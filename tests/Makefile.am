@@ -1,7 +1,7 @@
 TEST_SOURCES =			\
-	$(srcdir)/DatabaseTests.cs
+	$(srcdir)/IPodTests.cs
 
-TEST_ASSEMBLY = db-tests.dll
+TEST_ASSEMBLY = ipod-sharp-tests.dll
 
 $(TEST_ASSEMBLY): $(TEST_SOURCES)
 	$(MCS) -debug -r:$(top_builddir)/src/ipod-sharp.dll   \

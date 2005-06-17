@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace IPod.Tests {
 
     [TestFixture]
-    public class DatabaseTests {
+    public class IPodTests {
 
         private string tarballPath;
         private static int nextSong;
@@ -62,7 +62,7 @@ namespace IPod.Tests {
             startInfo.RedirectStandardError = true;
             Process proc = Process.Start (startInfo);
             string errors = proc.StandardError.ReadToEnd ();
-            string output = proc.StandardOutput.ReadToEnd ();
+            proc.StandardOutput.ReadToEnd ();
             proc.WaitForExit ();
 
             if (proc.ExitCode != 0)
