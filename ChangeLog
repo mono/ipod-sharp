@@ -1,5 +1,12 @@
 2005-06-17  James Willcox  <snorp@snorp.net>
 
+	* src/Song.cs: add TotalTracks
+	* tests/IPodTests.cs: add above to tests
+	* tests/runtests.sh: added, convenience script
+	* tests/Makefile.am: use runtests.sh
+
+2005-06-17  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs:
 	* src/Song.cs: support setting PlayCount, LastPlayed, and Rating
 	* src/IPodTests.cs: update tests for the above and other

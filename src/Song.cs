@@ -67,6 +67,11 @@ namespace IPod {
             get { return record.TrackNumber; }
             set { record.TrackNumber = value; }
         }
+
+        public int TotalTracks {
+            get { return record.TotalTracks; }
+            set { record.TotalTracks = value; }
+        }
         
         public int Year {
             get { return record.Year; }

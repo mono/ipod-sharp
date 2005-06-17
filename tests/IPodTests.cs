@@ -148,6 +148,7 @@ namespace IPod.Tests {
             song.Year = 1000;
             song.Length = 9999;
             song.TrackNumber = 8;
+            song.TotalTracks = 9;
             song.BitRate = 444;
             song.SampleRate = 555;
             song.Title = "TEST TITLE";
@@ -168,6 +169,7 @@ namespace IPod.Tests {
             Assert.AreEqual (1000, song.Year);
             Assert.AreEqual (9999, song.Length);
             Assert.AreEqual (8, song.TrackNumber);
+            Assert.AreEqual (9, song.TotalTracks);
             Assert.AreEqual (444, song.BitRate);
             Assert.AreEqual (555, song.SampleRate);
             Assert.AreEqual ("TEST TITLE", song.Title);

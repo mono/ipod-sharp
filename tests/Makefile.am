@@ -9,18 +9,21 @@ $(TEST_ASSEMBLY): $(TEST_SOURCES)
 
 all: $(TEST_ASSEMBLY)
 
+TEST_TARBALLS =					\
+	$(srcdir)/ipod-test-db-v12-a.tar.gz	\
+	$(srcdir)/ipod-test-db-rev2-a.tar.gz	\
+	$(srcdir)/ipod-test-db-rev3-a.tar.gz	\
+	$(srcdir)/ipod-test-db-rev4-a.tar.gz	\
+	$(srcdir)/ipod-test-db-shuffle-a.tar.gz
+
 check: $(TEST_ASSEMBLY)
-	IPOD_SHARP_TEST_TARBALL=$(srcdir)/ipod-test-db-v12-a.tar.gz mono --debug $(srcdir)/nunit-console.exe /nologo $(TEST_ASSEMBLY)
-	IPOD_SHARP_TEST_TARBALL=$(srcdir)/ipod-test-db-rev2-a.tar.gz mono --debug $(srcdir)/nunit-console.exe /nologo $(TEST_ASSEMBLY)
-	IPOD_SHARP_TEST_TARBALL=$(srcdir)/ipod-test-db-rev3-a.tar.gz mono --debug $(srcdir)/nunit-console.exe /nologo $(TEST_ASSEMBLY)
-	IPOD_SHARP_TEST_TARBALL=$(srcdir)/ipod-test-db-rev4-a.tar.gz mono --debug $(srcdir)/nunit-console.exe /nologo $(TEST_ASSEMBLY)
-	IPOD_SHARP_TEST_TARBALL=$(srcdir)/ipod-test-db-shuffle-a.tar.gz mono --debug $(srcdir)/nunit-console.exe /nologo $(TEST_ASSEMBLY)
+	for asm in $(TEST_TARBALLS); do $(srcdir)/runtests.sh $$asm; done;
 
 CLEANFILES = $(TEST_ASSEMBLY)
 
 EXTRA_DIST = 			\
 	$(TEST_SOURCES)		\
-	ipod-test-db-v12-a.tar.gz	\
+	$(TEST_TARBALLS)	\
 	nunit.core.dll		\
 	nunit.framework.dll	\
 	nunit.util.dll		\
