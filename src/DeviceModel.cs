@@ -2,8 +2,9 @@
 namespace IPod {
     
     public enum DeviceModel {
-        Regular,
         Photo,
+		Regular,
+        Mini,
         Shuffle
     }
 }
