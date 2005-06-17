@@ -1,4 +1,4 @@
-2005-06-17  James Willcox  <jwillcox@gnome.org>
+2005-06-17  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: Add On-The-Go playlist support
 	* src/Playlist.cs: ditto
