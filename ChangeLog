@@ -1,5 +1,11 @@
 2005-06-17  James Willcox  <snorp@snorp.net>
 
+	* tests/mktest.sh: Fixup a bit, and include more stuff in the tarball
+	* tests/runtests.sh: Accept a device to test, which makes a test
+	tarball out of it and runs the tests.
+
+2005-06-17  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: add TotalTracks
 	* tests/IPodTests.cs: add above to tests
 	* tests/runtests.sh: added, convenience script

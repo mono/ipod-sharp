@@ -2,12 +2,22 @@
 
 # I suck at shell script, sorry.
 
-if [ -x $2 ]; then \
-    echo "Usage: mktest.sh <db_file> <output_tarball>"
-    exit 0
+function usage()
+{
+    echo "Usage: mktest.sh <device> <output_tarball>"
+    exit 1
+}
+
+if [ -z $2 ]; then \
+    usage
+elif [ ! -d $1 ]; then
+    echo "Invalid device"
+    usage
 fi;
 
 rm -rf ipod-test-db
-mkdir -p ipod-test-db/iPod_Control/iTunes &&
-cp $1 ipod-test-db/iPod_Control/iTunes/iTunesDB &&
-tar cvfz $2 ipod-test-db 2>&1 > /dev/null
+mkdir -p ipod-test-db/iPod_Control &&
+cp -R $1/iPod_Control/iTunes ipod-test-db/iPod_Control &&
+cp -R $1/iPod_Control/Device ipod-test-db/iPod_Control &&
+tar cvfz $2 ipod-test-db 2>&1 > /dev/null &&
+rm -rf ipod-test-db
