@@ -1,3 +1,11 @@
+2005-06-17  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: don't write crap to stderr if the play counts
+	can't be loaded.
+	* tests/DatabaseTests.cs: s/ApplicationException/DeviceException/
+
+	Start keeping a ChangeLog again, now that things are in svn.
+
 2005-05-12  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: check the free space before copying songs

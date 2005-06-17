@@ -921,7 +921,7 @@ namespace IPod {
                     try {
                         LoadPlayCounts ();
                     } catch (Exception e) {
-                        Console.Error.WriteLine ("Failed to load play counts: " + e.Message);
+                        // that's ok.
                     }
 
                     // Load the playlists

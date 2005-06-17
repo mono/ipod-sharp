@@ -337,7 +337,7 @@ namespace IPod.Tests {
         }
 
         [Test]
-        [ExpectedException (typeof (ApplicationException))]
+        [ExpectedException (typeof (DeviceException))]
         public void NoDatabaseFoundTest () {
             SongDatabase db = new SongDatabase ();
             db.Load (new Device ("/tmp/no-database-here-move-along"));
