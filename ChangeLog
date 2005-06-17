@@ -1,5 +1,11 @@
 2005-06-17  James Willcox  <snorp@snorp.net>
 
+	* src/Device.cs: update bindings to handle the recently added
+	GError arguments.
+	* tests/IPodTests.cs: put funky UTF-8 strings in some of the tests
+
+2005-06-17  James Willcox  <snorp@snorp.net>
+
 	* tests/mktest.sh: Fixup a bit, and include more stuff in the tarball
 	* tests/runtests.sh: Accept a device to test, which makes a test
 	tarball out of it and runs the tests.

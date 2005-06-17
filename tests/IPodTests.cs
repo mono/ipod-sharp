@@ -143,17 +143,17 @@ namespace IPod.Tests {
 
             DateTime now = DateTime.Now;
             
-            song.Artist = "TEST ARTIST";
-            song.Album = "TEST ALBUM";
+            song.Artist = "عَلَيْكُم";
+            song.Album = "ሠላም";
             song.Year = 1000;
             song.Length = 9999;
             song.TrackNumber = 8;
             song.TotalTracks = 9;
             song.BitRate = 444;
             song.SampleRate = 555;
-            song.Title = "TEST TITLE";
-            song.Genre = "Metal";
-            song.Comment = "test comment";
+            song.Title = "ආයුබෝවන්";
+            song.Genre = "こんにちは";
+            song.Comment = "வணக்கம்";
             song.PlayCount = 34;
             song.LastPlayed = now;
             song.Rating = SongRating.Four;
@@ -164,17 +164,17 @@ namespace IPod.Tests {
             song = FindSong (db, id);
 
             Assert.IsNotNull (song);
-            Assert.AreEqual ("TEST ARTIST", song.Artist);
-            Assert.AreEqual ("TEST ALBUM", song.Album);
+            Assert.AreEqual ("عَلَيْكُم", song.Artist);
+            Assert.AreEqual ("ሠላም", song.Album);
             Assert.AreEqual (1000, song.Year);
             Assert.AreEqual (9999, song.Length);
             Assert.AreEqual (8, song.TrackNumber);
             Assert.AreEqual (9, song.TotalTracks);
             Assert.AreEqual (444, song.BitRate);
             Assert.AreEqual (555, song.SampleRate);
-            Assert.AreEqual ("TEST TITLE", song.Title);
-            Assert.AreEqual ("Metal", song.Genre);
-            Assert.AreEqual ("test comment", song.Comment);
+            Assert.AreEqual ("ආයුබෝවන්", song.Title);
+            Assert.AreEqual ("こんにちは", song.Genre);
+            Assert.AreEqual ("வணக்கம்", song.Comment);
             Assert.AreEqual (34, song.PlayCount);
             Assert.AreEqual (SongRating.Four, song.Rating);
 

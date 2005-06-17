@@ -20,10 +20,10 @@ namespace IPod {
         private static extern bool ipod_device_rescan_disk (IntPtr raw);
 
         [DllImport ("ipoddevice")]
-        private static extern uint ipod_device_eject (IntPtr raw);
+        private static extern uint ipod_device_eject (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
-        private static extern bool ipod_device_save (IntPtr raw);
+        private static extern bool ipod_device_save (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
         private static extern void ipod_device_debug (IntPtr raw);
@@ -133,21 +133,26 @@ namespace IPod {
         }
 
         public void Eject () {
-            EjectResult result = (EjectResult) ipod_device_eject (Raw);
+            IntPtr error = IntPtr.Zero;
+            EjectResult result = (EjectResult) ipod_device_eject (Raw, out error);
 
             switch (result) {
             case EjectResult.Ok:
                 return;
             case EjectResult.Error:
-                throw new DeviceException (this, "Could not eject device"); // FIXME: need better message
+                GLib.GException exc = new GLib.GException (error);
+                throw new DeviceException (this, exc.Message, exc);
             case EjectResult.Busy:
                 throw new DeviceBusyException (this);
             }
         }
 
         public void Save () {
-            if (!ipod_device_save (Raw)) {
-                throw new DeviceException (this, "Failed to save");
+            IntPtr error = IntPtr.Zero;
+            
+            if (!ipod_device_save (Raw, out error)) {
+                GLib.GException exc = new GLib.GException (error);
+                throw new DeviceException (this, exc.Message, exc);
             }
         }
 
