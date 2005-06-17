@@ -1,0 +1,112 @@
+<Type Name="Playlist" FullName="iPodSharp.Playlist">
+  <TypeSignature Language="C#" Value="public class Playlist" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    
+    
+    <Member MemberName="Songs">
+      <MemberSignature Language="C#" Value="public IPod.Song[] Songs { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Song[]</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>The songs in the playlist</summary>
+        <value>The songs in the playlist</value>
+        <remarks>These are the songs in the playlist, in the order that they will be played.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Name">
+      <MemberSignature Language="C#" Value="public string Name { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>The name of the playlist</summary>
+        <value>The name of the playlist</value>
+        <remarks>This is the name of the playlist as displayed on the device.</remarks>
+      </Docs>
+    </Member>
+  
+  
+  
+  <Member MemberName="InsertSong">
+      <MemberSignature Language="C#" Value="public void InsertSong (int index, IPod.Song song);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+        <Parameter Name="song" Type="IPod.Song" />
+      </Parameters>
+      <Docs>
+        <param name="index">To be added.</param>
+        <param name="song">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="AddSong">
+      <MemberSignature Language="C#" Value="public void AddSong (IPod.Song song);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="song" Type="IPod.Song" />
+      </Parameters>
+      <Docs>
+        <param name="song">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="RemoveSong">
+      <MemberSignature Language="C#" Value="public bool RemoveSong (IPod.Song song);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="song" Type="IPod.Song" />
+      </Parameters>
+      <Docs>
+        <param name="song">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="MoveSong">
+      <MemberSignature Language="C#" Value="public bool MoveSong (int index, IPod.Song song);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+        <Parameter Name="song" Type="IPod.Song" />
+      </Parameters>
+      <Docs>
+        <param name="index">To be added.</param>
+        <param name="song">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>Represents an iPod playlist</summary>
+    <remarks>The Playlist class represents a specific playlist on the device.  Currently, only "simple" playlists are supported -- not smart playlists.</remarks>
+  </Docs>
+</Type>

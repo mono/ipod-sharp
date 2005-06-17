@@ -1,0 +1,58 @@
+2005-05-12  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: check the free space before copying songs
+
+2005-05-12  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: fixup playlist creation a little, and add
+	RemovePlaylist()
+
+2005-05-10  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: Add API and fix things to enable creation
+	of new playlists.
+
+2005-05-10  James Willcox  <snorp@snorp.net>
+
+	* import into baz
+
+2005-05-10  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: get the filename from the record, when copying
+	* src/Song.cs: sanitize the filename, since apparently '?' causes
+	problems for bizarre reasons.
+	* configure.ing: bump to 0.0.3
+
+2005-05-10  James Willcox  <snorp@snorp.net>
+
+	* configure.in: bump to 0.0.2
+
+2005-05-10  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: rollback the db if something goes wrong while
+	copying files.
+	* src/Song.cs: support AAC files correctly, hopefully.
+	* tools/PodTool.cs: add --dump-files option
+
+2005-02-04  James Willcox  <james@ximian.com>
+
+	* tests/DatabaseTests.cs: add an assertion
+
+2005-02-04  James Willcox  <james@ximian.com>
+
+	* Makefile.am: add tests subdir
+	* configure.in: add --disable-tests
+	* src/Song.cs: fix filename handling
+	* src/SongDatabase.cs: fix miscellenous crap
+	* tests/DatabaseTests.cs: added
+	* tests/Makefile.am: ditto 
+	* tests/ipod-test-db.tar.gz: ditto
+	* tools/PodTool.cs: add --clear
+
+2005-01-24  James Willcox  <snorp@snorp.net>
+
+	* src/Makefile.am:
+	* tools/Makefile.am:
+
+	Fix the dist (sort of)
+

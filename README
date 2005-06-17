@@ -1,0 +1,7 @@
+
+ipod-sharp is a library that allows manipulation of the iTunesDB used in
+Apple iPod devices.  Currently it supports adding/removing songs and
+manipulating existing playlists.
+
+
+

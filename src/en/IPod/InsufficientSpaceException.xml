@@ -1,0 +1,37 @@
+<Type Name="InsufficientSpaceException" FullName="iPodSharp.InsufficientSpaceException">
+  <TypeSignature Language="C#" Value="public class InsufficientSpaceException : System.ApplicationException" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.ApplicationException</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public InsufficientSpaceException (string format, object[] args);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="format" Type="System.String" />
+        <Parameter Name="args" Type="System.Object[]">
+          <Attributes>
+            <Attribute>
+              <AttributeName>System.ParamArray</AttributeName>
+            </Attribute>
+          </Attributes>
+        </Parameter>
+      </Parameters>
+      <Docs>
+        <param name="format">String.Format string</param>
+        <param name="args">Format arguments</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary />
+    <remarks>This exception is thrown when there is not enough disk space on the device to do the required operations (usually adding new songs).</remarks>
+  </Docs>
+</Type>

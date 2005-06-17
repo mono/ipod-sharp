@@ -1,0 +1,73 @@
+<Type Name="DeviceException" FullName="IPod.DeviceException">
+  <TypeSignature Language="C#" Value="public class DeviceException : System.Exception" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Exception</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DeviceException (System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="info" Type="System.Runtime.Serialization.SerializationInfo" />
+        <Parameter Name="context" Type="System.Runtime.Serialization.StreamingContext" />
+      </Parameters>
+      <Docs>
+        <param name="info">To be added.</param>
+        <param name="context">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DeviceException (IPod.Device device, string msg);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="device" Type="IPod.Device" />
+        <Parameter Name="msg" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="device">To be added.</param>
+        <param name="msg">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DeviceException (IPod.Device device, string msg, Exception root);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="device" Type="IPod.Device" />
+        <Parameter Name="msg" Type="System.String" />
+        <Parameter Name="root" Type="System.Exception" />
+      </Parameters>
+      <Docs>
+        <param name="device">To be added.</param>
+        <param name="msg">To be added.</param>
+        <param name="root">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Device">
+      <MemberSignature Language="C#" Value="public IPod.Device Device { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Device</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>
