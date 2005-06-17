@@ -8,9 +8,14 @@ namespace IPod {
 
         private SongDatabase db;
         private PlaylistRecord record;
+        internal Song[] otgsongs = null;
 
         internal PlaylistRecord PlaylistRecord {
             get { return record; }
+        }
+
+        internal Playlist (SongDatabase db, Song[] otgsongs) {
+            this.otgsongs = otgsongs;
         }
         
         internal Playlist (SongDatabase db, PlaylistRecord record) {
@@ -20,6 +25,9 @@ namespace IPod {
 
         public Song[] Songs {
             get {
+                if (IsOnTheGo)
+                    return otgsongs;
+                    
                 ArrayList songs = new ArrayList ();
 
                 foreach (PlaylistItemRecord item in record.Items) {
@@ -37,11 +45,27 @@ namespace IPod {
         }
 
         public string Name {
-            get { return record.PlaylistName; }
-            set { record.PlaylistName = value; }
+            get {
+                if (IsOnTheGo)
+                    return "On-The-Go";
+                
+                return record.PlaylistName;
+            } set {
+                if (IsOnTheGo)
+                    throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
+                
+                record.PlaylistName = value;
+            }
+        }
+
+        public bool IsOnTheGo {
+            get { return otgsongs != null; }
         }
 
         public void InsertSong (int index, Song song) {
+            if (IsOnTheGo)
+                throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
+            
             PlaylistItemRecord item = new PlaylistItemRecord ();
             item.TrackId = song.Id;
 
@@ -53,6 +77,9 @@ namespace IPod {
         }
 
         public bool RemoveSong (Song song) {
+            if (IsOnTheGo)
+                throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
+            
             return record.RemoveItem (song.Id);
         }
 

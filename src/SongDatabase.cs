@@ -875,6 +875,10 @@ namespace IPod {
 
         private void LoadPlayCounts () {
             string path = device.MountPoint + "/iPod_Control/iTunes/Play Counts";
+
+            if (!File.Exists (path))
+                return;
+            
             using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open))) {
                 
 
@@ -894,6 +898,34 @@ namespace IPod {
                     }
                 }
             }
+        }
+
+        private void LoadOnTheGo () {
+            string path = device.MountPoint + "/iPod_Control/iTunes/OTGPlaylistInfo";
+
+            if (!File.Exists (path)) {
+                // add a blank one
+                playlists.Add (new Playlist (this, new Song[0]));
+                return;
+            }
+            
+            ArrayList otgsongs = new ArrayList ();
+            
+            using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open))) {
+
+                byte[] header = reader.ReadBytes (20);
+
+                int numTracks = BitConverter.ToInt32 (header, 12);
+
+                for (int i = 0; i < numTracks; i++) {
+                    int index = reader.ReadInt32 ();
+
+                    otgsongs.Add (songs[index]);
+                }
+            }
+
+            Playlist otglist = new Playlist (this, (Song[]) otgsongs.ToArray (typeof (Song)));
+            playlists.Add (otglist);
         }
 
         public void Load (Device device) {
@@ -918,11 +950,7 @@ namespace IPod {
                     }
 
                     // Load the play counts
-                    try {
-                        LoadPlayCounts ();
-                    } catch (Exception e) {
-                        // that's ok.
-                    }
+                    LoadPlayCounts ();
 
                     // Load the playlists
                     foreach (PlaylistRecord listrec in dbrec.DataSets[1].PlaylistList.Playlists) {
@@ -932,6 +960,9 @@ namespace IPod {
                         Playlist list = new Playlist (this, listrec);
                         playlists.Add (list);
                     }
+
+                    // Load the On-The-Go playlist
+                    LoadOnTheGo ();
                 }
             }
         }
@@ -1103,6 +1134,9 @@ namespace IPod {
 
         public void RemovePlaylist (Playlist playlist) {
             lock (playlists) {
+                if (playlist.IsOnTheGo)
+                    throw new InvalidOperationException ("The On-The-Go playlist cannot be removed.");
+                
                 dbrec.DataSets[1].PlaylistList.RemovePlaylist (playlist.PlaylistRecord);
                 playlists.Remove (playlist);
             }

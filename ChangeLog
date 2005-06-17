@@ -1,3 +1,9 @@
+2005-06-17  James Willcox  <jwillcox@gnome.org>
+
+	* src/SongDatabase.cs: Add On-The-Go playlist support
+	* src/Playlist.cs: ditto
+	* tests/IPodTests.cs: add tests for the above
+
 2005-06-17  James Willcox  <snorp@snorp.net>
 
 	* tests/IPodTests.cs: moved from DatabaseTests.cs

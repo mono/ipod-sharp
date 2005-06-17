@@ -342,5 +342,56 @@ namespace IPod.Tests {
             SongDatabase db = new SongDatabase ();
             db.Load (new Device ("/tmp/no-database-here-move-along"));
         }
+
+        private Playlist GetOTGPlaylist (SongDatabase db) {
+            foreach (Playlist p in db.Playlists) {
+                if (p.IsOnTheGo)
+                    return p;
+            }
+
+            return null;
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void ModifyOTGNameTest () {
+            SongDatabase db = OpenDevice ().SongDatabase;
+
+            GetOTGPlaylist (db).Name = "foobar";
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void AddOTGSongTest () {
+            SongDatabase db = OpenDevice ().SongDatabase;
+
+            Song song = AddSong (db);
+            GetOTGPlaylist (db).AddSong (song);
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void RemoveOTGSongTest () {
+            SongDatabase db = OpenDevice ().SongDatabase;
+
+            Playlist otg = GetOTGPlaylist (db);
+
+            // make nunit happy if there were no songs
+            if (otg.Songs.Length == 0)
+                throw new InvalidOperationException ("no songs");
+            
+            foreach (Song song in otg.Songs) {
+                otg.RemoveSong (song);
+            }
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void RemoveOTGPlaylistTest () {
+            SongDatabase db = OpenDevice ().SongDatabase;
+
+            Playlist otg = GetOTGPlaylist (db);
+            db.RemovePlaylist (otg);
+        }
     }
 }
