@@ -118,14 +118,14 @@ namespace IPod.Tests {
 
             Song foundSong = FindSong (db, id);
 
-            Assert.AreEqual (true, foundSong != null);
+            Assert.IsNotNull (foundSong);
 
             db.RemoveSong (foundSong);
             db.Save ();
 
             LoadDatabase (db);
 
-            Assert.AreEqual (true, FindSong (db, id) == null);
+            Assert.IsNull (FindSong (db, id));
         }
 
         [Test]
@@ -139,21 +139,46 @@ namespace IPod.Tests {
 
             Song song = FindSong (db, id);
 
-            Assert.AreEqual (true, song != null);
+            Assert.IsNotNull (song);
+
+            DateTime now = DateTime.Now;
             
-            song.Artist = "DEADBEEF";
-            song.Album = "DEADBEEF";
+            song.Artist = "TEST ARTIST";
+            song.Album = "TEST ALBUM";
             song.Year = 1000;
+            song.Length = 9999;
+            song.TrackNumber = 8;
+            song.BitRate = 444;
+            song.SampleRate = 555;
+            song.Title = "TEST TITLE";
+            song.Genre = "Metal";
+            song.Comment = "test comment";
+            song.PlayCount = 34;
+            song.LastPlayed = now;
+            song.Rating = SongRating.Four;
 
             db.Save ();
             LoadDatabase (db);
 
             song = FindSong (db, id);
 
-            Assert.AreEqual (true, song != null);
-            Assert.AreEqual ("DEADBEEF", song.Artist);
-            Assert.AreEqual ("DEADBEEF", song.Album);
+            Assert.IsNotNull (song);
+            Assert.AreEqual ("TEST ARTIST", song.Artist);
+            Assert.AreEqual ("TEST ALBUM", song.Album);
             Assert.AreEqual (1000, song.Year);
+            Assert.AreEqual (9999, song.Length);
+            Assert.AreEqual (8, song.TrackNumber);
+            Assert.AreEqual (444, song.BitRate);
+            Assert.AreEqual (555, song.SampleRate);
+            Assert.AreEqual ("TEST TITLE", song.Title);
+            Assert.AreEqual ("Metal", song.Genre);
+            Assert.AreEqual ("test comment", song.Comment);
+            Assert.AreEqual (34, song.PlayCount);
+            Assert.AreEqual (SongRating.Four, song.Rating);
+
+            // the conversion to/from mac time skews this a little
+            // so we can't do a straight comparison
+            Assert.IsTrue (Math.Abs ((song.LastPlayed - now).TotalSeconds) < 1);
         }
 
         private Playlist FindPlaylist (SongDatabase db, string name) {
@@ -186,7 +211,7 @@ namespace IPod.Tests {
 
             list = FindPlaylist (db, playlistName);
 
-            Assert.AreEqual (true, list != null);
+            Assert.IsNotNull (list);
             Assert.AreEqual (10, list.Songs.Length);
         }
 
@@ -200,7 +225,7 @@ namespace IPod.Tests {
 
             list = FindPlaylist (db, playlistName);
 
-            Assert.AreEqual (true, list != null);
+            Assert.IsNotNull (list);
 
             db.RemovePlaylist (list);
             db.Save ();
@@ -221,7 +246,7 @@ namespace IPod.Tests {
 
             list = FindPlaylist (db, playlistName);
 
-            Assert.AreEqual (true, list != null);
+            Assert.IsNotNull (list);
             Assert.AreEqual (10, list.Songs.Length);
 
             for (int i = 0; i < 10; i++)
@@ -233,7 +258,7 @@ namespace IPod.Tests {
 
             list = FindPlaylist (db, playlistName);
 
-            Assert.AreEqual (true, list != null);
+            Assert.IsNotNull (list);
             Assert.AreEqual (20, list.Songs.Length);
         }
 
@@ -247,7 +272,7 @@ namespace IPod.Tests {
 
             list = FindPlaylist (db, playlistName);
 
-            Assert.AreEqual (true, list != null);
+            Assert.IsNotNull (list);
             Assert.AreEqual (10, list.Songs.Length);
 
             Song mysong = list.Songs[4];
@@ -296,16 +321,16 @@ namespace IPod.Tests {
         [Test]
         public void IsIPodTest () {
             Device device = OpenDevice ();
-            Assert.AreEqual (true, device.IsIPod);
+            Assert.IsTrue (device.IsIPod);
         }
 
         [Test]
         public void DeviceVolumeTest () {
             Device device = OpenDevice ();
 
-            Assert.AreEqual (true, device.VolumeSize > 0);
+            Assert.IsTrue (device.VolumeSize > 0);
         }
-        
+
         [Test]
         public void SimpleTest () {
             SongDatabase db = OpenDevice ().SongDatabase;

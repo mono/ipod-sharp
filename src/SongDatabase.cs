@@ -447,7 +447,6 @@ namespace IPod {
         private int unknownNine;
         private int unknownTen;
         private byte compilationFlag = 0;
-        private byte rating = 0;
         private int playCountDup;
 
         private ArrayList details = new ArrayList ();
@@ -455,6 +454,7 @@ namespace IPod {
         public int Id;
         public bool Hidden = false;
         public TrackRecordType Type = TrackRecordType.MP3;
+        public byte Rating;
         public uint Date;
         public int Size;
         public int Length;
@@ -522,7 +522,7 @@ namespace IPod {
             unknownTwo = BitConverter.ToInt32 (body, 12);
             Type = (TrackRecordType) BitConverter.ToInt16 (body, 16);
             compilationFlag = body[18];
-            rating = body[19];
+            Rating = body[19];
             Date = BitConverter.ToUInt32 (body, 20);
             Size = BitConverter.ToInt32 (body, 24);
             Length = BitConverter.ToInt32 (body, 28);
@@ -591,7 +591,7 @@ namespace IPod {
             writer.Write (unknownTwo);
             writer.Write ((short) Type);
             writer.Write (compilationFlag);
-            writer.Write (rating);
+            writer.Write (Rating);
             writer.Write (Date);
             writer.Write (Size);
             writer.Write (Length);
@@ -880,7 +880,6 @@ namespace IPod {
                 return;
             
             using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open))) {
-                
 
                 byte[] header = reader.ReadBytes (96);
                 int entryLength = BitConverter.ToInt32 (header, 8);
@@ -894,7 +893,15 @@ namespace IPod {
 
                     uint lastPlayed = BitConverter.ToUInt32 (entry, 4);
                     if (lastPlayed > 0) {
-                        (songs[i] as Song).lastPlayed = Utility.MacTimeToDate (lastPlayed);
+                        (songs[i] as Song).Track.LastPlayedTime = lastPlayed;
+                    }
+
+                    // if it has rating info, get it
+                    if (entryLength >= 16) {
+                        // Why is this one byte in iTunesDB and 4 here?
+                        
+                        int rating = BitConverter.ToInt32 (entry, 12);
+                        (songs[i] as Song).Track.Rating  = (byte) rating;
                     }
                 }
             }

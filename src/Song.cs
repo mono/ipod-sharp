@@ -4,6 +4,15 @@ using System.IO;
 
 namespace IPod {
 
+    public enum SongRating {
+        Zero = 0,
+        One = 20,
+        Two = 40,
+        Three = 60,
+        Four = 80,
+        Five = 100
+    }
+    
     public class Song {
 
         private TrackRecord record;
@@ -125,11 +134,25 @@ namespace IPod {
         }
 
         public int PlayCount {
-            get { return playCount; }
+            get { return record.PlayCount; }
+            set { record.PlayCount = value; }
         }
 
         public DateTime LastPlayed {
-            get { return lastPlayed; }
+            get {
+                if (record.LastPlayedTime > 0) {
+                    return Utility.MacTimeToDate (record.LastPlayedTime);
+                } else {
+                    return DateTime.MinValue;
+                }
+            } set {
+                record.LastPlayedTime = Utility.DateToMacTime (value);
+            }
+        }
+
+        public SongRating Rating {
+            get { return (SongRating) record.Rating; }
+            set { record.Rating = (byte) value; }
         }
 
         internal SongDatabase Database {
