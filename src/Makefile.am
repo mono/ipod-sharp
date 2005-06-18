@@ -38,7 +38,6 @@ install-data-hook:
 	$(GACUTIL) /i $(ASSEMBLY) /package $(PACKAGE) /gacdir $(libdir) /root $(DESTDIR)$(libdir)
 
 EXTRA_DIST =			\
-	ipod-sharp.dll.config	\
 	$(ASSEMBLY_SOURCES)	\
 	ipod-sharp.snk 		\
 	$(srcdir)/en/*.xml	\

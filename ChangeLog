@@ -1,5 +1,12 @@
 2005-06-18  James Willcox  <snorp@snorp.net>
 
+	* tests/Makefile.am:
+	* tests/runtests.sh:
+
+	Fix things so they work when builddir != srcdir.
+
+2005-06-18  James Willcox  <snorp@snorp.net>
+
 	* src/Equalizer.cs: added
 	* src/Device.cs: add equalizer bits
 	* src/SongDatabase.cs: clean up some

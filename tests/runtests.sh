@@ -17,4 +17,8 @@ fi;
 
 export IPOD_SHARP_TEST_TARBALL
 
-exec mono --debug nunit-console.exe /nologo ipod-sharp-tests.dll
+if test -z $NUNIT_DIR; then
+    NUNIT_DIR="."
+fi;
+
+exec mono --debug $NUNIT_DIR/nunit-console.exe /nologo ipod-sharp-tests.dll

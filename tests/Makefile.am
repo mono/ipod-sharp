@@ -17,13 +17,15 @@ TEST_TARBALLS =					\
 	$(srcdir)/ipod-test-db-shuffle-a.tar.gz
 
 check: $(TEST_ASSEMBLY)
-	for asm in $(TEST_TARBALLS); do $(srcdir)/runtests.sh $$asm; done;
+	for asm in $(TEST_TARBALLS); do NUNIT_DIR=$(srcdir) $(srcdir)/runtests.sh $$asm; done;
 
 CLEANFILES = $(TEST_ASSEMBLY)
 
 EXTRA_DIST = 			\
 	$(TEST_SOURCES)		\
 	$(TEST_TARBALLS)	\
+	runtests.sh		\
+	mktest.sh		\
 	nunit.core.dll		\
 	nunit.framework.dll	\
 	nunit.util.dll		\
