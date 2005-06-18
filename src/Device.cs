@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 using System.Collections;
 using System.Runtime.InteropServices;
 
@@ -34,6 +35,13 @@ namespace IPod {
         [DllImport ("ipoddevice")]
         private static extern IntPtr ipod_device_get_type ();
 
+        private ArrayList equalizers = new ArrayList ();
+        private EqualizerContainerRecord eqsrec;
+
+        private string EqDbPath {
+            get { return this.MountPoint + "/iPod_Control/iTunes/iTunesEQPresets"; }
+        }
+        
         public DeviceModel Model {
             get {
                 uint rawtype = (uint) GetProperty ("device-model").Val;
@@ -101,6 +109,14 @@ namespace IPod {
             }
         }
 
+        public Equalizer[] Equalizers {
+            get {
+                lock (equalizers) {
+                    return (Equalizer[]) equalizers.ToArray (typeof (Equalizer));
+                }
+            }
+        }
+
         public SongDatabase SongDatabase {
             get {
                 if (!IsIPod) {
@@ -118,11 +134,25 @@ namespace IPod {
         }
 
         protected Device (IntPtr ptr) : base (ptr) {
+            if (Raw == IntPtr.Zero) {
+                throw new DeviceException (this, "Failed to create device");
+            }
+            
+            LoadEqualizers ();
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
-            if (Raw == IntPtr.Zero) {
-                throw new DeviceException (this, "Failed to create device");
+        }
+
+        private void LoadEqualizers () {
+            using (BinaryReader reader = new BinaryReader (File.Open (EqDbPath, FileMode.Open))) {
+                eqsrec = new EqualizerContainerRecord ();
+                eqsrec.Read (reader);
+
+                foreach (EqualizerRecord eqrec in eqsrec.EqualizerRecords) {
+                    Equalizer eq = new Equalizer (eqrec);
+                    equalizers.Add (eq);
+                }
             }
         }
 
@@ -149,10 +179,27 @@ namespace IPod {
 
         public void Save () {
             IntPtr error = IntPtr.Zero;
-            
+
             if (!ipod_device_save (Raw, out error)) {
-                GLib.GException exc = new GLib.GException (error);
-                throw new DeviceException (this, exc.Message, exc);
+                if (!error.Equals (IntPtr.Zero)) {
+                    GLib.GException exc = new GLib.GException (error);
+                    throw new DeviceException (this, exc.Message, exc);
+                } else {
+                    throw new DeviceException (this, "Failed to save device");
+                }
+            }
+
+            try {
+                // Back up the eq db
+                File.Copy (EqDbPath, EqDbPath + ".bak", true);
+                
+                // Save the eq db
+                using (BinaryWriter writer = new BinaryWriter (new FileStream (EqDbPath, FileMode.Create))) {
+                    eqsrec.Save (writer);
+                }
+            } catch (Exception e) {
+                // restore the backup
+                File.Copy (EqDbPath + ".bak", EqDbPath, true);
             }
         }
 
@@ -160,6 +207,25 @@ namespace IPod {
             ipod_device_debug (Raw);
         }
 
+        public Equalizer CreateEqualizer () {
+            lock (equalizers) {
+                EqualizerRecord rec = new EqualizerRecord ();
+                Equalizer eq = new Equalizer (rec);
+
+                eqsrec.Add (rec);
+                equalizers.Add (eq);
+
+                return eq;
+            }
+        }
+
+        public void RemoveEqualizer (Equalizer eq) {
+            lock (equalizers) {
+                equalizers.Remove (eq);
+                eqsrec.Remove (eq.EqualizerRecord);
+            }
+        }
+        
         public static Device[] ListDevices () {
             GLib.List list = new GLib.List (ipod_device_list_devices ());
 

@@ -14,8 +14,6 @@ namespace IPod.Tests {
 
         private const string testdir = "/tmp/ipod-sharp-tests";
         private const string playlistName = "Foo Playlist";
-
-        // The following tests should all succeed.
         
         [SetUp]
         public void SetUp () {
@@ -89,6 +87,15 @@ namespace IPod.Tests {
             }
 
             return null;
+        }
+
+        // The following tests should all succeed.
+
+        [Test]
+        public void SimpleTest () {
+            Device device = OpenDevice ();
+            device.Save ();
+            device.SongDatabase.Save ();
         }
 
         [Test]
@@ -327,16 +334,90 @@ namespace IPod.Tests {
         }
 
         [Test]
-        public void DeviceVolumeTest () {
+        public void DeviceVolumeSizeTest () {
             Device device = OpenDevice ();
 
             Assert.IsTrue (device.VolumeSize > 0);
         }
 
+        private Equalizer FindEq (Device device, string name) {
+            foreach (Equalizer eq in device.Equalizers) {
+                if (eq.Name == name)
+                    return eq;
+            }
+
+            return null;
+        }
+
+        private Equalizer AddEq (Device device) {
+            Equalizer eq = device.CreateEqualizer ();
+            
+            eq.Name = "my name";
+            eq.PreAmp = 50;
+
+            int[] bands = new int[] { 200, 20, 10, 5, 300 };
+            eq.BandValues = bands;
+
+            return eq;
+        }
+
         [Test]
-        public void SimpleTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
-            db.Save ();
+        public void AddEqualizerTest () {
+            Device device = OpenDevice ();
+
+            Equalizer eq = AddEq (device);
+            string name = eq.Name;
+            int preamp = eq.PreAmp;
+            int[] bands = eq.BandValues;
+            
+            device.Save ();
+            device = GetDevice ();
+
+            eq = FindEq (device, name);
+
+            Assert.IsNotNull (eq);
+            Assert.AreEqual (name, eq.Name);
+            Assert.AreEqual (preamp, eq.PreAmp);
+            Assert.AreEqual (bands, eq.BandValues);
+        }
+
+        [Test]
+        public void RemoveEqualizerTest () {
+            Device device = OpenDevice ();
+
+            string name = AddEq (device).Name;
+
+            device.Save ();
+            device = GetDevice ();
+
+            Equalizer eq = FindEq (device, name);
+
+            Assert.IsNotNull (eq);
+
+            device.RemoveEqualizer (eq);
+            device.Save ();
+
+            device = GetDevice ();
+
+            Assert.IsNull (FindEq (device, name));
+        }
+
+        [Test]
+        public void EqualizerOverflowTest () {
+            Device device = OpenDevice ();
+
+            Equalizer eq = AddEq (device);
+            
+            // the iTunesDB file only allows 510 chars here, so intentionally
+            // overflow it to make sure it gets truncated properly.
+            eq.Name = "my eq".PadRight (1000);
+
+            device.Save ();
+            device = GetDevice ();
+
+            eq = FindEq (device, "my eq".PadRight (510));
+
+            Assert.IsNotNull (eq);
         }
 
         // The following tests should all "fail".
@@ -419,6 +500,28 @@ namespace IPod.Tests {
 
             Playlist otg = GetOTGPlaylist (db);
             db.RemovePlaylist (otg);
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void EqualizerNotEnoughBandsTest () {
+            Device device = OpenDevice ();
+
+            Equalizer eq = AddEq (device);
+            eq.BandValues = new int[] { 5, 4, 3 };
+            
+            device.Save ();
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void EqualizerInvalidBandsTest () {
+            Device device = OpenDevice ();
+
+            Equalizer eq = AddEq (device);
+            eq.BandValues = new int[] { 5, 4, 5000, 0, 0 };
+            
+            device.Save ();
         }
     }
 }

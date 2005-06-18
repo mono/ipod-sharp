@@ -12,6 +12,7 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/DeviceModel.cs	\
 	$(srcdir)/DeviceException.cs	\
 	$(srcdir)/DeviceBusyException.cs	\
+	$(srcdir)/Equalizer.cs		\
 	$(srcdir)/Song.cs		\
 	$(srcdir)/Playlist.cs		\
 	$(srcdir)/SongDatabase.cs

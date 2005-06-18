@@ -23,7 +23,7 @@ namespace IPod {
 
     internal abstract class Record {
 
-        protected const int PadLength = 2;
+        public const int PadLength = 2;
 
         public string Name;
         public int HeaderOne; // usually the size of this record
@@ -837,8 +837,14 @@ namespace IPod {
         private ArrayList playlists = new ArrayList ();
 
         private Device device;
-        private string dbPath;
-        private string musicDirectory;
+
+        private string SongDbPath {
+            get { return device.MountPoint + "/iPod_Control/iTunes/iTunesDB"; }
+        }
+
+        private string MusicPath {
+            get { return device.MountPoint + "/iPod_Control/Music/" + MusicFolder; }
+        }
 
         public Song[] Songs {
             get {
@@ -867,10 +873,6 @@ namespace IPod {
             songsToAdd.Clear ();
             songsToRemove.Clear ();
             playlists.Clear ();
-        }
-
-        private string GetDbPath () {
-            return device.MountPoint + "/iPod_Control/iTunes/iTunesDB";
         }
 
         private void LoadPlayCounts () {
@@ -940,10 +942,8 @@ namespace IPod {
             lock (this) {
 
                 this.device = device;
-                this.dbPath = GetDbPath ();
-                this.musicDirectory = device.MountPoint + "/iPod_Control/Music/" + MusicFolder;
                 
-                using (BinaryReader reader = new BinaryReader (new FileStream (dbPath, FileMode.Open))) {
+                using (BinaryReader reader = new BinaryReader (new FileStream (SongDbPath, FileMode.Open))) {
 
                     Clear ();
                     
@@ -1009,11 +1009,11 @@ namespace IPod {
             CheckFreeSpace ();
 
             // Back up the current song db
-            File.Copy (dbPath, dbPath + ".bak", true);
-
+            File.Copy (SongDbPath, SongDbPath + ".bak", true);
+            
             try {
                 // Save the songs db
-                using (BinaryWriter writer = new BinaryWriter (new FileStream (dbPath, FileMode.Create))) {
+                using (BinaryWriter writer = new BinaryWriter (new FileStream (SongDbPath, FileMode.Create))) {
                     dbrec.Save (dbrec, writer);
                 }
                 
@@ -1022,8 +1022,8 @@ namespace IPod {
                         File.Delete (song.Filename);
                 }
                 
-                if (!Directory.Exists (musicDirectory))
-                    Directory.CreateDirectory (musicDirectory);
+                if (!Directory.Exists (MusicPath))
+                    Directory.CreateDirectory (MusicPath);
                 
                 int completed = 0;
                 
@@ -1039,8 +1039,8 @@ namespace IPod {
                 if (handler != null)
                     handler (this, null, songsToAdd.Count, songsToAdd.Count);
             } catch (Exception e) {
-                // rollback the songs db
-                File.Copy (dbPath + ".bak", dbPath, true);
+                // rollback the song db
+                File.Copy (SongDbPath + ".bak", SongDbPath, true);
                 throw e;
             }
         }

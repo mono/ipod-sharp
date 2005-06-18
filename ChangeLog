@@ -1,3 +1,11 @@
+2005-06-18  James Willcox  <snorp@snorp.net>
+
+	* src/Equalizer.cs: added
+	* src/Device.cs: add equalizer bits
+	* src/SongDatabase.cs: clean up some
+	* tests/IPodTests.cs: add equalizer tests
+	* tests/tests/ipod-test-db-v12-a.tar.gz: add a EQ file, since it was missing one
+
 2005-06-17  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: update bindings to handle the recently added
