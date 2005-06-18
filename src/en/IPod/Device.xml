@@ -226,6 +226,46 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+  <Member MemberName="CreateEqualizer">
+      <MemberSignature Language="C#" Value="public IPod.Equalizer CreateEqualizer ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Equalizer</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="RemoveEqualizer">
+      <MemberSignature Language="C#" Value="public void RemoveEqualizer (IPod.Equalizer eq);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="eq" Type="IPod.Equalizer" />
+      </Parameters>
+      <Docs>
+        <param name="eq">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="Equalizers">
+      <MemberSignature Language="C#" Value="public IPod.Equalizer[] Equalizers { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Equalizer[]</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>To be added.</summary>

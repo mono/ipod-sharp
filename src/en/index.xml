@@ -14,6 +14,8 @@
       <Type Name="SongDatabase" />
       <Type Name="StatusHandler" />
       <Type Name="DeviceModel" />
+      <Type Name="Equalizer" />
+      <Type Name="SongRating" />
     </Namespace>
   </Types>
   <Title>ipod-sharp</Title>
