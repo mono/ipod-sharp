@@ -1,5 +1,9 @@
 2005-06-21  James Willcox  <snorp@snorp.net>
 
+	* src/Device.cs: load equalizers on demand
+
+2005-06-21  James Willcox  <snorp@snorp.net>
+
 	* ui/ProgressDialog.cs: don't use Label.Ellipsize, as it's not in
 	gtk-sharp 1.9.x 
 

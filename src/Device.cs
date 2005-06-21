@@ -35,7 +35,7 @@ namespace IPod {
         [DllImport ("ipoddevice")]
         private static extern IntPtr ipod_device_get_type ();
 
-        private ArrayList equalizers = new ArrayList ();
+        private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
         private SongDatabase songs;
 
@@ -112,7 +112,10 @@ namespace IPod {
 
         public Equalizer[] Equalizers {
             get {
-                lock (equalizers) {
+                lock (this) {
+                    if (equalizers == null)
+                        LoadEqualizers ();
+
                     return (Equalizer[]) equalizers.ToArray (typeof (Equalizer));
                 }
             }
@@ -142,13 +145,14 @@ namespace IPod {
                 throw new DeviceException (this, "Failed to create device");
             }
             
-            LoadEqualizers ();
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
         }
 
         private void LoadEqualizers () {
+            equalizers = new ArrayList ();
+            
             using (BinaryReader reader = new BinaryReader (File.Open (EqDbPath, FileMode.Open))) {
                 eqsrec = new EqualizerContainerRecord ();
                 eqsrec.Read (reader);
@@ -212,7 +216,10 @@ namespace IPod {
         }
 
         public Equalizer CreateEqualizer () {
-            lock (equalizers) {
+            lock (this) {
+                if (equalizers == null)
+                    LoadEqualizers ();
+                
                 EqualizerRecord rec = new EqualizerRecord ();
                 Equalizer eq = new Equalizer (rec);
 
@@ -224,7 +231,7 @@ namespace IPod {
         }
 
         public void RemoveEqualizer (Equalizer eq) {
-            lock (equalizers) {
+            lock (this) {
                 equalizers.Remove (eq);
                 eqsrec.Remove (eq.EqualizerRecord);
             }
