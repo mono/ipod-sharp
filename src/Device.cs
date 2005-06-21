@@ -197,6 +197,10 @@ namespace IPod {
                 }
             }
 
+            // nothing more to do
+            if (equalizers == null)
+                return;
+
             try {
                 // Back up the eq db
                 File.Copy (EqDbPath, EqDbPath + ".bak", true);
@@ -208,6 +212,8 @@ namespace IPod {
             } catch (Exception e) {
                 // restore the backup
                 File.Copy (EqDbPath + ".bak", EqDbPath, true);
+
+                throw e;
             }
         }
 

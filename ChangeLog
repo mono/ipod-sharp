@@ -1,5 +1,10 @@
 2005-06-21  James Willcox  <snorp@snorp.net>
 
+	* src/Device.cs: propagate exceptions when saving the equalizers
+	and don't try to save equalizers if they weren't loaded
+
+2005-06-21  James Willcox  <snorp@snorp.net>
+
 	* src/Device.cs: load equalizers on demand
 
 2005-06-21  James Willcox  <snorp@snorp.net>
