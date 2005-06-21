@@ -60,7 +60,9 @@ fi
 AC_OUTPUT([
 Makefile
 ipod-sharp.pc
+ipod-sharp-ui.pc
 src/Makefile
+ui/Makefile
 tools/Makefile
 tests/Makefile
 ])

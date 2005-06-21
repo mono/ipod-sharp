@@ -838,12 +838,20 @@ namespace IPod {
 
         private Device device;
 
+        public event EventHandler SaveStarted;
+        public event StatusHandler SaveProgressChanged;
+        public event EventHandler SaveEnded;
+
         private string SongDbPath {
             get { return device.MountPoint + "/iPod_Control/iTunes/iTunesDB"; }
         }
 
         private string MusicPath {
             get { return device.MountPoint + "/iPod_Control/Music/" + MusicFolder; }
+        }
+
+        private string PlayCountsPath {
+            get { return device.MountPoint + "/iPod_Control/iTunes/Play Counts"; }
         }
 
         public Song[] Songs {
@@ -876,12 +884,10 @@ namespace IPod {
         }
 
         private void LoadPlayCounts () {
-            string path = device.MountPoint + "/iPod_Control/iTunes/Play Counts";
-
-            if (!File.Exists (path))
+            if (!File.Exists (PlayCountsPath))
                 return;
             
-            using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open))) {
+            using (BinaryReader reader = new BinaryReader (File.Open (PlayCountsPath, FileMode.Open))) {
 
                 byte[] header = reader.ReadBytes (96);
                 int entryLength = BitConverter.ToInt32 (header, 8);
@@ -1001,12 +1007,11 @@ namespace IPod {
         }
 
         public void Save () {
-            Save (null);
-        }
-
-        public void Save (StatusHandler handler) {
 
             CheckFreeSpace ();
+
+            if (SaveStarted != null)
+                SaveStarted (this, new EventArgs ());
 
             // Back up the current song db
             File.Copy (SongDbPath, SongDbPath + ".bak", true);
@@ -1028,20 +1033,25 @@ namespace IPod {
                 int completed = 0;
                 
                 foreach (Song song in songsToAdd) {
-                    if (handler != null)
-                        handler (this, song, completed++, songsToAdd.Count);
+                    if (SaveProgressChanged != null)
+                        SaveProgressChanged (this, song, completed++, songsToAdd.Count);
                     
                     string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
 
                     File.Copy (song.Filename, dest, true);
                 }
 
-                if (handler != null)
-                    handler (this, null, songsToAdd.Count, songsToAdd.Count);
+                // The play count file is invalid now, so we'll remove it (even though the iPod would anyway)
+                if (File.Exists (PlayCountsPath))
+                    File.Delete (PlayCountsPath);
+
             } catch (Exception e) {
                 // rollback the song db
                 File.Copy (SongDbPath + ".bak", SongDbPath, true);
                 throw e;
+            } finally {
+                if (SaveEnded != null)
+                    SaveEnded (this, new EventArgs ());
             }
         }
 

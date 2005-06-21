@@ -37,6 +37,7 @@ namespace IPod {
 
         private ArrayList equalizers = new ArrayList ();
         private EqualizerContainerRecord eqsrec;
+        private SongDatabase songs;
 
         private string EqDbPath {
             get { return this.MountPoint + "/iPod_Control/iTunes/iTunesEQPresets"; }
@@ -123,7 +124,10 @@ namespace IPod {
                     throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
                 }
 
-                return new SongDatabase (this);
+                if (songs == null)
+                    songs = new SongDatabase (this);
+
+                return songs;
             }
         }
 

@@ -1,3 +1,12 @@
+2005-06-21  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: add events for save progress, instead of using
+	a callback passed into the Save method.
+	* ui/*: added a new assembly which contains gtk# widgets that are
+	handy for using with ipod-sharp.  Currently it contains a progress
+	dialog that shows save progress.
+	* ipod-sharp.snk: moved from src/
+
 2005-06-18  James Willcox  <snorp@snorp.net>
 
 	* src/ipod-sharp.dll.config: added

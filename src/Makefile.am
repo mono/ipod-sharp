@@ -26,7 +26,7 @@ doc_DATA =              	\
 all: $(ASSEMBLY) 
 
 $(ASSEMBLY): $(ASSEMBLY_SOURCES)
-	$(MCS) $(MCS_FLAGS) -keyfile:$(srcdir)/ipod-sharp.snk -target:library -o $@ $(ASSEMBLY_SOURCES) -r:Mono.Posix -pkg:gtk-sharp-2.0
+	$(MCS) $(MCS_FLAGS) -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -o $@ $(ASSEMBLY_SOURCES) -r:Mono.Posix -pkg:gtk-sharp-2.0
 
 update-docs: $(ASSEMBLY)
 	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en
