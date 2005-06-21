@@ -51,7 +51,9 @@ namespace IPod {
             label = new Label ("");
             label.Xalign = 0.0f;
             label.UseMarkup = true;
-            label.Ellipsize = Pango.EllipsizeMode.Middle;
+
+            // only available in gtk-sharp-2.0 2.5.x
+            // label.Ellipsize = Pango.EllipsizeMode.Middle;
             hbox.PackStart (label, true, true, 0);
 
             vbox.PackStart (hbox, true, false, 0);
