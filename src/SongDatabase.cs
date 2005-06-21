@@ -868,11 +868,9 @@ namespace IPod {
             }
         }
 
-        public SongDatabase () {
-        }
-        
-        public SongDatabase (Device device) {
-            Load (device);
+        internal SongDatabase (Device device) {
+            this.device = device;
+            Reload ();
         }
         
         private void Clear () {
@@ -943,12 +941,10 @@ namespace IPod {
             playlists.Add (otglist);
         }
 
-        public void Load (Device device) {
+        public void Reload () {
 
             lock (this) {
 
-                this.device = device;
-                
                 using (BinaryReader reader = new BinaryReader (new FileStream (SongDbPath, FileMode.Open))) {
 
                     Clear ();

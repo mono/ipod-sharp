@@ -43,10 +43,6 @@ namespace IPod.Tests {
             }
         }
 
-        private void LoadDatabase (SongDatabase db) {
-            db.Load (GetDevice ());
-        }
-
         private Device GetDevice () {
             return new Device (String.Format ("{0}/ipod-test-db", testdir));
         }
@@ -108,8 +104,7 @@ namespace IPod.Tests {
                 AddSong (db);
 
             db.Save ();
-
-            LoadDatabase (db);
+            db.Reload ();
 
             Assert.AreEqual (len + 100, db.Songs.Length);
         }
@@ -121,7 +116,7 @@ namespace IPod.Tests {
             int id = AddSong (db).Id;
             db.Save ();
 
-            LoadDatabase (db);
+            db.Reload ();
 
             Song foundSong = FindSong (db, id);
 
@@ -130,7 +125,7 @@ namespace IPod.Tests {
             db.RemoveSong (foundSong);
             db.Save ();
 
-            LoadDatabase (db);
+            db.Reload ();
 
             Assert.IsNull (FindSong (db, id));
         }
@@ -142,7 +137,7 @@ namespace IPod.Tests {
             int id = AddSong (db).Id;
 
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             Song song = FindSong (db, id);
 
@@ -166,7 +161,7 @@ namespace IPod.Tests {
             song.Rating = SongRating.Four;
 
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             song = FindSong (db, id);
 
@@ -216,7 +211,7 @@ namespace IPod.Tests {
             Playlist list = CreatePlaylist (db, 10);
 
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             list = FindPlaylist (db, playlistName);
 
@@ -230,7 +225,7 @@ namespace IPod.Tests {
             Playlist list = CreatePlaylist (db, 10);
 
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             list = FindPlaylist (db, playlistName);
 
@@ -238,7 +233,7 @@ namespace IPod.Tests {
 
             db.RemovePlaylist (list);
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             list = FindPlaylist (db, playlistName);
 
@@ -251,7 +246,7 @@ namespace IPod.Tests {
 
             Playlist list = CreatePlaylist (db, 10);
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             list = FindPlaylist (db, playlistName);
 
@@ -263,7 +258,7 @@ namespace IPod.Tests {
 
             Assert.AreEqual (20, list.Songs.Length);
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             list = FindPlaylist (db, playlistName);
 
@@ -277,7 +272,8 @@ namespace IPod.Tests {
 
             Playlist list = CreatePlaylist (db, 10);
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
+
 
             list = FindPlaylist (db, playlistName);
 
@@ -289,7 +285,7 @@ namespace IPod.Tests {
 
             list.MoveSong (0, mysong);
             db.Save ();
-            LoadDatabase (db);
+            db.Reload ();
 
             list = FindPlaylist (db, playlistName);
             Assert.AreEqual ("reordered", list.Songs[0].Artist);
@@ -447,8 +443,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (DeviceException))]
         public void NoDatabaseFoundTest () {
-            SongDatabase db = new SongDatabase ();
-            db.Load (new Device ("/tmp/no-database-here-move-along"));
+            Device device = new Device ("/tmp/no-database-here-move-along");
         }
 
         private Playlist GetOTGPlaylist (SongDatabase db) {
