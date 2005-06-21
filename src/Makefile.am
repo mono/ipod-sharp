@@ -40,7 +40,6 @@ install-data-hook:
 EXTRA_DIST =			\
 	$(ASSEMBLY_SOURCES)	\
 	ipod-sharp.dll.config	\
-	ipod-sharp.snk 		\
 	$(srcdir)/en/*.xml	\
 	$(srcdir)/en/*/*.xml	\
 	ipod-sharp-docs.source

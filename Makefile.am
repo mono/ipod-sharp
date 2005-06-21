@@ -6,3 +6,5 @@ endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = ipod-sharp.pc ipod-sharp-ui.pc
+
+EXTRA_DIST = ipod-sharp.snk
