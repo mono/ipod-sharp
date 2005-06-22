@@ -22,8 +22,8 @@ namespace IPod.Tests {
             if (tarballPath == null)
                 throw new ApplicationException ("No test tarball specified.  Set IPOD_SHARP_TEST_TARBALL env var.");
             
-            if (!Directory.Exists (testdir))
-                Directory.CreateDirectory (testdir);
+            DeleteDirectory (testdir);
+            Directory.CreateDirectory (testdir);
         }
 
         [TearDown]

@@ -143,6 +143,13 @@ namespace IPod {
             set { record.PlayCount = value; }
         }
 
+        public bool IsCompilation {
+            get { return record.CompilationFlag == (byte) 1; }
+            set {
+                record.CompilationFlag = value ? (byte) 1 : (byte) 0;
+            }
+        }
+
         public DateTime LastPlayed {
             get {
                 if (record.LastPlayedTime > 0) {

@@ -446,14 +446,15 @@ namespace IPod {
         private int unknownEight = 0x0000000c;
         private int unknownNine;
         private int unknownTen;
-        private byte compilationFlag = 0;
         private int playCountDup;
+        private byte[] remainder = new byte[0];
 
         private ArrayList details = new ArrayList ();
 
         public int Id;
         public bool Hidden = false;
         public TrackRecordType Type = TrackRecordType.MP3;
+        public byte CompilationFlag = 0;
         public byte Rating;
         public uint Date;
         public int Size;
@@ -521,7 +522,7 @@ namespace IPod {
             Hidden = BitConverter.ToInt32 (body, 8) == 1 ? false : true;
             unknownTwo = BitConverter.ToInt32 (body, 12);
             Type = (TrackRecordType) BitConverter.ToInt16 (body, 16);
-            compilationFlag = body[18];
+            CompilationFlag = body[18];
             Rating = body[19];
             Date = BitConverter.ToUInt32 (body, 20);
             Size = BitConverter.ToInt32 (body, 24);
@@ -558,6 +559,11 @@ namespace IPod {
             unknownNine = BitConverter.ToInt32 (body, 136);
             unknownTen = BitConverter.ToInt32 (body, 140);
 
+            if (body.Length > 144) {
+                remainder = new byte[body.Length - 144];
+                Array.Copy (body, 144, remainder, 0, body.Length - 144);
+            }
+
             details.Clear ();
 
             for (int i = 0; i < numDetails; i++) {
@@ -582,15 +588,15 @@ namespace IPod {
             childWriter.Close ();
             
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
-            writer.Write (156 + PadLength);
-            writer.Write (156 + PadLength + childDataLength);
+            writer.Write (156 + remainder.Length + PadLength);
+            writer.Write (156 + remainder.Length + PadLength + childDataLength);
 
             writer.Write (details.Count);
             writer.Write (Id);
             writer.Write (Hidden ? 0 : 1);
             writer.Write (unknownTwo);
             writer.Write ((short) Type);
-            writer.Write (compilationFlag);
+            writer.Write (CompilationFlag);
             writer.Write (Rating);
             writer.Write (Date);
             writer.Write (Size);
@@ -626,6 +632,7 @@ namespace IPod {
             writer.Write (unknownEight);
             writer.Write (unknownNine);
             writer.Write (unknownTen);
+            writer.Write (remainder);
             writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
         }

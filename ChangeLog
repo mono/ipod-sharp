@@ -1,3 +1,10 @@
+2005-06-22  James Willcox  <snorp@snorp.net>
+
+	* configure.in: jack up the version arbitrarily
+	* src/SongDatabase.cs: expose the compilation flag in songs,
+	and also preserve extra data found in track records.
+	* src/Song.cs:
+
 2005-06-21  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: propagate exceptions when saving the equalizers
