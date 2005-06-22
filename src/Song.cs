@@ -162,6 +162,10 @@ namespace IPod {
             }
         }
 
+        public DateTime DateAdded {
+            get { return Utility.MacTimeToDate (record.Date); }
+        }
+
         public SongRating Rating {
             get { return (SongRating) record.Rating; }
             set { record.Rating = (byte) value; }
