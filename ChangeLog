@@ -1,5 +1,9 @@
 2005-06-22  James Willcox  <snorp@snorp.net>
 
+	* ui/DeviceCombo.cs: added
+
+2005-06-22  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: add the DateAdded property.
 
 2005-06-22  James Willcox  <snorp@snorp.net>

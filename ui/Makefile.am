@@ -5,7 +5,8 @@ ASSEMBLY = ipod-sharp-ui.dll
 
 ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
-	$(srcdir)/ProgressDialog.cs
+	$(srcdir)/ProgressDialog.cs	\
+	$(srcdir)/DeviceCombo.cs
 
 all: $(ASSEMBLY) 
 
