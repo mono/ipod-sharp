@@ -1,5 +1,10 @@
 2005-06-23  James Willcox  <snorp@snorp.net>
 
+	* ui/DeviceCombo.cs: be a little more stetic when no
+	devices are available.
+
+2005-06-23  James Willcox  <snorp@snorp.net>
+
 	* ui/ProgressDialog.cs: add evil hack for ellipsizing, and make
 	the message when copying songs a bit nicer.
 

@@ -49,15 +49,18 @@ namespace IPod {
                     TreeIter iter = store.AppendValues (device.Name, device);
 
                     if (device.MountPoint == current) {
-                        Console.WriteLine ("Setting active iter");
                         SetActiveIter (iter);
                         haveActive = true;
                     }
                 }
             }
 
-            if (!haveActive)
+            if (store.IterNChildren () == 0) {
+                store.AppendValues ("No iPod Found", null);
                 this.Active = 0;
+            } else if (!haveActive) {
+                this.Active = 0;
+            }
         }
 
         public void EjectActive () {
