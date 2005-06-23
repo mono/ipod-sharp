@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Gtk;
 using GLib;
 
@@ -52,8 +53,7 @@ namespace IPod {
             label.Xalign = 0.0f;
             label.UseMarkup = true;
 
-            // only available in gtk-sharp-2.0 2.5.x
-            // label.Ellipsize = Pango.EllipsizeMode.Middle;
+            SetEllipsize (label);
             hbox.PackStart (label, true, true, 0);
 
             vbox.PackStart (hbox, true, false, 0);
@@ -67,6 +67,12 @@ namespace IPod {
             notify = new ThreadNotify (new ReadyEvent (OnNotify));
         }
 
+        private void SetEllipsize (Label label) {
+            MethodInfo method = typeof (GLib.Object).GetMethod ("SetProperty",
+                                                                BindingFlags.Instance | BindingFlags.NonPublic);
+            method.Invoke (label, new object[] { "ellipsize", new GLib.Value (3) });
+        }
+
         private void OnSaveStarted (object o, EventArgs args) {
             visible = true;
             message = "<b>Preparing...</b>";
@@ -76,9 +82,12 @@ namespace IPod {
         private void OnSaveProgressChanged (SongDatabase db, Song song,
                                             int current, int total) {
             lock (this) {
-                message = String.Format ("<b>Adding '{0}' ({1} of {2})</b>",
-                                         GLib.Markup.EscapeText (song.Title),
-                                         current, total);
+                string padstr = String.Format ("Adding {0} of {0}", total);
+
+                message = String.Format ("Adding {0} of {1}", current, total);
+                message = message.PadLeft (padstr.Length);
+
+                message = String.Format ("<b>{0}: {1}</b>", message, GLib.Markup.EscapeText (song.Title));
                 fraction = (double) current / (double) total;
                 notify.WakeupMain ();
             }

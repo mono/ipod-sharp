@@ -1,3 +1,8 @@
+2005-06-23  James Willcox  <snorp@snorp.net>
+
+	* ui/ProgressDialog.cs: add evil hack for ellipsizing, and make
+	the message when copying songs a bit nicer.
+
 2005-06-22  James Willcox  <snorp@snorp.net>
 
 	* ui/DeviceCombo.cs: added
