@@ -3,7 +3,7 @@ TEST_SOURCES =			\
 
 TEST_ASSEMBLY = ipod-sharp-tests.dll
 
-$(TEST_ASSEMBLY): $(TEST_SOURCES)
+$(TEST_ASSEMBLY): $(TEST_SOURCES) $(top_builddir)/src/ipod-sharp.dll
 	$(MCS) -debug -r:$(top_builddir)/src/ipod-sharp.dll   \
 	-r:$(srcdir)/nunit.framework $(TEST_SOURCES) -target:library -o $@
 

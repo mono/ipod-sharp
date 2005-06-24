@@ -1,3 +1,10 @@
+2005-06-24  James Willcox  <snorp@snorp.net>
+
+	* ui/ProgressDialog.cs:
+	* ui/ipod.gif:
+
+	Add extra-slick iPod animation to the progress dialog.
+
 2005-06-23  James Willcox  <snorp@snorp.net>
 
 	* ui/DeviceCombo.cs: be a little more stetic when no

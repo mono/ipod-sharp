@@ -33,9 +33,11 @@ namespace IPod {
                 foreach (PlaylistItemRecord item in record.Items) {
                     Song song = db.GetSongById (item.TrackId);
 
-                    if (song == null)
-                        throw new ApplicationException (String.Format ("Song with id '{0}' was not found",
-                                                                       item.TrackId));
+                    if (song == null) {
+                        Console.Error.WriteLine ("Playlist '{0}' contains invalid song id '{0}'",
+                                                 Name, item.TrackId);
+                        continue;
+                    }
 
                     songs.Add (song);
                 }

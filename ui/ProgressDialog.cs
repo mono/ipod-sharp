@@ -47,7 +47,10 @@ namespace IPod {
             vbox.BorderWidth = 6;
 
             HBox hbox = new HBox (false, 6);
-            hbox.PackStart (new Image (Stock.DialogInfo, IconSize.Dialog), false, false, 0);
+
+            Gdk.PixbufAnimation animation = new Gdk.PixbufAnimation (Assembly.GetExecutingAssembly (),
+                                                                     "ipod.gif");
+            hbox.PackStart (new Image (animation), false, false, 0);
 
             label = new Label ("");
             label.Xalign = 0.0f;
