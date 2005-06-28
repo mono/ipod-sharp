@@ -31,7 +31,7 @@ namespace IPod {
             Refresh ();
         }
 
-        private void Refresh () {
+        public void Refresh () {
             string current = null;
             bool haveActive = false;
             
