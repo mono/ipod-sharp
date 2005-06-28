@@ -31,11 +31,7 @@ namespace IPod {
             Refresh ();
         }
 
-        public void Refresh () {
-            Refresh (null);
-        }
-        
-        private void Refresh (string omit) {
+        private void Refresh () {
             string current = null;
             bool haveActive = false;
             
@@ -45,22 +41,43 @@ namespace IPod {
             store.Clear ();
 
             foreach (Device device in Device.ListDevices ()) {
-                if (device.MountPoint != omit) {
-                    TreeIter iter = store.AppendValues (device.Name, device);
-
-                    if (device.MountPoint == current) {
-                        SetActiveIter (iter);
-                        haveActive = true;
-                    }
+                TreeIter iter = store.AppendValues (device.Name, device);
+                
+                if (device.MountPoint == current) {
+                    SetActiveIter (iter);
+                    haveActive = true;
                 }
             }
 
+            if (!haveActive) {
+                SetActive ();
+            }
+        }
+
+        private void SetActive () {
             if (store.IterNChildren () == 0) {
                 store.AppendValues ("No iPod Found", null);
                 this.Active = 0;
-            } else if (!haveActive) {
+            } else {
                 this.Active = 0;
             }
+        }
+
+        private void RemoveDevice (Device dev) {
+            TreeIter iter = TreeIter.Zero;
+
+            if (!store.IterChildren (out iter))
+                return;
+
+            do {
+                Device dev2 = (Device) store.GetValue (iter, 1);
+                if (dev2 == dev) {
+                    store.Remove (ref iter);
+                    break;
+                }
+            } while (store.IterNext (ref iter));
+
+            SetActive ();
         }
 
         public void EjectActive () {
@@ -69,9 +86,8 @@ namespace IPod {
             if (device == null)
                 return;
 
-            string omit = device.MountPoint;
             device.Eject ();
-            Refresh (omit);
+            RemoveDevice (device);
         }
     }
 }

@@ -1,3 +1,7 @@
+2005-06-27  James Willcox  <snorp@snorp.net>
+
+	* ui/DeviceCombo.cs: change EjectActive() to be slightly less hacky
+
 2005-06-24  James Willcox  <snorp@snorp.net>
 
 	* ui/ProgressDialog.cs:
