@@ -1,3 +1,15 @@
+2005-07-05  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: support the newest database version with all the
+	podcast stuff.  The special podcast playlist is not exposed yet in the
+	public API.
+
+2005-07-05  Ross Burton  <ross@burtonini.com>
+
+	* configure.in:
+	* src/Makefile.am:
+	Allow the building of API docs to be disabled.
+
 2005-06-28  James Willcox  <snorp@snorp.net>
 
 	* ui/DeviceCombo.cs: oops, make Refresh public again
