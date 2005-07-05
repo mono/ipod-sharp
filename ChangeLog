@@ -1,5 +1,10 @@
 2005-07-05  James Willcox  <snorp@snorp.net>
 
+	* src/Song.cs: add a 'PodcastUrl' property.
+	* test/IPodTests.cs: add a test for the above
+
+2005-07-05  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: support the newest database version with all the
 	podcast stuff.  The special podcast playlist is not exposed yet in the
 	public API.

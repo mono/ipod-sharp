@@ -390,6 +390,9 @@ namespace IPod {
             if ((int) Type < 50) {
                 if (Type == DetailType.PodcastUrl ||
                     Type == DetailType.PodcastUrl2) {
+
+                    // force it to the 'first' podcast url type
+                    Type = DetailType.PodcastUrl;
                     Value = Encoding.UTF8.GetString (body, 12, body.Length - 12);
                 } else if (Type == DetailType.ChapterData) {
                     // ugh ugh ugh, just preserve it for now -- no parsing

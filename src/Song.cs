@@ -171,6 +171,11 @@ namespace IPod {
             set { record.Rating = (byte) value; }
         }
 
+        public string PodcastUrl {
+            get { return record.GetDetail (DetailType.PodcastUrl).Value; }
+            set { record.GetDetail (DetailType.PodcastUrl).Value = value; }
+        }
+
         internal SongDatabase Database {
             get { return db; }
         }

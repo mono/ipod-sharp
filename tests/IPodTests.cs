@@ -159,6 +159,7 @@ namespace IPod.Tests {
             song.PlayCount = 34;
             song.LastPlayed = now;
             song.Rating = SongRating.Four;
+            song.PodcastUrl = "blah blah";
 
             db.Save ();
             db.Reload ();
@@ -179,6 +180,7 @@ namespace IPod.Tests {
             Assert.AreEqual ("வணக்கம்", song.Comment);
             Assert.AreEqual (34, song.PlayCount);
             Assert.AreEqual (SongRating.Four, song.Rating);
+            Assert.AreEqual ("blah blah", song.PodcastUrl);
 
             // the conversion to/from mac time skews this a little
             // so we can't do a straight comparison
