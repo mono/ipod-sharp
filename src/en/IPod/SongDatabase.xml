@@ -9,15 +9,7 @@
   </Base>
   <Interfaces />
   <Members>
-    <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public SongDatabase ();" />
-      <MemberType>Constructor</MemberType>
-      <Parameters />
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+    
     
     <Member MemberName="Save">
       <MemberSignature Language="C#" Value="public void Save ();" />
@@ -61,48 +53,9 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public SongDatabase (IPod.Device device);" />
-      <MemberType>Constructor</MemberType>
-      <Parameters>
-        <Parameter Name="device" Type="IPod.Device" />
-      </Parameters>
-      <Docs>
-        <param name="device">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-  <Member MemberName="Load">
-      <MemberSignature Language="C#" Value="public void Load (IPod.Device device);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="device" Type="IPod.Device" />
-      </Parameters>
-      <Docs>
-        <param name="device">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-  <Member MemberName="Save">
-      <MemberSignature Language="C#" Value="public void Save (IPod.StatusHandler handler);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="handler" Type="IPod.StatusHandler" />
-      </Parameters>
-      <Docs>
-        <param name="handler">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+  
+  
+  
   <Member MemberName="RemoveSong">
       <MemberSignature Language="C#" Value="public void RemoveSong (IPod.Song song);" />
       <MemberType>Method</MemberType>
@@ -174,6 +127,63 @@
       <Docs>
         <param name="song">To be added.</param>
         <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="SaveStarted">
+      <MemberSignature Language="C#" Value="public event EventHandler SaveStarted;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="SaveProgressChanged">
+      <MemberSignature Language="C#" Value="public event IPod.StatusHandler SaveProgressChanged;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.StatusHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="SaveEnded">
+      <MemberSignature Language="C#" Value="public event EventHandler SaveEnded;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="Reload">
+      <MemberSignature Language="C#" Value="public void Reload ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="OnTheGoPlaylist">
+      <MemberSignature Language="C#" Value="public IPod.Playlist OnTheGoPlaylist { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Playlist</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

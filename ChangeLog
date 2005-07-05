@@ -1,5 +1,9 @@
 2005-07-05  James Willcox  <snorp@snorp.net>
 
+	* src/en/*: updated
+
+2005-07-05  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: add a 'PodcastUrl' property.
 	* test/IPodTests.cs: add a test for the above
 
