@@ -17,11 +17,13 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Playlist.cs		\
 	$(srcdir)/SongDatabase.cs
 
+if BUILD_DOCS
 docdir = `@MONODOC@ --get-sourcesdir`
 doc_DATA =              	\
 	ipod-sharp-docs.zip	\
 	ipod-sharp-docs.tree	\
 	ipod-sharp-docs.source
+endif
 
 all: $(ASSEMBLY) 
 
