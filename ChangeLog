@@ -1,3 +1,12 @@
+2005-07-08  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: add PodcastPlaylist property.  This playlist and
+	the OnTheGo playlist are not listed in the Playlists property now, they
+	are only acccesible through their respective properties.
+	* src/Song.cs: add 'Category' and 'Grouping' properties.
+	* src/en/*: update docs
+	* test/IPodTests.cs: add/update tests for podcast stuff.
+
 2005-07-05  James Willcox  <snorp@snorp.net>
 
 	* src/en/*: updated

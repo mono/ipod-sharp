@@ -113,9 +113,18 @@ namespace IPod.Tests {
         public void RemoveSongTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            int id = AddSong (db).Id;
-            db.Save ();
+            Song song = AddSong (db);
+            int id = song.Id;
+            
+            foreach (Playlist pl in db.Playlists) {
+                pl.AddSong (song);
+            }
 
+            if (db.PodcastPlaylist != null) {
+                db.PodcastPlaylist.AddSong (song);
+            }
+            
+            db.Save ();
             db.Reload ();
 
             Song foundSong = FindSong (db, id);
@@ -123,9 +132,33 @@ namespace IPod.Tests {
             Assert.IsNotNull (foundSong);
 
             db.RemoveSong (foundSong);
-            db.Save ();
 
+            foreach (Playlist pl in db.Playlists) {
+                foreach (Song ps in pl.Songs) {
+                    Assert.IsFalse (id == ps.Id);
+                }
+            }
+
+            if (db.PodcastPlaylist != null) {
+                foreach (Song ps in db.PodcastPlaylist.Songs) {
+                    Assert.IsFalse (id == ps.Id);
+                }
+            }
+            
+            db.Save ();
             db.Reload ();
+
+            foreach (Playlist pl in db.Playlists) {
+                foreach (Song ps in pl.Songs) {
+                    Assert.IsFalse (id == ps.Id);
+                }
+            }
+
+            if (db.PodcastPlaylist != null) {
+                foreach (Song ps in db.PodcastPlaylist.Songs) {
+                    Assert.IsFalse (id == ps.Id);
+                }
+            }
 
             Assert.IsNull (FindSong (db, id));
         }
@@ -160,6 +193,7 @@ namespace IPod.Tests {
             song.LastPlayed = now;
             song.Rating = SongRating.Four;
             song.PodcastUrl = "blah blah";
+            song.Category = "my category";
 
             db.Save ();
             db.Reload ();
@@ -181,19 +215,11 @@ namespace IPod.Tests {
             Assert.AreEqual (34, song.PlayCount);
             Assert.AreEqual (SongRating.Four, song.Rating);
             Assert.AreEqual ("blah blah", song.PodcastUrl);
+            Assert.AreEqual ("my category", song.Category);
 
             // the conversion to/from mac time skews this a little
             // so we can't do a straight comparison
             Assert.IsTrue (Math.Abs ((song.LastPlayed - now).TotalSeconds) < 1);
-        }
-
-        private Playlist FindPlaylist (SongDatabase db, string name) {
-            foreach (Playlist p in db.Playlists) {
-                if (p.Name == playlistName)
-                    return p;
-            }
-
-            return null;
         }
 
         private Playlist CreatePlaylist (SongDatabase db, int numSongs) {
@@ -215,7 +241,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
             Assert.AreEqual (10, list.Songs.Length);
@@ -229,7 +255,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
 
@@ -237,7 +263,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
 
             Assert.AreEqual (null, list);
         }
@@ -250,7 +276,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
             Assert.AreEqual (10, list.Songs.Length);
@@ -262,7 +288,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
             Assert.AreEqual (20, list.Songs.Length);
@@ -277,7 +303,7 @@ namespace IPod.Tests {
             db.Reload ();
 
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
             Assert.AreEqual (10, list.Songs.Length);
@@ -289,7 +315,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            list = FindPlaylist (db, playlistName);
+            list = db.LookupPlaylist (playlistName);
             Assert.AreEqual ("reordered", list.Songs[0].Artist);
         }
 
@@ -418,6 +444,24 @@ namespace IPod.Tests {
             Assert.IsNotNull (eq);
         }
 
+        [Test]
+        public void PodcastPlaylistTest () {
+            Device device = OpenDevice ();
+            Playlist list = device.SongDatabase.PodcastPlaylist;
+            if (list != null) {
+                int len = list.Songs.Length;
+
+                for (int i = 0; i < 10; i++) {
+                    list.AddSong (AddSong (device.SongDatabase));
+                }
+
+                device.SongDatabase.Save ();
+                device.SongDatabase.Reload ();
+
+                Assert.AreEqual (len + 10, device.SongDatabase.PodcastPlaylist.Songs.Length);
+            }
+        }
+
         // The following tests should all "fail".
 
         [Test]
@@ -448,21 +492,12 @@ namespace IPod.Tests {
             Device device = new Device ("/tmp/no-database-here-move-along");
         }
 
-        private Playlist GetOTGPlaylist (SongDatabase db) {
-            foreach (Playlist p in db.Playlists) {
-                if (p.IsOnTheGo)
-                    return p;
-            }
-
-            return null;
-        }
-
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
         public void ModifyOTGNameTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            GetOTGPlaylist (db).Name = "foobar";
+            db.OnTheGoPlaylist.Name = "foobar";
         }
 
         [Test]
@@ -471,7 +506,7 @@ namespace IPod.Tests {
             SongDatabase db = OpenDevice ().SongDatabase;
 
             Song song = AddSong (db);
-            GetOTGPlaylist (db).AddSong (song);
+            db.OnTheGoPlaylist.AddSong (song);
         }
 
         [Test]
@@ -479,7 +514,7 @@ namespace IPod.Tests {
         public void RemoveOTGSongTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            Playlist otg = GetOTGPlaylist (db);
+            Playlist otg = db.OnTheGoPlaylist;
 
             // make nunit happy if there were no songs
             if (otg.Songs.Length == 0)
@@ -495,8 +530,15 @@ namespace IPod.Tests {
         public void RemoveOTGPlaylistTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            Playlist otg = GetOTGPlaylist (db);
-            db.RemovePlaylist (otg);
+            db.RemovePlaylist (db.OnTheGoPlaylist);
+        }
+
+        [Test]
+        [ExpectedException (typeof (InvalidOperationException))]
+        public void RemovePodcastPlaylistTest () {
+            SongDatabase db = OpenDevice ().SongDatabase;
+
+            db.RemovePlaylist (db.PodcastPlaylist);
         }
 
         [Test]

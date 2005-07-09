@@ -176,6 +176,16 @@ namespace IPod {
             set { record.GetDetail (DetailType.PodcastUrl).Value = value; }
         }
 
+        public string Category {
+            get { return record.GetDetail (DetailType.Category).Value; }
+            set { record.GetDetail (DetailType.Category).Value = value; }
+        }
+
+        public string Grouping {
+            get { return record.GetDetail (DetailType.Grouping).Value; }
+            set { record.GetDetail (DetailType.Grouping).Value = value; }
+        }
+
         internal SongDatabase Database {
             get { return db; }
         }

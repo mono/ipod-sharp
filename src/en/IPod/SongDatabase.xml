@@ -187,6 +187,34 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+  <Member MemberName="LookupPlaylist">
+      <MemberSignature Language="C#" Value="public IPod.Playlist LookupPlaylist (string name);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Playlist</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="name" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="name">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="PodcastPlaylist">
+      <MemberSignature Language="C#" Value="public IPod.Playlist PodcastPlaylist { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Playlist</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>To be added.</summary>

@@ -336,6 +336,7 @@ namespace IPod {
         Filetype = 6,
         EQ = 7,
         Comment = 8,
+        Category = 9,
         Composer = 12,
         Grouping = 13,
         PodcastUrl = 15,
@@ -910,6 +911,8 @@ namespace IPod {
         private ArrayList songsToRemove = new ArrayList ();
 
         private ArrayList playlists = new ArrayList ();
+        private Playlist otgPlaylist;
+        private Playlist podcastPlaylist;
 
         private Device device;
 
@@ -944,16 +947,11 @@ namespace IPod {
         }
 
         public Playlist OnTheGoPlaylist {
-            get {
-                lock (playlists) {
-                    foreach (Playlist p in playlists) {
-                        if (p.IsOnTheGo)
-                            return p;
-                    }
+            get { return otgPlaylist; }
+        }
 
-                    return null;
-                }
-            }
+        public Playlist PodcastPlaylist {
+            get { return podcastPlaylist; }
         }
 
         internal SongDatabase (Device device) {
@@ -1005,8 +1003,8 @@ namespace IPod {
             string path = device.MountPoint + "/iPod_Control/iTunes/OTGPlaylistInfo";
 
             if (!File.Exists (path)) {
-                // add a blank one
-                playlists.Add (new Playlist (this, new Song[0]));
+                // make a blank one
+                otgPlaylist = new Playlist (this, new Song[0]);
                 return;
             }
             
@@ -1025,8 +1023,7 @@ namespace IPod {
                 }
             }
 
-            Playlist otglist = new Playlist (this, (Song[]) otgsongs.ToArray (typeof (Song)));
-            playlists.Add (otglist);
+            otgPlaylist = new Playlist (this, (Song[]) otgsongs.ToArray (typeof (Song)));
         }
 
         public void Reload () {
@@ -1060,6 +1057,11 @@ namespace IPod {
 
                     // Load the On-The-Go playlist
                     LoadOnTheGo ();
+
+                    // Load the Podcast playlist
+                    if (dbrec[DataSetIndex.Podcast] != null) {
+                        podcastPlaylist = new Playlist (this, dbrec[DataSetIndex.Podcast].PodcastList.Playlists[0]);
+                    }
                 }
             }
         }
@@ -1196,8 +1198,14 @@ namespace IPod {
                     dbrec[DataSetIndex.Library].TrackList.Remove (song.Id);
 
                     // remove from the playlists
-                    foreach (PlaylistRecord list in dbrec[DataSetIndex.Playlist].PlaylistList.Playlists) {
-                        list.RemoveItem (song.Id);
+                    foreach (Playlist list in playlists) {
+                        list.RemoveSong (song);
+                    }
+
+                    otgPlaylist.RemoveOTGSong (song);
+                    
+                    if (podcastPlaylist != null) {
+                        podcastPlaylist.RemoveSong (song);
                     }
                 }
             }
@@ -1235,12 +1243,28 @@ namespace IPod {
 
         public void RemovePlaylist (Playlist playlist) {
             lock (playlists) {
-                if (playlist.IsOnTheGo)
+                if (playlist == null) {
+                    throw new InvalidOperationException ("playist is null");
+                } else if (playlist.IsOnTheGo) {
                     throw new InvalidOperationException ("The On-The-Go playlist cannot be removed.");
+                } else if (playlist == podcastPlaylist) {
+                    throw new InvalidOperationException ("The Podcast playlist cannot be removed.");
+                }
                 
                 dbrec[DataSetIndex.Playlist].PlaylistList.RemovePlaylist (playlist.PlaylistRecord);
                 playlists.Remove (playlist);
             }
+        }
+
+        public Playlist LookupPlaylist (string name) {
+            lock (playlists) {
+                foreach (Playlist list in playlists) {
+                    if (list.Name == name)
+                        return list;
+                }
+            }
+
+            return null;
         }
 
         public void RevertSong (Song song) {
