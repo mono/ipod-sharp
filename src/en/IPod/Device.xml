@@ -226,7 +226,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="CreateEqualizer">
+    <Member MemberName="CreateEqualizer">
       <MemberSignature Language="C#" Value="public IPod.Equalizer CreateEqualizer ();" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -239,7 +239,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="RemoveEqualizer">
+    <Member MemberName="RemoveEqualizer">
       <MemberSignature Language="C#" Value="public void RemoveEqualizer (IPod.Equalizer eq);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -254,7 +254,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Equalizers">
+    <Member MemberName="Equalizers">
       <MemberSignature Language="C#" Value="public IPod.Equalizer[] Equalizers { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -268,7 +268,7 @@
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>Represents an iPod device</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

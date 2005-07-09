@@ -1,4 +1,4 @@
-<Type Name="SongDatabase" FullName="iPodSharp.SongDatabase">
+<Type Name="SongDatabase" FullName="IPod.SongDatabase">
   <TypeSignature Language="C#" Value="public class SongDatabase" />
   <AssemblyInfo>
     <AssemblyName>ipod-sharp</AssemblyName>
@@ -9,8 +9,6 @@
   </Base>
   <Interfaces />
   <Members>
-    
-    
     <Member MemberName="Save">
       <MemberSignature Language="C#" Value="public void Save ();" />
       <MemberType>Method</MemberType>
@@ -19,16 +17,10 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Saves the database to the device.</summary>
+        <remarks>This method must be called for any modifications of the database to be persisted to the device.</remarks>
       </Docs>
     </Member>
-    
-    
-    
-    
-    
-    
     <Member MemberName="Songs">
       <MemberSignature Language="C#" Value="public IPod.Song[] Songs { get; };" />
       <MemberType>Property</MemberType>
@@ -36,9 +28,9 @@
         <ReturnType>IPod.Song[]</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Represents all songs on the iPod.</summary>
+        <value>Represents all songs on the iPod.</value>
+        <remarks />
       </Docs>
     </Member>
     <Member MemberName="Playlists">
@@ -48,15 +40,12 @@
         <ReturnType>IPod.Playlist[]</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Contains the list of playlists on the iPod.</summary>
+        <value>Contains the list of playlists on the iPod.</value>
+        <remarks>The On-The-Go and Podcast playlists are not included in this list.  Those playlists are available through the <see cref="T:IPod.SongDatabase.OnTheGoPlaylist" /> and <see cref="T:IPod.SongDatabase.PodcastPlaylist" /> properties, respectively.</remarks>
       </Docs>
     </Member>
-  
-  
-  
-  <Member MemberName="RemoveSong">
+    <Member MemberName="RemoveSong">
       <MemberSignature Language="C#" Value="public void RemoveSong (IPod.Song song);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -66,12 +55,12 @@
         <Parameter Name="song" Type="IPod.Song" />
       </Parameters>
       <Docs>
-        <param name="song">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="song">the song to remove</param>
+        <summary>Removes a song from the database</summary>
+        <remarks />
       </Docs>
     </Member>
-  <Member MemberName="CreateSong">
+    <Member MemberName="CreateSong">
       <MemberSignature Language="C#" Value="public IPod.Song CreateSong ();" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -79,12 +68,12 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <summary>Creates a new song in the database.</summary>
+        <returns>The new blank song</returns>
+        <remarks />
       </Docs>
     </Member>
-  <Member MemberName="CreatePlaylist">
+    <Member MemberName="CreatePlaylist">
       <MemberSignature Language="C#" Value="public IPod.Playlist CreatePlaylist (string name);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -94,13 +83,13 @@
         <Parameter Name="name" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="name">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="name">name for the playlist</param>
+        <summary>Creates a new playlist in the database with the specified name.</summary>
+        <returns>The new playlist</returns>
+        <remarks />
       </Docs>
     </Member>
-  <Member MemberName="RemovePlaylist">
+    <Member MemberName="RemovePlaylist">
       <MemberSignature Language="C#" Value="public void RemovePlaylist (IPod.Playlist playlist);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -110,12 +99,12 @@
         <Parameter Name="playlist" Type="IPod.Playlist" />
       </Parameters>
       <Docs>
-        <param name="playlist">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="playlist">the playlist to remove</param>
+        <summary>Remove a playlist from the database.</summary>
+        <remarks />
       </Docs>
     </Member>
-  <Member MemberName="RevertSong">
+    <Member MemberName="RevertSong">
       <MemberSignature Language="C#" Value="public void RevertSong (IPod.Song song);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -125,45 +114,45 @@
         <Parameter Name="song" Type="IPod.Song" />
       </Parameters>
       <Docs>
-        <param name="song">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="song">the song to revert</param>
+        <summary>Reverts an action taken on a song</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="SaveStarted">
+    <Member MemberName="SaveStarted">
       <MemberSignature Language="C#" Value="public event EventHandler SaveStarted;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
         <ReturnType>System.EventHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Fired when a save operation has been started</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="SaveProgressChanged">
+    <Member MemberName="SaveProgressChanged">
       <MemberSignature Language="C#" Value="public event IPod.StatusHandler SaveProgressChanged;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
         <ReturnType>IPod.StatusHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Fired when the progress of a save operation has changed</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="SaveEnded">
+    <Member MemberName="SaveEnded">
       <MemberSignature Language="C#" Value="public event EventHandler SaveEnded;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
         <ReturnType>System.EventHandler</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Fired when a save operation has ended.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Reload">
+    <Member MemberName="Reload">
       <MemberSignature Language="C#" Value="public void Reload ();" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -171,23 +160,23 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <summary>Reload the database from the device.</summary>
+        <remarks>Any modifications made to the current database are cleared when this method is called.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="OnTheGoPlaylist">
+    <Member MemberName="OnTheGoPlaylist">
       <MemberSignature Language="C#" Value="public IPod.Playlist OnTheGoPlaylist { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>IPod.Playlist</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Represents the "On-The-Go" playlists on the iPod.</summary>
+        <value>Represents the "On-The-Go" playlists on the iPod.</value>
+        <remarks>This playlist cannot be modified.  Attempts to add/remove songs to this playlist, or remove the playlist will result in a <see cref="T:System.InvalidOperationException" />.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="LookupPlaylist">
+    <Member MemberName="LookupPlaylist">
       <MemberSignature Language="C#" Value="public IPod.Playlist LookupPlaylist (string name);" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -197,27 +186,44 @@
         <Parameter Name="name" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="name">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="name">name of the playlist to find</param>
+        <summary>Finds a playlist with the specified name.</summary>
+        <returns>The playlist if found, null otherwise.</returns>
+        <remarks>In the case of multiple playlists with the same name, this method will obviously return only the first one found that matches the given name.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="PodcastPlaylist">
+    <Member MemberName="PodcastPlaylist">
       <MemberSignature Language="C#" Value="public IPod.Playlist PodcastPlaylist { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>IPod.Playlist</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
+        <summary>Represents the "Podcast" playlist on the iPod.</summary>
+        <value>Represents the "Podcast" playlist on the iPod.</value>
+        <remarks>Not all iPod devices have this playlist, as it is only available on newer (version 13) firmware.  If it does not exist, this property will be null.</remarks>
       </Docs>
     </Member>
   </Members>
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Represents the database of songs and playlists on an iPod device</summary>
+    <remarks>This is the primary class used for manipulating the contents of the device's song database.  Usage is fairly straightforward.  The example below adds a song to all devices found on the machine:
+
+<para /><example>
+        <code lang="C#">
+foreach (Device device in Device.ListDevices ())
+{
+	SongDatabase db = device.SongDatabase;
+
+	Song song = db.CreateSong ();
+	song.Artist = "My Artist";
+	song.Album = "My Album";
+	song.Title = "My Title";
+	song.Filename = "/tmp/foo.mp3";
+
+	db.Save ();
+}
+  </code>
+      </example></remarks>
   </Docs>
 </Type>

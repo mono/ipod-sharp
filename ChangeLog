@@ -1,3 +1,7 @@
+2005-07-09  James Willcox  <snorp@snorp.net>
+
+	* src/en/*: update docs some more
+
 2005-07-08  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: add PodcastPlaylist property.  This playlist and

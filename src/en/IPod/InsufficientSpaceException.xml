@@ -1,4 +1,4 @@
-<Type Name="InsufficientSpaceException" FullName="iPodSharp.InsufficientSpaceException">
+<Type Name="InsufficientSpaceException" FullName="IPod.InsufficientSpaceException">
   <TypeSignature Language="C#" Value="public class InsufficientSpaceException : System.ApplicationException" />
   <AssemblyInfo>
     <AssemblyName>ipod-sharp</AssemblyName>

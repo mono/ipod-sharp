@@ -1,4 +1,4 @@
-<Type Name="Playlist" FullName="iPodSharp.Playlist">
+<Type Name="Playlist" FullName="IPod.Playlist">
   <TypeSignature Language="C#" Value="public class Playlist" />
   <AssemblyInfo>
     <AssemblyName>ipod-sharp</AssemblyName>

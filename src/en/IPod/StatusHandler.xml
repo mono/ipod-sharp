@@ -1,4 +1,4 @@
-<Type Name="StatusHandler" FullName="iPodSharp.StatusHandler">
+<Type Name="StatusHandler" FullName="IPod.StatusHandler">
   <TypeSignature Language="C#" Value="public delegate void StatusHandler(IPod.SongDatabase db, IPod.Song currentSong, int completed, int total);" />
   <AssemblyInfo>
     <AssemblyName>ipod-sharp</AssemblyName>
@@ -17,11 +17,11 @@
     <ReturnType>System.Void</ReturnType>
   </ReturnValue>
   <Docs>
-    <param name="db">To be added.</param>
-    <param name="currentSong">To be added.</param>
-    <param name="completed">To be added.</param>
-    <param name="total">To be added.</param>
-    <summary>To be added.</summary>
+    <param name="db">the song database</param>
+    <param name="currentSong">the current song being copied</param>
+    <param name="completed">number of songs already copied</param>
+    <param name="total">total number of songs to be copied</param>
+    <summary>Used with the <see cref="T:IPod.SongDatabase.SaveProgressChanged" /> event to provide status of a save operation.</summary>
     <remarks>To be added.</remarks>
   </Docs>
 </Type>

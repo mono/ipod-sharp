@@ -2,7 +2,7 @@
   <Remarks>ipod-sharp is a library for interacting with Apple iPod (tm) devices.</Remarks>
   <Copyright>James Willcox, 2005</Copyright>
   <Types>
-    <Namespace Name="iPodSharp">
+    <Namespace Name="IPod">
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />
