@@ -1,3 +1,9 @@
+2005-07-12  Aaron Bockover  <aaron@aaronbock.net>
+
+	* configure.in: Check for ipoddevice >= 0.2.2
+	* src/Makefile.am, tests/Makefile.am, ui/Makefile.am, tools/Makefile.am:
+	Update compiler flags -o -> -out: and -r -> -debug
+
 2005-07-12  James Willcox  <snorp@snorp.net>
 
 	* src/Makefile.am, ui/Makefile.am: since ipod-sharp[-ui] is still
