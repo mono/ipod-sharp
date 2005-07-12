@@ -3,6 +3,22 @@
   <Copyright>James Willcox, 2005</Copyright>
   <Types>
     <Namespace Name="IPod">
+      <Type Name="Device" />
+      <Type Name="DeviceEventListener" />
+      <Type Name="DeviceAddedArgs" />
+      <Type Name="DeviceRemovedArgs" />
+      <Type Name="DeviceException" />
+      <Type Name="DeviceBusyException" />
+      <Type Name="Equalizer" />
+      <Type Name="Song" />
+      <Type Name="Playlist" />
+      <Type Name="InsufficientSpaceException" />
+      <Type Name="SongDatabase" />
+      <Type Name="DeviceAddedHandler" />
+      <Type Name="DeviceRemovedHandler" />
+      <Type Name="StatusHandler" />
+      <Type Name="DeviceModel" />
+      <Type Name="SongRating" />
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />

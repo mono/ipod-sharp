@@ -1,3 +1,12 @@
+2005-07-12  James Willcox  <snorp@snorp.net>
+
+	* src/DeviceEventListener.cs: new, wraps the respective class in
+	libipoddevice.
+	* src/Initializer.cs: put all initialization stuff here, and have
+	the static constructors call it.
+	* ui/DeviceCombo.cs: use the new event listener to add/remove devices
+	* src/en/*: update docs for the above
+
 2005-07-09  James Willcox  <snorp@snorp.net>
 
 	* src/en/*: update docs some more

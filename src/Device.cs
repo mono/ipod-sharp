@@ -21,10 +21,10 @@ namespace IPod {
         private static extern bool ipod_device_rescan_disk (IntPtr raw);
 
         [DllImport ("ipoddevice")]
-        private static extern uint ipod_device_eject (IntPtr raw, out IntPtr error);
+        private static unsafe extern uint ipod_device_eject (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
-        private static extern bool ipod_device_save (IntPtr raw, out IntPtr error);
+        private static unsafe extern bool ipod_device_save (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
         private static extern void ipod_device_debug (IntPtr raw);
@@ -34,7 +34,7 @@ namespace IPod {
 
         [DllImport ("ipoddevice")]
         private static extern IntPtr ipod_device_get_type ();
-
+        
         private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
         private SongDatabase songs;
@@ -75,6 +75,12 @@ namespace IPod {
                 return (string) GetProperty ("host-name").Val;
             } set {
                 SetProperty ("host-name", new GLib.Value (value));
+            }
+        }
+
+        public string VolumeId {
+            get {
+                return (string) GetProperty ("hal-volume-id").Val;
             }
         }
 
@@ -134,10 +140,16 @@ namespace IPod {
             }
         }
 
+        public static new GLib.GType GType { 
+            get {
+                IntPtr raw_ret = ipod_device_get_type();
+                GLib.GType ret = new GLib.GType(raw_ret);
+                return ret;
+            }
+        }
+        
         static Device () {
-            Gtk.Application.Init ();
-            GLib.GType.Register (new GLib.GType (ipod_device_get_type ()),
-                                 typeof (Device));
+            Initializer.Init ();
         }
 
         protected Device (IntPtr ptr) : base (ptr) {

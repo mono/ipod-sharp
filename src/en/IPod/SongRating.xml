@@ -1,0 +1,76 @@
+<Type Name="SongRating" FullName="IPod.SongRating">
+  <TypeSignature Language="C#" Value="public enum SongRating" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Members>
+    <Member MemberName="Zero">
+      <MemberSignature Language="C#" Value="Zero" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.SongRating</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="One">
+      <MemberSignature Language="C#" Value="One" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.SongRating</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Two">
+      <MemberSignature Language="C#" Value="Two" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.SongRating</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Three">
+      <MemberSignature Language="C#" Value="Three" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.SongRating</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Four">
+      <MemberSignature Language="C#" Value="Four" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.SongRating</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Five">
+      <MemberSignature Language="C#" Value="Five" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.SongRating</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>Represents the rating for a song</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>
