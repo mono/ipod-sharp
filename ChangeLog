@@ -1,5 +1,12 @@
 2005-07-12  James Willcox  <snorp@snorp.net>
 
+	* src/Makefile.am, ui/Makefile.am: since ipod-sharp[-ui] is still
+	in development, don't install the assemblies to the GAC.
+	* ipod-sharp.pc.in, ipod-sharp-ui.pc.in: add a 'Libraries' variable
+	that contains the path to the assembly for apps to copy.
+
+2005-07-12  James Willcox  <snorp@snorp.net>
+
 	* src/DeviceEventListener.cs: new, wraps the respective class in
 	libipoddevice.
 	* src/Initializer.cs: put all initialization stuff here, and have

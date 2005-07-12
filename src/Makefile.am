@@ -6,6 +6,9 @@ MCS_FLAGS = -debug
 
 ASSEMBLY = ipod-sharp.dll
 
+ipoddir = $(prefix)/lib/ipod-sharp
+ipod_DATA = $(ASSEMBLY)
+
 ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
 	$(srcdir)/Device.cs		\
@@ -40,8 +43,8 @@ update-docs: $(ASSEMBLY)
 ipod-sharp-docs.zip ipod-sharp-docs.tree: $(srcdir)/en/*/*.xml
 	$(DOC_ASSEMBLER) --ecma $(srcdir)/en -o ipod-sharp-docs 
 
-install-data-hook:
-	$(GACUTIL) /i $(ASSEMBLY) /package $(PACKAGE) /gacdir $(libdir) /root $(DESTDIR)$(libdir)
+#install-data-hook:
+#	$(GACUTIL) /i $(ASSEMBLY) /package $(PACKAGE) /gacdir $(libdir) /root $(DESTDIR)$(libdir)
 
 EXTRA_DIST =			\
 	$(ASSEMBLY_SOURCES)	\

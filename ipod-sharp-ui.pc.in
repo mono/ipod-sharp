@@ -1,9 +1,9 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@
+Libraries=@prefix@/lib/ipod-sharp/ipod-sharp-ui.dll
 
 Name: ipod-sharp-ui
 Description: ipod-sharp-ui - Widgets useful for working with ipod-sharp
 Version: @VERSION@
-Libs: -r:@libdir@/mono/@PACKAGE@/ipod-sharp-ui.dll
+Libs: -r:${Libraries}
