@@ -2,7 +2,7 @@
 DOC_UPDATER = @MONODOCER@ -delete
 DOC_ASSEMBLER = @MONODOC@ --assemble
 
-MCS_FLAGS = -g
+MCS_FLAGS = -debug
 
 ASSEMBLY = ipod-sharp.dll
 
@@ -32,7 +32,7 @@ endif
 all: $(ASSEMBLY) 
 
 $(ASSEMBLY): $(ASSEMBLY_SOURCES)
-	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -o $@ $(ASSEMBLY_SOURCES) -r:Mono.Posix -pkg:gtk-sharp-2.0
+	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) -r:Mono.Posix -pkg:gtk-sharp-2.0
 
 update-docs: $(ASSEMBLY)
 	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en
