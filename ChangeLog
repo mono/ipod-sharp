@@ -1,3 +1,8 @@
+2005-07-18  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: remove from the 'library' playlist when removing a song.
+	Also, don't force the PodcastUrl2 detail type to PodcastUrl.
+
 2005-07-12  Aaron Bockover  <aaron@aaronbock.net>
 
 	* configure.in: Check for ipoddevice >= 0.2.2

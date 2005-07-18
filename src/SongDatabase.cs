@@ -384,7 +384,6 @@ namespace IPod {
             if ((int) Type > 50 && Type != DetailType.Misc)
                 throw new ApplicationException ("Unsupported detail type: " + Type);
 
-
             unknownOne = BitConverter.ToInt32 (body, 4);
             unknownTwo = BitConverter.ToInt32 (body, 8);
             
@@ -392,8 +391,6 @@ namespace IPod {
                 if (Type == DetailType.PodcastUrl ||
                     Type == DetailType.PodcastUrl2) {
 
-                    // force it to the 'first' podcast url type
-                    Type = DetailType.PodcastUrl;
                     Value = Encoding.UTF8.GetString (body, 12, body.Length - 12);
                 } else if (Type == DetailType.ChapterData) {
                     // ugh ugh ugh, just preserve it for now -- no parsing
@@ -1196,14 +1193,17 @@ namespace IPod {
 
                     // remove from the song db
                     dbrec[DataSetIndex.Library].TrackList.Remove (song.Id);
-
-                    // remove from the playlists
+                    dbrec[DataSetIndex.Playlist].PlaylistList.Playlists[0].RemoveItem (song.Track.Id);
+                    
+                    // remove from the "normal" playlists
                     foreach (Playlist list in playlists) {
                         list.RemoveSong (song);
                     }
 
+                    // remove from On-The-Go playlist
                     otgPlaylist.RemoveOTGSong (song);
-                    
+
+                    // remove from podcast playlist
                     if (podcastPlaylist != null) {
                         podcastPlaylist.RemoveSong (song);
                     }
