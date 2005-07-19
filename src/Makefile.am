@@ -11,6 +11,8 @@ ipod_DATA = $(ASSEMBLY)
 
 ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
+	$(srcdir)/DatabaseReadException.cs	\
+	$(srcdir)/DatabaseWriteException.cs	\
 	$(srcdir)/Device.cs		\
 	$(srcdir)/DeviceEventListener.cs	\
 	$(srcdir)/DeviceAddedHandler.cs	\

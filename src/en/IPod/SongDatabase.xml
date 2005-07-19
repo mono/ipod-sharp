@@ -104,21 +104,7 @@
         <remarks />
       </Docs>
     </Member>
-    <Member MemberName="RevertSong">
-      <MemberSignature Language="C#" Value="public void RevertSong (IPod.Song song);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="song" Type="IPod.Song" />
-      </Parameters>
-      <Docs>
-        <param name="song">the song to revert</param>
-        <summary>Reverts an action taken on a song</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+    
     <Member MemberName="SaveStarted">
       <MemberSignature Language="C#" Value="public event EventHandler SaveStarted;" />
       <MemberType>Event</MemberType>

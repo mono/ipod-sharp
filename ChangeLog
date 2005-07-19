@@ -1,3 +1,17 @@
+2005-07-19  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: clean some of the internal bits up a bit,
+	and remove RevertSong.
+	* src/DatabaseReadException.cs: added
+	* src/DatabaseWriteException.cs: ditto
+	* src/en/*: update docs
+
+2005-07-19  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: put files in the F00 style directories and
+	rename them similar to how iTunes does it.  Patch from
+	Aaron Bockover <aaron@aaronbock.net>
+
 2005-07-18  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: remove from the 'library' playlist when removing a song.

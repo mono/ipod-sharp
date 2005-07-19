@@ -19,6 +19,8 @@
       <Type Name="StatusHandler" />
       <Type Name="DeviceModel" />
       <Type Name="SongRating" />
+      <Type Name="DatabaseReadException" />
+      <Type Name="DatabaseWriteException" />
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />
