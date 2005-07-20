@@ -1,3 +1,9 @@
+2005-07-20  James Willcox  <snorp@snorp.net>
+
+	* src/Initializer.cs: use a separate thread for hal
+	* ui/DeviceCombo.cs: since events come in on a thread, do stuff
+	in an idle handler.
+
 2005-07-19  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: s/StatusHandler/SaveProgressHandler/ and add a

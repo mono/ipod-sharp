@@ -10,6 +10,10 @@ namespace IPod {
         private ListStore store;
         private DeviceEventListener listener;
 
+        private ArrayList addedUdis = new ArrayList ();
+        private ArrayList removedUdis = new ArrayList ();
+        private ThreadNotify notify;
+
         public Device ActiveDevice {
             get {
                 TreeIter iter = TreeIter.Zero;
@@ -32,35 +36,61 @@ namespace IPod {
 
             Refresh ();
 
+            notify = new ThreadNotify (new ReadyEvent (OnNotify));
+            
             listener = new DeviceEventListener ();
             listener.DeviceAdded += OnDeviceAdded;
             listener.DeviceRemoved += OnDeviceRemoved;
         }
 
         private void OnDeviceAdded (object o, DeviceAddedArgs args) {
-            try {
-                Device device = new Device (args.Udi);
-                AddDevice (device);
-
-                if (ActiveDevice == null) {
-                    SetActive ();
-                }
-            } catch (Exception e) {
-                Console.Error.WriteLine ("Error creating new device ({0}): {1}", args.Udi, e);
+            lock (this) {
+                addedUdis.Add (args.Udi);
+                notify.WakeupMain ();
             }
         }
 
         private void OnDeviceRemoved (object o, DeviceRemovedArgs args) {
-            TreeIter iter = FindDevice (args.Udi);
-                
-            if (!iter.Equals (TreeIter.Zero)) {
-                store.Remove (ref iter);
-            }
-
-            if (ActiveDevice == null) {
-                SetActive ();
+            lock (this) {
+                removedUdis.Add (args.Udi);
+                notify.WakeupMain ();
             }
         }
+
+        private void OnNotify () {
+            lock (this) {
+                
+                foreach (string udi in addedUdis) {
+                    try {
+                        Device device = new Device (udi);
+                        AddDevice (device);
+                        
+                        if (ActiveDevice == null) {
+                            SetActive ();
+                        }
+                    } catch (Exception e) {
+                        Console.Error.WriteLine ("Error creating new device ({0}): {1}", udi, e);
+                    }
+                }
+
+                foreach (string udi in removedUdis) {
+                    TreeIter iter = FindDevice (udi);
+                    
+                    if (!iter.Equals (TreeIter.Zero)) {
+                        store.Remove (ref iter);
+                    }
+                    
+                    if (ActiveDevice == null) {
+                        SetActive ();
+                    }
+                }
+
+                addedUdis.Clear ();
+                removedUdis.Clear ();
+            }
+        }
+
+        
 
         private TreeIter FindDevice (string udi) {
             TreeIter iter = TreeIter.Zero;
