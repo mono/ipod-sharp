@@ -10,6 +10,9 @@ namespace IPod {
 
         private static IntPtr mainContext;
 
+        [DllImport ("libgobject-2.0.so.0")]
+        private static extern void g_type_init ();
+        
         [DllImport ("libglib-2.0.so.0")]
         private static extern IntPtr g_main_context_new ();
 
@@ -31,7 +34,7 @@ namespace IPod {
                     return;
                 
                 dbus_g_thread_init ();
-                Gtk.Application.Init ();
+                g_type_init ();
                 GLib.GType.Register (Device.GType, typeof (Device));
                 GLib.GType.Register (DeviceEventListener.GType, typeof (DeviceEventListener));
                 

@@ -1,5 +1,10 @@
 2005-07-20  James Willcox  <snorp@snorp.net>
 
+	* src/Initializer.cs: use g_type_init instead of Gtk.Application.Init.
+	We do not require an X connection, etc.
+
+2005-07-20  James Willcox  <snorp@snorp.net>
+
 	* src/Initializer.cs: use a separate thread for hal
 	* ui/DeviceCombo.cs: since events come in on a thread, do stuff
 	in an idle handler.
