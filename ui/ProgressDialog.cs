@@ -87,7 +87,7 @@ namespace IPod {
             lock (this) {
                 string padstr = String.Format ("Adding {0} of {0}", total);
 
-                message = String.Format ("Adding {0} of {1}", current, total);
+                message = String.Format ("Adding {0} of {1}", current + 1, total);
                 message = message.PadLeft (padstr.Length);
 
                 message = String.Format ("<b>{0}: {1}</b>", message, GLib.Markup.EscapeText (song.Title));
