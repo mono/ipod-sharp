@@ -117,10 +117,10 @@
       </Docs>
     </Member>
     <Member MemberName="SaveProgressChanged">
-      <MemberSignature Language="C#" Value="public event IPod.StatusHandler SaveProgressChanged;" />
+      <MemberSignature Language="C#" Value="public event IPod.SaveProgressHandler SaveProgressChanged;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
-        <ReturnType>IPod.StatusHandler</ReturnType>
+        <ReturnType>IPod.SaveProgressHandler</ReturnType>
       </ReturnValue>
       <Docs>
         <summary>Fired when the progress of a save operation has changed</summary>

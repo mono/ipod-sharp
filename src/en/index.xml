@@ -16,11 +16,11 @@
       <Type Name="SongDatabase" />
       <Type Name="DeviceAddedHandler" />
       <Type Name="DeviceRemovedHandler" />
-      <Type Name="StatusHandler" />
       <Type Name="DeviceModel" />
       <Type Name="SongRating" />
       <Type Name="DatabaseReadException" />
       <Type Name="DatabaseWriteException" />
+      <Type Name="SaveProgressHandler" />
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />
@@ -30,7 +30,6 @@
       <Type Name="Playlist" />
       <Type Name="InsufficientSpaceException" />
       <Type Name="SongDatabase" />
-      <Type Name="StatusHandler" />
       <Type Name="DeviceModel" />
       <Type Name="Equalizer" />
       <Type Name="SongRating" />
