@@ -1,5 +1,15 @@
 2005-07-19  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: s/StatusHandler/SaveProgressHandler/ and add a
+	'currentPercent' argument to it, which represents how much of the
+	current song has been copied.  Also, made the Save method provide
+	that information.
+
+	* ui/ProgressDialog.cs: use the new 'currentPercent' info to provide
+	a smoother progress bar.
+
+2005-07-19  James Willcox  <snorp@snorp.net>
+
 	* ui/ProgressDialog.cs: display 'current + 1' instead of 'current' in
 	the progress handler, to be accurate.
 

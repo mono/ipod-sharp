@@ -915,11 +915,14 @@ namespace IPod {
         }
     }
 
-    public delegate void StatusHandler (SongDatabase db, Song currentSong,
-                                        int completed, int total);
+    public delegate void SaveProgressHandler (SongDatabase db, Song currentSong, double currentPercent,
+                                              int completed, int total);
 
     public class SongDatabase {
 
+        private const int CopyBufferSize = 8192;
+        private const double PercentThreshold = 0.10;
+        
         private DatabaseRecord dbrec;
 
         private ArrayList songs = new ArrayList ();
@@ -934,7 +937,7 @@ namespace IPod {
         private Device device;
 
         public event EventHandler SaveStarted;
-        public event StatusHandler SaveProgressChanged;
+        public event SaveProgressHandler SaveProgressChanged;
         public event EventHandler SaveEnded;
 
         private string SongDbPath {
@@ -1132,6 +1135,39 @@ namespace IPod {
             return uniqueName.Replace("/", ":");
         }
 
+        private void CopySong (Song song, string dest, int completed, int total) {
+            BinaryReader reader = null;
+            BinaryWriter writer = null;
+            
+            try {
+                FileInfo info = new FileInfo (song.Filename);
+                long length = info.Length;
+                long count = 0;
+                double lastPercent = 0.0;
+
+                reader = new BinaryReader (new BufferedStream (File.Open (song.Filename, FileMode.Open)));
+                writer = new BinaryWriter (new BufferedStream (File.Open (dest, FileMode.Create)));
+                
+                do {
+                    byte[] buf = reader.ReadBytes (CopyBufferSize);
+                    writer.Write (buf);
+                    count += buf.Length;
+
+                    double percent = (double) count / (double) length;
+                    if (percent >= lastPercent + PercentThreshold && SaveProgressChanged != null) {
+                        SaveProgressChanged (this, song, (double) count / (double) length, completed, total);
+                        lastPercent = percent;
+                    }
+                } while (count < length);
+            } finally {
+                if (reader != null)
+                    reader.Close ();
+
+                if (writer != null)
+                    writer.Close ();
+            }
+        }
+
         public void Save () {
 
             CheckFreeSpace ();
@@ -1159,12 +1195,9 @@ namespace IPod {
                 int completed = 0;
                 
                 foreach (Song song in songsToAdd) {
-                    if (SaveProgressChanged != null)
-                        SaveProgressChanged (this, song, completed++, songsToAdd.Count);
-                    
                     string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
 
-                    File.Copy (song.Filename, dest, true);
+                    CopySong (song, dest, completed++, songsToAdd.Count);
                 }
 
                 // The play count file is invalid now, so we'll remove it (even though the iPod would anyway)
