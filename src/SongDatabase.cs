@@ -46,6 +46,16 @@ namespace IPod {
         
         public abstract void Save (DatabaseRecord db, BinaryWriter writer);
 
+        protected void SaveChild (DatabaseRecord db, Record record, out byte[] data, out int length) {
+            MemoryStream stream = new MemoryStream ();
+            BinaryWriter writer = new BinaryWriter (stream);
+            record.Save (db, writer);
+            writer.Flush ();
+            length = (int) stream.Length;
+            data = stream.GetBuffer ();
+            writer.Close ();
+        }
+        
         protected byte[] Concatenate (params byte[][] byteArrayList) {
             int size = 0;
 
@@ -122,16 +132,28 @@ namespace IPod {
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
+
+            int childLength = 0;
+            byte[] childData = null;
+            SaveChild (db, detail, out childData, out childLength);
+
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
             writer.Write (32 + PadLength);
-            writer.Write (32 + PadLength);
+            
+            // as of version 13, the detail record counts as a child
+            if (db.Version >= 13) {
+                writer.Write (32 + childLength + PadLength);
+            } else {
+                writer.Write (32 + PadLength);
+            }
+
             writer.Write (unknownOne);
             writer.Write (correlationId);
             writer.Write (Index);
             writer.Write (TrackId);
             writer.Write (Timestamp);
             writer.Write (new byte[PadLength]);
-            detail.Save (db, writer);
+            writer.Write (childData, 0, childLength);
         }
     }
 
