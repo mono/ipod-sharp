@@ -1,5 +1,10 @@
 2005-07-26  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: TrackRecord was reading/writing some things in
+	(apparently) the wrong order, so fix that.
+
+2005-07-26  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: when dealing with tracks, don't read/write
 	the 'remainder'.
 

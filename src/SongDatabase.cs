@@ -490,7 +490,6 @@ namespace IPod {
 
     internal class TrackRecord : Record {
 
-        private int unknownTwo = 0;
         private short unknownThree = 0;
         private short unknownFour;
         private int unknownFive;
@@ -572,7 +571,6 @@ namespace IPod {
             int numDetails = BitConverter.ToInt32 (body, 0);
             Id = BitConverter.ToInt32 (body, 4);
             Hidden = BitConverter.ToInt32 (body, 8) == 1 ? false : true;
-            unknownTwo = BitConverter.ToInt32 (body, 12);
             Type = (TrackRecordType) BitConverter.ToInt16 (body, 16);
             CompilationFlag = body[18];
             Rating = body[19];
@@ -583,8 +581,8 @@ namespace IPod {
             TotalTracks = BitConverter.ToInt32 (body, 36);
             Year = BitConverter.ToInt32 (body, 40);
             BitRate = BitConverter.ToInt32 (body, 44);
-            SampleRate = BitConverter.ToUInt16 (body, 48);
             unknownThree = BitConverter.ToInt16 (body, 50);
+            SampleRate = BitConverter.ToUInt16 (body, 48);
             Volume = BitConverter.ToInt32 (body, 52);
             StartTime = BitConverter.ToInt32 (body, 56);
             StopTime = BitConverter.ToInt32 (body, 60);
@@ -601,8 +599,8 @@ namespace IPod {
             Checked = body[108];
             ApplicationRating = body[109];
             BPM = BitConverter.ToInt16 (body, 110);
-            unknownFour = BitConverter.ToInt16 (body, 112);
             ArtworkCount = BitConverter.ToInt16 (body, 114);
+            unknownFour = BitConverter.ToInt16 (body, 112);
             ArtworkSize = BitConverter.ToInt32 (body, 116);
             unknownFive = BitConverter.ToInt32 (body, 120);
             unknownSix = BitConverter.ToInt32 (body, 124);
@@ -641,7 +639,19 @@ namespace IPod {
             writer.Write (details.Count);
             writer.Write (Id);
             writer.Write (Hidden ? 0 : 1);
-            writer.Write (unknownTwo);
+
+            switch (Type) {
+            case TrackRecordType.MP3:
+                writer.Write (new char[] { 'M', 'P', '3', ' ' });
+                break;
+            case TrackRecordType.AAC:
+                writer.Write (new char[] { 'A', 'A', 'C', ' ' });
+                break;
+            default:
+                writer.Write ((Int32) 0);
+                break;
+            }
+            
             writer.Write ((short) Type);
             writer.Write (CompilationFlag);
             writer.Write (Rating);
@@ -652,8 +662,8 @@ namespace IPod {
             writer.Write (TotalTracks);
             writer.Write (Year);
             writer.Write (BitRate);
-            writer.Write (SampleRate);
             writer.Write (unknownThree);
+            writer.Write (SampleRate);
             writer.Write (Volume);
             writer.Write (StartTime);
             writer.Write (StopTime);
@@ -670,8 +680,8 @@ namespace IPod {
             writer.Write (Checked);
             writer.Write (ApplicationRating);
             writer.Write (BPM);
-            writer.Write (unknownFour);
             writer.Write (ArtworkCount);
+            writer.Write (unknownFour);
             writer.Write (ArtworkSize);
             writer.Write (unknownFive);
             writer.Write (unknownSix);
