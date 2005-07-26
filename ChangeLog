@@ -1,3 +1,8 @@
+2005-07-26  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: when dealing with tracks, don't read/write
+	the 'remainder'.
+
 2005-07-20  James Willcox  <snorp@snorp.net>
 
 	* src/Initializer.cs: use g_type_init instead of Gtk.Application.Init.

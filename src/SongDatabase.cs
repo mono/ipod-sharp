@@ -500,7 +500,6 @@ namespace IPod {
         private int unknownNine;
         private int unknownTen;
         private int playCountDup;
-        private byte[] remainder = new byte[0];
 
         private ArrayList details = new ArrayList ();
 
@@ -612,11 +611,6 @@ namespace IPod {
             unknownNine = BitConverter.ToInt32 (body, 136);
             unknownTen = BitConverter.ToInt32 (body, 140);
 
-            if (body.Length > 144) {
-                remainder = new byte[body.Length - 144];
-                Array.Copy (body, 144, remainder, 0, body.Length - 144);
-            }
-
             details.Clear ();
 
             for (int i = 0; i < numDetails; i++) {
@@ -641,8 +635,8 @@ namespace IPod {
             childWriter.Close ();
             
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
-            writer.Write (156 + remainder.Length + PadLength);
-            writer.Write (156 + remainder.Length + PadLength + childDataLength);
+            writer.Write (156 + PadLength);
+            writer.Write (156 + PadLength + childDataLength);
 
             writer.Write (details.Count);
             writer.Write (Id);
@@ -685,7 +679,6 @@ namespace IPod {
             writer.Write (unknownEight);
             writer.Write (unknownNine);
             writer.Write (unknownTen);
-            writer.Write (remainder);
             writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
         }
