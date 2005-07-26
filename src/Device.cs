@@ -116,6 +116,36 @@ namespace IPod {
             }
         }
 
+        public bool IsNew {
+            get {
+                return (bool) GetProperty ("is-new").Val;
+            }
+        }
+
+        public string SerialNumber {
+            get {
+                return (string) GetProperty ("serial-number").Val;
+            }
+        }
+
+        public string ModelNumber {
+            get {
+                return (string) GetProperty ("model-number").Val;
+            }
+        }
+
+        public string FirmwareVersion {
+            get {
+                return (string) GetProperty ("firmware-version").Val;
+            }
+        }
+
+        public string VolumeUuid {
+            get {
+                return (string) GetProperty ("volume-uuid").Val;
+            }
+        }
+
         public Equalizer[] Equalizers {
             get {
                 lock (this) {

@@ -1,5 +1,9 @@
 2005-07-26  James Willcox  <snorp@snorp.net>
 
+	* src/Device.cs: wrap the new device properties in libipoddevice
+
+2005-07-26  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: the type 100 mhod following a mhit is now
 	considered a child in database version 13, and the size must
 	be calculated appropriately.
