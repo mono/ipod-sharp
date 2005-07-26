@@ -1,5 +1,10 @@
 2005-07-26  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: write all the extra unknown fields out in
+	TrackRecord, if the database version is >= 12.
+
+2005-07-26  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: TrackRecord was reading/writing some things in
 	(apparently) the wrong order, so fix that.
 

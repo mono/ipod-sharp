@@ -631,10 +631,17 @@ namespace IPod {
             byte[] childData = stream.GetBuffer ();
             int childDataLength = (int) stream.Length;
             childWriter.Close ();
+
+            int len;
+            if (db.Version >= 12) {
+                len = 244;
+            } else {
+                len = 156;
+            }
             
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
-            writer.Write (156 + PadLength);
-            writer.Write (156 + PadLength + childDataLength);
+            writer.Write (len + PadLength);
+            writer.Write (len + PadLength + childDataLength);
 
             writer.Write (details.Count);
             writer.Write (Id);
@@ -689,6 +696,11 @@ namespace IPod {
             writer.Write (unknownEight);
             writer.Write (unknownNine);
             writer.Write (unknownTen);
+
+            if (db.Version >= 12) {
+                writer.Write (new byte[88]);
+            }
+            
             writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
         }
