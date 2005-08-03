@@ -84,6 +84,12 @@ namespace IPod {
             }
         }
 
+        public string AdvertisedCapacity {
+            get {
+                return Capacities.GetCapacity (ModelNumber);
+            }
+        }
+
         public UInt64 VolumeSize {
             get {
                 return (UInt64) GetProperty ("volume-size").Val;
@@ -186,7 +192,6 @@ namespace IPod {
             if (Raw == IntPtr.Zero) {
                 throw new DeviceException (this, "Failed to create device");
             }
-            
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {

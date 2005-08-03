@@ -23,7 +23,7 @@ namespace IPod {
 
     internal abstract class Record {
 
-        public const int PadLength = 2;
+        public const int PadLength = 8;
 
         public string Name;
         public int HeaderOne; // usually the size of this record
@@ -55,24 +55,6 @@ namespace IPod {
             data = stream.GetBuffer ();
             writer.Close ();
         }
-        
-        protected byte[] Concatenate (params byte[][] byteArrayList) {
-            int size = 0;
-
-            foreach (byte[] b in byteArrayList) {
-                size += b.Length;
-            }
-
-            byte[] ret = new byte[size];
-
-            int offset = 0;
-            foreach (byte[] b in byteArrayList) {
-                Array.Copy (b, 0, ret, offset, b.Length);
-                offset += b.Length;
-            }
-
-            return ret;
-        }
     }
 
     internal class GenericRecord : Record {
@@ -95,7 +77,7 @@ namespace IPod {
 
     internal class PlaylistItemRecord : Record {
 
-        private int unknownOne = 1;
+        private int unknownOne = 0;
         private int correlationId = 0;
         private DetailRecord detail;
 

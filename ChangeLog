@@ -1,3 +1,13 @@
+2005-08-03  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: change unknownOne in PlaylistItemRecord to be 0
+	instead of 1, as that's what iTunes does.  Make PadLength 8 to see if
+	that "fixes" problems with 4th devices.
+	* src/Device.cs: add AdvertisedCapacity property
+	* src/Capacities.cs: new file, gets advertised capacity info, given
+	a model number.
+	* src/capacities.txt: a little text db that maps model -> capacity
+
 2005-07-26  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: wrap the new device properties in libipoddevice

@@ -11,6 +11,7 @@ ipod_DATA = $(ASSEMBLY)
 
 ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
+	$(srcdir)/Capacities.cs	\
 	$(srcdir)/DatabaseReadException.cs	\
 	$(srcdir)/DatabaseWriteException.cs	\
 	$(srcdir)/Device.cs		\
@@ -26,6 +27,8 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Playlist.cs		\
 	$(srcdir)/SongDatabase.cs
 
+ASSEMBLY_RESOURCES = $(srcdir)/capacities.txt
+
 if BUILD_DOCS
 docdir = `@MONODOC@ --get-sourcesdir`
 doc_DATA =              	\
@@ -36,8 +39,8 @@ endif
 
 all: $(ASSEMBLY) 
 
-$(ASSEMBLY): $(ASSEMBLY_SOURCES)
-	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) -r:Mono.Posix -pkg:gtk-sharp-2.0
+$(ASSEMBLY): $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES)
+	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0
 
 update-docs: $(ASSEMBLY)
 	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en
