@@ -78,25 +78,14 @@ namespace IPod {
     internal class PlaylistItemRecord : Record {
 
         private int unknownOne = 0;
-        private int correlationId = 0;
-        private DetailRecord detail;
+        private int unknownTwo = 0;
+        private ArrayList details = new ArrayList ();
 
         public int TrackId;
         public int Timestamp;
-        public int Index;
-
-        public int CorrelationId {
-            get { return correlationId; }
-            set {
-                correlationId = value;
-                detail.Position = value;
-            }
-        }
 
         public PlaylistItemRecord () {
             this.Name = "mhip";
-            detail = new DetailRecord ();
-            detail.Type = DetailType.Misc;
         }
 
         public override void Read (DatabaseRecord db, BinaryReader reader) {
@@ -104,38 +93,61 @@ namespace IPod {
             
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            unknownOne = BitConverter.ToInt32 (body, 0);
-            correlationId = BitConverter.ToInt32 (body, 4);
-            Index = BitConverter.ToInt32 (body, 8);
+            int numDataObjects = BitConverter.ToInt32 (body, 0);
+            unknownOne = BitConverter.ToInt32 (body, 4);
+            unknownTwo = BitConverter.ToInt32 (body, 8);
             TrackId = BitConverter.ToInt32 (body, 12);
             Timestamp = BitConverter.ToInt32 (body, 16);
-            
-            detail.Read (db, reader);
+
+            for (int i = 0; i < numDataObjects; i++) {
+                DetailRecord detail = new DetailRecord ();
+                detail.Read (db, reader);
+                details.Add (detail);
+            }
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
 
-            int childLength = 0;
-            byte[] childData = null;
-            SaveChild (db, detail, out childData, out childLength);
+            // we need to create this for new playlist items
+            if (details.Count == 0) {
+                DetailRecord detail = new DetailRecord ();
+                detail.Type = DetailType.Misc;
+                details.Add (detail);
+            }
+
+            int childrenLength = 0;
+            byte[] childrenData = new byte[0];
+            
+            foreach (DetailRecord child in details) {
+                int childLength = 0;
+                byte[] childData = null;
+                
+                SaveChild (db, child, out childData, out childLength);
+                childrenLength += childLength;
+
+                byte[] newChildrenData = new byte[childrenData.Length + childData.Length];
+                Array.Copy (childrenData, 0, newChildrenData, 0, childrenData.Length);
+                Array.Copy (childData, 0, newChildrenData, childrenData.Length, childData.Length);
+                childrenData = newChildrenData;
+            }
 
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
             writer.Write (32 + PadLength);
             
             // as of version 13, the detail record counts as a child
             if (db.Version >= 13) {
-                writer.Write (32 + childLength + PadLength);
+                writer.Write (32 + childrenLength + PadLength);
             } else {
                 writer.Write (32 + PadLength);
             }
 
+            writer.Write (details.Count);
             writer.Write (unknownOne);
-            writer.Write (correlationId);
-            writer.Write (Index);
+            writer.Write (unknownTwo);
             writer.Write (TrackId);
             writer.Write (Timestamp);
             writer.Write (new byte[PadLength]);
-            writer.Write (childData, 0, childLength);
+            writer.Write (childrenData, 0, childrenLength);
         }
     }
 
@@ -193,14 +205,6 @@ namespace IPod {
         }
         
         public void InsertItem (int index, PlaylistItemRecord rec) {
-            int maxidx = 0;
-            foreach (PlaylistItemRecord item in playlistItems) {
-                if (item.Index > maxidx)
-                    maxidx = item.Index;
-            }
-
-            rec.Index = maxidx + 2;
-
             if (index < 0) {
                 playlistItems.Add (rec);
             } else {
