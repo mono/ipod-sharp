@@ -156,6 +156,7 @@ namespace IPod {
         private int unknownOne;
         private int unknownTwo;
         private int unknownThree;
+        private bool isLibrary;
 
         private ArrayList stringDetails = new ArrayList ();
         private ArrayList otherDetails = new ArrayList ();
@@ -186,7 +187,8 @@ namespace IPod {
             }
         }
 
-        public PlaylistRecord () {
+        public PlaylistRecord (bool isLibrary) {
+            this.isLibrary = isLibrary;
             this.Name = "mhyp";
         }
 
@@ -238,6 +240,10 @@ namespace IPod {
                     nameRecord = new DetailRecord ();
                     nameRecord.Read (db, reader);
                     stringDetails.Add (nameRecord);
+                } else if (isLibrary) {
+                    DetailRecord rec = new DetailRecord ();
+                    rec.Read (db, reader);
+                    otherDetails.Add (rec);
                 } else {
                     GenericRecord rec = new GenericRecord ();
                     rec.Read (db, reader);
@@ -252,8 +258,25 @@ namespace IPod {
             }
         }
 
+        private void CreateLibraryIndices () {
+            // remove any existing library index records
+            foreach (Record rec in (ArrayList) otherDetails.Clone ()) {
+                DetailRecord detail = rec as DetailRecord;
+                if (detail != null && detail.Type == DetailType.LibraryIndex) {
+                    Console.WriteLine ("Removing index for: " + detail.IndexType);
+                    otherDetails.Remove (rec);
+                }
+            }
+
+            // TODO: actually create the new indices
+        }
+        
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
 
+            if (isLibrary) {
+                CreateLibraryIndices ();
+            }
+            
             MemoryStream stream = new MemoryStream ();
             BinaryWriter childWriter = new BinaryWriter (stream);
 
@@ -321,7 +344,12 @@ namespace IPod {
             playlists.Clear ();
 
             for (int i = 0; i < numlists; i++) {
-                PlaylistRecord list = new PlaylistRecord ();
+                bool isLibrary = false;
+                
+                if (i == 0)
+                    isLibrary = true;
+                
+                PlaylistRecord list = new PlaylistRecord (isLibrary);
                 list.Read (db, reader);
                 playlists.Add (list);
             }
@@ -379,6 +407,14 @@ namespace IPod {
         Misc = 100
     }
 
+    internal enum IndexType {
+        Song = 3,
+        Album = 4,
+        Artist = 5,
+        Genre = 7,
+        Composer = 18
+    }
+    
     internal class DetailRecord : Record {
 
         private static UnicodeEncoding encoding = new UnicodeEncoding (false, false);
@@ -392,9 +428,12 @@ namespace IPod {
         public string Value = String.Empty;
         public int Position = 1;
 
+        public IndexType IndexType;
+        public int[] LibraryIndices;
+
         public DetailRecord () {
             this.Name = "mhod";
-            this.HeaderOne = 24; // this is always the value
+            this.HeaderOne = 24; // this is always the value for mhods
         }
 
         public DetailRecord (DetailType type, string value) : this () {
@@ -409,7 +448,7 @@ namespace IPod {
             
             Type = (DetailType) BitConverter.ToInt32 (body, 0);
 
-            if ((int) Type > 50 && Type != DetailType.Misc)
+            if ((int) Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex)
                 throw new DatabaseReadException ("Unsupported detail type: " + Type);
 
             unknownOne = BitConverter.ToInt32 (body, 4);
@@ -446,7 +485,20 @@ namespace IPod {
                     if(Value.Length != strlen / 2)
                         Value = Encoding.UTF8.GetString(body, 28, strlen);
                 }
-            } else {
+            } else if (Type == DetailType.LibraryIndex) {
+                IndexType = (IndexType) BitConverter.ToInt32 (body, 12);
+
+                int numEntries = BitConverter.ToInt32 (body, 16);
+
+                ArrayList entries = new ArrayList ();
+                
+                for (int i = 0; i < numEntries; i++) {
+                    int entry = BitConverter.ToInt32 (body, 56 + (i * 4));
+                    entries.Add (entry);
+                }
+
+                LibraryIndices = (int[]) entries.ToArray (typeof (int));
+            } else if (Type == DetailType.Misc) {
                 Position = BitConverter.ToInt32 (body, 12);
             }
         }
@@ -469,6 +521,8 @@ namespace IPod {
                     valbytes = encoding.GetBytes (Value);
                     writer.Write (40 + valbytes.Length);
                 }
+            } else if (Type == DetailType.LibraryIndex) {
+                writer.Write (72 + (4 * LibraryIndices.Length));
             } else if (Type == DetailType.Misc) {
                 writer.Write (44);
             }
@@ -487,6 +541,14 @@ namespace IPod {
                     writer.Write (0);
                     writer.Write (unknownThree);
                     writer.Write (valbytes);
+                }
+            } else if (Type == DetailType.LibraryIndex) {
+                writer.Write ((int) IndexType);
+                writer.Write (LibraryIndices.Length);
+                writer.Write (new byte[40]);
+
+                foreach (int index in LibraryIndices) {
+                    writer.Write (index);
                 }
             } else if (Type == DetailType.Misc) {
                 writer.Write (Position);
@@ -1331,7 +1393,7 @@ namespace IPod {
             if (name == null)
                 throw new ArgumentException ("name cannot be null");
             
-            PlaylistRecord playrec = new PlaylistRecord ();
+            PlaylistRecord playrec = new PlaylistRecord (false);
             playrec.PlaylistName = name;
             
             dbrec[DataSetIndex.Playlist].PlaylistList.AddPlaylist (playrec);

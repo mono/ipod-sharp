@@ -1,5 +1,11 @@
 2005-08-03  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: add stuff for reading/writing library index
+	type mhod records.  Currently, though, only the old indices are
+	removed when the db is saved.
+
+2005-08-03  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: correctly write out the number of child
 	details in playlist records.
 
