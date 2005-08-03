@@ -53,6 +53,7 @@ ipod-sharp-docs.zip ipod-sharp-docs.tree: $(srcdir)/en/*/*.xml
 
 EXTRA_DIST =			\
 	$(ASSEMBLY_SOURCES)	\
+	$(ASSEMBLY_RESOURCES)	\
 	ipod-sharp.dll.config	\
 	$(srcdir)/en/*.xml	\
 	$(srcdir)/en/*/*.xml	\
