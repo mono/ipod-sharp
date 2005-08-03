@@ -648,8 +648,8 @@ namespace IPod {
             }
             
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
-            writer.Write (len + PadLength);
-            writer.Write (len + PadLength + childDataLength);
+            writer.Write (len);
+            writer.Write (len + childDataLength);
 
             writer.Write (details.Count);
             writer.Write (Id);
@@ -709,7 +709,6 @@ namespace IPod {
                 writer.Write (new byte[88]);
             }
             
-            writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
         }
     }
