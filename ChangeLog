@@ -1,5 +1,10 @@
 2005-08-03  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: correctly write out the number of child
+	details in playlist records.
+
+2005-08-03  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: don't pad 'mhit' records
 
 2005-08-03  James Willcox  <snorp@snorp.net>

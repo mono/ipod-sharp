@@ -157,7 +157,8 @@ namespace IPod {
         private int unknownTwo;
         private int unknownThree;
 
-        private ArrayList dataObjects = new ArrayList (); //these are DetailRecord objects
+        private ArrayList stringDetails = new ArrayList ();
+        private ArrayList otherDetails = new ArrayList ();
         private ArrayList playlistItems = new ArrayList ();
 
         private DetailRecord nameRecord;
@@ -172,7 +173,7 @@ namespace IPod {
                 if (nameRecord == null) {
                     nameRecord = new DetailRecord ();
                     nameRecord.Type = DetailType.Title;
-                    dataObjects.Add (nameRecord);
+                    stringDetails.Add (nameRecord);
                 }
                 
                 nameRecord.Value = value;
@@ -217,7 +218,7 @@ namespace IPod {
             
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            int numobjs = BitConverter.ToInt32 (body, 0);
+            int numdetails = BitConverter.ToInt32 (body, 0);
             int numitems = BitConverter.ToInt32 (body, 4);
             int hiddenFlag = BitConverter.ToInt32 (body, 8);
 
@@ -227,21 +228,20 @@ namespace IPod {
             Timestamp = BitConverter.ToInt32 (body, 12);
             Id = BitConverter.ToInt32 (body, 16);
             unknownOne = BitConverter.ToInt32 (body, 20);
-            unknownTwo = BitConverter.ToInt32 (body, 24);
-            unknownThree = BitConverter.ToInt32 (body, 28);
 
-            dataObjects.Clear ();
+            stringDetails.Clear ();
+            otherDetails.Clear ();
             playlistItems.Clear ();
 
-            for (int i = 0; i < numobjs; i++) {
+            for (int i = 0; i < numdetails; i++) {
                 if (i == 0) {
                     nameRecord = new DetailRecord ();
                     nameRecord.Read (db, reader);
-                    dataObjects.Add (nameRecord);
+                    stringDetails.Add (nameRecord);
                 } else {
                     GenericRecord rec = new GenericRecord ();
                     rec.Read (db, reader);
-                    dataObjects.Add (rec);
+                    otherDetails.Add (rec);
                 }
             }
 
@@ -257,8 +257,12 @@ namespace IPod {
             MemoryStream stream = new MemoryStream ();
             BinaryWriter childWriter = new BinaryWriter (stream);
 
-            foreach (Record dataobj in dataObjects) {
-                dataobj.Save (db, childWriter);
+            foreach (Record rec in stringDetails) {
+                rec.Save (db, childWriter);
+            }
+
+            foreach (Record rec in otherDetails) {
+                rec.Save (db, childWriter);
             }
 
             foreach (PlaylistItemRecord item in playlistItems) {
@@ -273,14 +277,14 @@ namespace IPod {
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
             writer.Write (44 + PadLength);
             writer.Write (44 + PadLength + childDataLength);
-            writer.Write (dataObjects.Count);
+            writer.Write (stringDetails.Count + otherDetails.Count);
             writer.Write (playlistItems.Count);
             writer.Write (IsHidden ? 1 : 0);
             writer.Write (Timestamp);
             writer.Write (Id);
             writer.Write (unknownOne);
-            writer.Write (unknownTwo);
-            writer.Write (unknownThree);
+            writer.Write (stringDetails.Count);
+            writer.Write (otherDetails.Count);
             writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
         }
