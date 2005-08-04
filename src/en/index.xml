@@ -40,9 +40,6 @@
     <Assembly Name="ipod-sharp" Version="0.0.1.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCulture(Culture="")</AttributeName>
-        </Attribute>
-        <Attribute>
           <AttributeName>System.Reflection.AssemblyTrademark(Trademark="")</AttributeName>
         </Attribute>
         <Attribute>
