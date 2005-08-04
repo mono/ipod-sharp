@@ -17,6 +17,7 @@ TEST_TARBALLS =					\
 	$(srcdir)/ipod-test-db-shuffle-a.tar.gz
 
 check: $(TEST_ASSEMBLY)
+	cp $(top_builddir)/src/ipod-sharp.dll .
 	for asm in $(TEST_TARBALLS); do NUNIT_DIR=$(srcdir) $(srcdir)/runtests.sh $$asm; done;
 
 CLEANFILES = $(TEST_ASSEMBLY)
