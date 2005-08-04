@@ -39,6 +39,8 @@ namespace IPod {
         private EqualizerContainerRecord eqsrec;
         private SongDatabase songs;
 
+        public event EventHandler Changed;
+
         private string EqDbPath {
             get { return this.MountPoint + "/iPod_Control/iTunes/iTunesEQPresets"; }
         }
@@ -67,6 +69,7 @@ namespace IPod {
                 return (string) GetProperty ("user-name").Val;
             } set {
                 SetProperty ("user-name", new GLib.Value (value));
+                EmitChanged ();
             }
         }
 
@@ -75,6 +78,7 @@ namespace IPod {
                 return (string) GetProperty ("host-name").Val;
             } set {
                 SetProperty ("host-name", new GLib.Value (value));
+                EmitChanged ();
             }
         }
 
@@ -119,6 +123,7 @@ namespace IPod {
                 return (string) GetProperty ("device-name").Val;
             } set {
                 SetProperty ("device-name", new GLib.Value (value));
+                EmitChanged ();
             }
         }
 
@@ -195,6 +200,12 @@ namespace IPod {
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
+        }
+
+        private void EmitChanged () {
+            if (Changed != null) {
+                Changed (this, new EventArgs ());
+            }
         }
 
         private void LoadEqualizers () {

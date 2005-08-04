@@ -1062,6 +1062,10 @@ namespace IPod {
             get { return podcastPlaylist; }
         }
 
+        public int Version {
+            get { return dbrec.Version; }
+        }
+
         internal SongDatabase (Device device) {
             this.device = device;
             Reload ();

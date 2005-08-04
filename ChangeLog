@@ -1,3 +1,14 @@
+2005-08-04  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: add a 'Version' property.
+
+	* src/Device.cs: add a 'Changed' event, which is fired whenever
+	a property is changed.
+
+	* ui/DeviceCombo.cs: remove the 'EjectActive' method, as it's not
+	needed anymore.  Also, update the device name in response to
+	the new Device.Changed event.
+
 2005-08-03  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: add stuff for reading/writing library index

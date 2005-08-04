@@ -10,8 +10,10 @@ namespace IPod {
         private ListStore store;
         private DeviceEventListener listener;
 
+        private ArrayList devices = new ArrayList ();
         private ArrayList addedUdis = new ArrayList ();
         private ArrayList removedUdis = new ArrayList ();
+        private ArrayList changedDevices = new ArrayList ();
         private ThreadNotify notify;
 
         public Device ActiveDevice {
@@ -26,7 +28,7 @@ namespace IPod {
         }
 
         public DeviceCombo () : base () {
-            store = new ListStore (GLib.GType.String, Device.GType);
+            store = new ListStore (typeof (string), typeof (Device));
             this.Model = store;
 
             CellRendererText renderer = new CellRendererText ();
@@ -34,9 +36,9 @@ namespace IPod {
             
             this.AddAttribute (renderer, "text", 0);
 
-            Refresh ();
-
             notify = new ThreadNotify (new ReadyEvent (OnNotify));
+                        
+            Refresh ();
             
             listener = new DeviceEventListener ();
             listener.DeviceAdded += OnDeviceAdded;
@@ -53,6 +55,13 @@ namespace IPod {
         private void OnDeviceRemoved (object o, DeviceRemovedArgs args) {
             lock (this) {
                 removedUdis.Add (args.Udi);
+                notify.WakeupMain ();
+            }
+        }
+
+        private void OnDeviceChanged (object o, EventArgs args) {
+            lock (this) {
+                changedDevices.Add (o);
                 notify.WakeupMain ();
             }
         }
@@ -74,23 +83,23 @@ namespace IPod {
                 }
 
                 foreach (string udi in removedUdis) {
-                    TreeIter iter = FindDevice (udi);
-                    
+                    RemoveDevice (udi);
+                }
+
+                foreach (Device device in changedDevices) {
+                    TreeIter iter = FindDevice (device.VolumeId);
+
                     if (!iter.Equals (TreeIter.Zero)) {
-                        store.Remove (ref iter);
-                    }
-                    
-                    if (ActiveDevice == null) {
-                        SetActive ();
+                        store.SetValue (iter, 0, device.Name);
+                        store.EmitRowChanged (store.GetPath (iter), iter);
                     }
                 }
 
                 addedUdis.Clear ();
                 removedUdis.Clear ();
+                changedDevices.Clear ();
             }
         }
-
-        
 
         private TreeIter FindDevice (string udi) {
             TreeIter iter = TreeIter.Zero;
@@ -161,34 +170,33 @@ namespace IPod {
 
         private TreeIter AddDevice (Device device) {
             ClearPlaceholder ();
+
+            device.Changed += OnDeviceChanged;
+
+            // gtk-sharp doesn't ensure that I will get the same managed
+            // instance when pulling this out of the store, so hold a
+            // ref to it here
+            devices.Add (device);
+
             return store.AppendValues (device.Name, device);
         }
 
-        private void RemoveDevice (Device dev) {
-            TreeIter iter = TreeIter.Zero;
+        private void RemoveDevice (string udi) {
+            TreeIter iter = FindDevice (udi);
 
-            if (!store.IterChildren (out iter))
+            if (iter.Equals (TreeIter.Zero))
                 return;
 
-            do {
-                Device dev2 = (Device) store.GetValue (iter, 1);
-                if (dev2 == dev) {
-                    store.Remove (ref iter);
-                    break;
-                }
-            } while (store.IterNext (ref iter));
+            Device device = (Device) store.GetValue (iter, 1);
+
+            device.Changed -= OnDeviceChanged;
+            devices.Remove (device);
+            
+            if (!iter.Equals (TreeIter.Zero)) {
+                store.Remove (ref iter);
+            }
 
             SetActive ();
-        }
-
-        public void EjectActive () {
-            Device device = ActiveDevice;
-
-            if (device == null)
-                return;
-
-            device.Eject ();
-            RemoveDevice (device);
         }
     }
 }
