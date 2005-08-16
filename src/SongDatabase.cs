@@ -606,6 +606,7 @@ namespace IPod {
         public short BPM;
         public short ArtworkCount;
         public int ArtworkSize;
+        public int WeirdDRMValue;
 
         public DetailRecord[] Details {
             get { return (DetailRecord[]) details.ToArray (typeof (DetailRecord)); }
@@ -680,7 +681,7 @@ namespace IPod {
             unknownSix = BitConverter.ToInt32 (body, 124);
             unknownSeven = BitConverter.ToInt32 (body, 128);
             unknownEight = BitConverter.ToInt32 (body, 132);
-            unknownNine = BitConverter.ToInt32 (body, 136);
+            WeirdDRMValue = BitConverter.ToInt32 (body, 136);
             unknownTen = BitConverter.ToInt32 (body, 140);
 
             details.Clear ();
@@ -768,7 +769,7 @@ namespace IPod {
             writer.Write (unknownSix);
             writer.Write (unknownSeven);
             writer.Write (unknownEight);
-            writer.Write (unknownNine);
+            writer.Write (WeirdDRMValue);
             writer.Write (unknownTen);
 
             if (db.Version >= 12) {

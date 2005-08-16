@@ -186,6 +186,10 @@ namespace IPod {
             set { record.GetDetail (DetailType.Grouping).Value = value; }
         }
 
+        public bool IsProtected {
+            get { return record.WeirdDRMValue != 0; }
+        }
+
         internal SongDatabase Database {
             get { return db; }
         }

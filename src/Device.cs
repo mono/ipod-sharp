@@ -236,8 +236,12 @@ namespace IPod {
             case EjectResult.Ok:
                 return;
             case EjectResult.Error:
-                GLib.GException exc = new GLib.GException (error);
-                throw new DeviceException (this, exc.Message, exc);
+                if (error != IntPtr.Zero) {
+                    GLib.GException exc = new GLib.GException (error);
+                    throw new DeviceException (this, exc.Message, exc);
+                } else {
+                    throw new DeviceException (this, "Failed to eject device");
+                }
             case EjectResult.Busy:
                 throw new DeviceBusyException (this);
             }

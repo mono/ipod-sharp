@@ -1,3 +1,11 @@
+2005-08-16  James Willcox  <snorp@snorp.net>
+
+	* src/Song.cs: add an IsProtected property, which indicates whether
+	or not the song uses DRM.
+	* src/SongDatabase.cs: reworked some stuff in TrackRecord for the above
+	* src/Device.cs: don't assume that the error gets set if eject
+	returns false.
+
 2005-08-04  James Willcox  <snorp@snorp.net>
 
 	* src/en/*: update docs
