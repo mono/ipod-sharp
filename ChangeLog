@@ -1,3 +1,10 @@
+2005-08-18  Aaron Bockover <aaron@aaronbock.net>
+
+	* src/capacities.txt: Removed letter prefix from list
+	* configure.in: bump to 0.4.11
+	* src/Initializer.cs: Use either the default GMainContext or a new one,
+	managed by ipod-sharp (default)
+
 2005-08-16  James Willcox  <snorp@snorp.net>
 
 	* configure.in: bump to 0.4.10
