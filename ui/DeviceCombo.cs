@@ -39,6 +39,20 @@ namespace IPod {
             notify = new ThreadNotify (new ReadyEvent (OnNotify));
                         
             Refresh ();
+
+            string paths = Environment.GetEnvironmentVariable ("IPOD_DEVICE_IMAGES");
+            if (paths != null) {
+                foreach (string path in paths.Split (':')) {
+                    try {
+                        Device device = new Device (path);
+                        AddDevice (device);
+                    } catch (Exception e) {
+                        Console.Error.WriteLine ("Failed to load device at: " + path);
+                    }
+                }
+
+                SetActive ();
+            }
             
             listener = new DeviceEventListener ();
             listener.DeviceAdded += OnDeviceAdded;
@@ -87,7 +101,7 @@ namespace IPod {
                 }
 
                 foreach (Device device in changedDevices) {
-                    TreeIter iter = FindDevice (device.VolumeId);
+                    TreeIter iter = FindDevice (device.MountPoint);
 
                     if (!iter.Equals (TreeIter.Zero)) {
                         store.SetValue (iter, 0, device.Name);
@@ -101,7 +115,7 @@ namespace IPod {
             }
         }
 
-        private TreeIter FindDevice (string udi) {
+        private TreeIter FindDevice (string mount) {
             TreeIter iter = TreeIter.Zero;
 
             if (!store.GetIterFirst (out iter))
@@ -112,7 +126,7 @@ namespace IPod {
 
                 if (device != null) {
                     
-                    if (device.VolumeId == udi)
+                    if (device.MountPoint == mount)
                         return iter;
                 }
 

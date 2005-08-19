@@ -6,8 +6,8 @@ namespace IPod {
 
     public class Initializer {
         private static Initializer instance;
-		private static bool inited;
-		private static bool useDefaultContext;
+        private static bool inited;
+        private static bool useDefaultContext;
 
         private static IntPtr mainContext;
 
@@ -17,8 +17,8 @@ namespace IPod {
         [DllImport ("libglib-2.0.so.0")]
         private static extern IntPtr g_main_context_new ();
 
-		[DllImport ("libglib-2.0.so.0")]
-		private static extern IntPtr g_main_context_default();
+        [DllImport ("libglib-2.0.so.0")]
+        private static extern IntPtr g_main_context_default();
 
         [DllImport ("libglib-2.0.so.0")]
         private static extern void g_main_context_iteration (IntPtr ctx, bool mayblock);
@@ -34,13 +34,13 @@ namespace IPod {
         
         public static bool UseDefaultContext {
             set {
-        	    useDefaultContext = value;
+                useDefaultContext = value;
             }
         }
         
         public static void Init () {
             lock (typeof (Initializer)) {
-                if(inited)
+                if (inited)
                     return;
            			
                 inited = true;
@@ -52,7 +52,7 @@ namespace IPod {
                 
                 GLib.GType.Register(Device.GType, typeof(Device));
                 GLib.GType.Register(DeviceEventListener.GType, 
-                    typeof(DeviceEventListener));
+                                    typeof (DeviceEventListener));
                 
                 mainContext = useDefaultContext ? 
                     g_main_context_default() :
@@ -60,15 +60,15 @@ namespace IPod {
                 	
                 ipod_device_set_global_main_context (mainContext);
                 
-                if(!useDefaultContext) {
+                if (!useDefaultContext) {
                     Thread mainThread = new Thread (new ThreadStart (MainLoopThread));
                     mainThread.IsBackground = true;
                     mainThread.Start ();
                 }
-			}
+            }
         }
 
-      private static void MainLoopThread () {
+        private static void MainLoopThread () {
             while (true) {
                 try {
                     while (g_main_context_pending (mainContext))

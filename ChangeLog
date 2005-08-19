@@ -1,3 +1,10 @@
+2005-08-19  James Willcox  <snorp@snorp.net>
+
+	* src/Initializer.cs: fix indentation
+	* ui/DeviceCombo.cs: check the IPOD_DEVICE_IMAGES env var for
+	fake devices and add those as well.
+	* src/SongDatabase.cs: remove the annoying WriteLine
+
 2005-08-18  Aaron Bockover <aaron@aaronbock.net>
 
 	* src/capacities.txt: Removed letter prefix from list

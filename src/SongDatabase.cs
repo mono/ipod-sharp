@@ -263,7 +263,6 @@ namespace IPod {
             foreach (Record rec in (ArrayList) otherDetails.Clone ()) {
                 DetailRecord detail = rec as DetailRecord;
                 if (detail != null && detail.Type == DetailType.LibraryIndex) {
-                    Console.WriteLine ("Removing index for: " + detail.IndexType);
                     otherDetails.Remove (rec);
                 }
             }
