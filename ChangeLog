@@ -1,5 +1,11 @@
 2005-08-21  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: as the podcast playlist doesn't appear
+	to be special at all, remove the special API for it.
+	* tests/IPodTests.cs: remove tests for the above
+
+2005-08-21  James Willcox  <snorp@snorp.net>
+
 	* ui/DeviceCombo.cs: make removing devices work again (oops)
 	* src/SongDatabase.cs: fix support for 4th gen devices with v13
 	databases.  The current 'spec' appears to be wrong about what

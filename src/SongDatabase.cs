@@ -1034,7 +1034,6 @@ namespace IPod {
 
         private ArrayList playlists = new ArrayList ();
         private Playlist otgPlaylist;
-        private Playlist podcastPlaylist;
         
         private Random random = new Random();
         private Device device;
@@ -1071,10 +1070,6 @@ namespace IPod {
 
         public Playlist OnTheGoPlaylist {
             get { return otgPlaylist; }
-        }
-
-        public Playlist PodcastPlaylist {
-            get { return podcastPlaylist; }
         }
 
         public int Version {
@@ -1378,11 +1373,6 @@ namespace IPod {
 
                     // remove from On-The-Go playlist
                     otgPlaylist.RemoveOTGSong (song);
-
-                    // remove from podcast playlist
-                    if (podcastPlaylist != null) {
-                        podcastPlaylist.RemoveSong (song);
-                    }
                 }
             }
         }
@@ -1423,8 +1413,6 @@ namespace IPod {
                     throw new InvalidOperationException ("playist is null");
                 } else if (playlist.IsOnTheGo) {
                     throw new InvalidOperationException ("The On-The-Go playlist cannot be removed.");
-                } else if (playlist == podcastPlaylist) {
-                    throw new InvalidOperationException ("The Podcast playlist cannot be removed.");
                 }
                 
                 dbrec[DataSetIndex.Playlist].PlaylistList.RemovePlaylist (playlist.PlaylistRecord);

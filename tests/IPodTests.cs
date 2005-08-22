@@ -120,10 +120,6 @@ namespace IPod.Tests {
                 pl.AddSong (song);
             }
 
-            if (db.PodcastPlaylist != null) {
-                db.PodcastPlaylist.AddSong (song);
-            }
-            
             db.Save ();
             db.Reload ();
 
@@ -139,23 +135,11 @@ namespace IPod.Tests {
                 }
             }
 
-            if (db.PodcastPlaylist != null) {
-                foreach (Song ps in db.PodcastPlaylist.Songs) {
-                    Assert.IsFalse (id == ps.Id);
-                }
-            }
-            
             db.Save ();
             db.Reload ();
 
             foreach (Playlist pl in db.Playlists) {
                 foreach (Song ps in pl.Songs) {
-                    Assert.IsFalse (id == ps.Id);
-                }
-            }
-
-            if (db.PodcastPlaylist != null) {
-                foreach (Song ps in db.PodcastPlaylist.Songs) {
                     Assert.IsFalse (id == ps.Id);
                 }
             }
@@ -444,24 +428,6 @@ namespace IPod.Tests {
             Assert.IsNotNull (eq);
         }
 
-        [Test]
-        public void PodcastPlaylistTest () {
-            Device device = OpenDevice ();
-            Playlist list = device.SongDatabase.PodcastPlaylist;
-            if (list != null) {
-                int len = list.Songs.Length;
-
-                for (int i = 0; i < 10; i++) {
-                    list.AddSong (AddSong (device.SongDatabase));
-                }
-
-                device.SongDatabase.Save ();
-                device.SongDatabase.Reload ();
-
-                Assert.AreEqual (len + 10, device.SongDatabase.PodcastPlaylist.Songs.Length);
-            }
-        }
-
         // The following tests should all "fail".
 
         [Test]
@@ -531,14 +497,6 @@ namespace IPod.Tests {
             SongDatabase db = OpenDevice ().SongDatabase;
 
             db.RemovePlaylist (db.OnTheGoPlaylist);
-        }
-
-        [Test]
-        [ExpectedException (typeof (InvalidOperationException))]
-        public void RemovePodcastPlaylistTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
-
-            db.RemovePlaylist (db.PodcastPlaylist);
         }
 
         [Test]
