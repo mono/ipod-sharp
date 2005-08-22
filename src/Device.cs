@@ -118,6 +118,12 @@ namespace IPod {
             }
         }
 
+        public bool CanWrite {
+            get {
+                return (bool) GetProperty ("can-write").Val;
+            }
+        }
+
         public string Name {
             get {
                 return (string) GetProperty ("device-name").Val;

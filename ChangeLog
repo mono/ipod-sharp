@@ -1,3 +1,10 @@
+2005-08-22  Aaron Bockover  <aaron@aaronbock.net>
+
+	* ipod-sharp: Version 0.5.1
+	* configure.in: Requires libipoddevice >= 0.2.6, Bumped version to 0.5.1
+	* src/Device.cs: Device.CanWrite binding for new can-write property 
+	in libipoddeivce
+
 2005-08-21  James Willcox  <snorp@snorp.net>
 
 	* src/Capacities.cs: we're not including the first letter in the model
