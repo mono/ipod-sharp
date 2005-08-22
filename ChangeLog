@@ -1,3 +1,12 @@
+2005-08-21  James Willcox  <snorp@snorp.net>
+
+	* ui/DeviceCombo.cs: make removing devices work again (oops)
+	* src/SongDatabase.cs: fix support for 4th gen devices with v13
+	databases.  The current 'spec' appears to be wrong about what
+	the extra 'mhlp' record is.  It does not appear to be the
+	podcast playlist, but rather a duplicate of the 'real' mhlp.
+	* en/*: update docs
+
 2005-08-19  James Willcox  <snorp@snorp.net>
 
 	* src/Initializer.cs: fix indentation

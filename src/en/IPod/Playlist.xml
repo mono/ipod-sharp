@@ -116,6 +116,22 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+  <Member MemberName="IndexOf">
+      <MemberSignature Language="C#" Value="public int IndexOf (IPod.Song song);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="song" Type="IPod.Song" />
+      </Parameters>
+      <Docs>
+        <param name="song">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>Represents an iPod playlist</summary>

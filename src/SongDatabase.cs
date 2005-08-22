@@ -214,6 +214,20 @@ namespace IPod {
                 playlistItems.Insert (index, rec);
             }
         }
+
+        public int IndexOf (int trackid) {
+
+            int i = 0;
+            foreach (PlaylistItemRecord rec in playlistItems) {
+                if (rec.TrackId == trackid) {
+                    return i;
+                }
+
+                i++;
+            }
+
+            return -1;
+        }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
             base.Read (db, reader, this.Name);
@@ -655,8 +669,8 @@ namespace IPod {
             TotalTracks = BitConverter.ToInt32 (body, 36);
             Year = BitConverter.ToInt32 (body, 40);
             BitRate = BitConverter.ToInt32 (body, 44);
-            unknownThree = BitConverter.ToInt16 (body, 50);
-            SampleRate = BitConverter.ToUInt16 (body, 48);
+            unknownThree = BitConverter.ToInt16 (body, 48);
+            SampleRate = BitConverter.ToUInt16 (body, 50);
             Volume = BitConverter.ToInt32 (body, 52);
             StartTime = BitConverter.ToInt32 (body, 56);
             StopTime = BitConverter.ToInt32 (body, 60);
@@ -846,7 +860,7 @@ namespace IPod {
     internal enum DataSetIndex {
         Library = 1,
         Playlist = 2,
-        Podcast = 3
+        PlaylistDuplicate = 3
     }
 
     internal class DataSetRecord : Record {
@@ -871,23 +885,21 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            int idx = BitConverter.ToInt32 (body, 0);
+            Index = (DataSetIndex) BitConverter.ToInt32 (body, 0);
 
-            switch (idx) {
-            case 1:
+            switch (Index) {
+            case DataSetIndex.Library:
                 this.TrackList = new TrackListRecord ();
                 this.TrackList.Read (db, reader);
                 break;
-            case 2:
-            case 3:
+            case DataSetIndex.Playlist:
+            case DataSetIndex.PlaylistDuplicate:
                 this.PlaylistList = new PlaylistListRecord ();
                 this.PlaylistList.Read (db, reader);
                 break;
             default:
                 throw new DatabaseReadException ("Can't handle dataset index: " + Index);
             }
-
-            Index = (DataSetIndex) idx;
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
@@ -898,12 +910,12 @@ namespace IPod {
             MemoryStream stream = new MemoryStream ();
             BinaryWriter childWriter = new BinaryWriter (stream);
 
-            switch ((int) Index) {
-            case 1:
+            switch (Index) {
+            case DataSetIndex.Library:
                 TrackList.Save (db, childWriter);
                 break;
-            case 2:
-            case 3:
+            case DataSetIndex.Playlist:
+            case DataSetIndex.PlaylistDuplicate:
                 PlaylistList.Save (db, childWriter);
                 break;
             default:
@@ -967,6 +979,9 @@ namespace IPod {
                 rec.Read (this, reader);
                 datasets.Add (rec);
             }
+
+            // make the duplicate record have the same stuff as the 'real' one
+            this[DataSetIndex.PlaylistDuplicate].PlaylistList = this[DataSetIndex.Playlist].PlaylistList;
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
@@ -1169,11 +1184,6 @@ namespace IPod {
 
                     // Load the On-The-Go playlist
                     LoadOnTheGo ();
-
-                    // Load the Podcast playlist
-                    if (dbrec[DataSetIndex.Podcast] != null) {
-                        podcastPlaylist = new Playlist (this, dbrec[DataSetIndex.Podcast].Library);
-                    }
                 }
             }
         }

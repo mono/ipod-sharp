@@ -135,6 +135,26 @@ namespace IPod {
             return TreeIter.Zero;
         }
 
+        private TreeIter FindDeviceByUdi (string udi) {
+            TreeIter iter = TreeIter.Zero;
+
+            if (!store.GetIterFirst (out iter))
+                return TreeIter.Zero;
+            
+            do {
+                Device device = (Device) store.GetValue (iter, 1);
+
+                if (device != null) {
+                    
+                    if (device.VolumeId == udi)
+                        return iter;
+                }
+
+            } while (store.IterNext (ref iter));
+
+            return TreeIter.Zero;
+        }
+
         private void ClearPlaceholder () {
             TreeIter iter = TreeIter.Zero;
 
@@ -196,7 +216,7 @@ namespace IPod {
         }
 
         private void RemoveDevice (string udi) {
-            TreeIter iter = FindDevice (udi);
+            TreeIter iter = FindDeviceByUdi (udi);
 
             if (iter.Equals (TreeIter.Zero))
                 return;

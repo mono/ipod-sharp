@@ -21,6 +21,7 @@
       <Type Name="DatabaseReadException" />
       <Type Name="DatabaseWriteException" />
       <Type Name="SaveProgressHandler" />
+      <Type Name="Initializer" />
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />

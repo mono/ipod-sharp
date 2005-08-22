@@ -100,6 +100,10 @@ namespace IPod {
             InsertSong (index, song);
             return true;
         }
+
+        public int IndexOf (Song song) {
+            return record.IndexOf (song.Id);
+        }
     }
 
 }

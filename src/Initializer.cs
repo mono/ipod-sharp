@@ -75,6 +75,8 @@ namespace IPod {
                         g_main_context_iteration (mainContext, false);
 
                     Thread.Sleep (10);
+                } catch (ThreadAbortException e) {
+                    break;
                 } catch (Exception e) {
                     Console.Error.WriteLine ("Error in event listener loop: " + e);
                 }
