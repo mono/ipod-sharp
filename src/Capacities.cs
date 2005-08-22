@@ -25,7 +25,7 @@ namespace IPod {
         }
 
         public static string GetCapacity (string model) {
-            return (string) caps[model];
+            return (string) caps[model.Substring (1)];
         }
     }
 }

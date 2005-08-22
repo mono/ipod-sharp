@@ -1,5 +1,10 @@
 2005-08-21  James Willcox  <snorp@snorp.net>
 
+	* src/Capacities.cs: we're not including the first letter in the model
+	so use the appropriate substring.
+
+2005-08-21  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: only open stuff in FileAccess.Read where we can
 
 2005-08-21  James Willcox  <snorp@snorp.net>
