@@ -1094,7 +1094,7 @@ namespace IPod {
             if (!File.Exists (PlayCountsPath))
                 return;
             
-            using (BinaryReader reader = new BinaryReader (File.Open (PlayCountsPath, FileMode.Open))) {
+            using (BinaryReader reader = new BinaryReader (File.Open (PlayCountsPath, FileMode.Open, FileAccess.Read))) {
 
                 byte[] header = reader.ReadBytes (96);
                 int entryLength = BitConverter.ToInt32 (header, 8);
@@ -1133,7 +1133,7 @@ namespace IPod {
             
             ArrayList otgsongs = new ArrayList ();
             
-            using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open))) {
+            using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open, FileAccess.Read))) {
 
                 byte[] header = reader.ReadBytes (20);
 
@@ -1153,7 +1153,7 @@ namespace IPod {
 
             lock (this) {
 
-                using (BinaryReader reader = new BinaryReader (new FileStream (SongDbPath, FileMode.Open))) {
+                using (BinaryReader reader = new BinaryReader (File.Open (SongDbPath, FileMode.Open, FileAccess.Read))) {
 
                     Clear ();
                     
@@ -1243,7 +1243,7 @@ namespace IPod {
                 long count = 0;
                 double lastPercent = 0.0;
 
-                reader = new BinaryReader (new BufferedStream (File.Open (song.Filename, FileMode.Open)));
+                reader = new BinaryReader (new BufferedStream (File.Open (song.Filename, FileMode.Open, FileAccess.Read)));
                 writer = new BinaryWriter (new BufferedStream (File.Open (dest, FileMode.Create)));
                 
                 do {
