@@ -178,18 +178,7 @@
         <remarks>In the case of multiple playlists with the same name, this method will obviously return only the first one found that matches the given name.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="PodcastPlaylist">
-      <MemberSignature Language="C#" Value="public IPod.Playlist PodcastPlaylist { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>IPod.Playlist</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>Represents the "Podcast" playlist on the iPod.</summary>
-        <value>Represents the "Podcast" playlist on the iPod.</value>
-        <remarks>Not all iPod devices have this playlist, as it is only available on newer (version 13) firmware.  If it does not exist, this property will be null.</remarks>
-      </Docs>
-    </Member>
+    
   <Member MemberName="Version">
       <MemberSignature Language="C#" Value="public int Version { get; };" />
       <MemberType>Property</MemberType>
