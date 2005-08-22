@@ -981,7 +981,8 @@ namespace IPod {
             }
 
             // make the duplicate record have the same stuff as the 'real' one
-            this[DataSetIndex.PlaylistDuplicate].PlaylistList = this[DataSetIndex.Playlist].PlaylistList;
+            if (this[DataSetIndex.PlaylistDuplicate] != null)
+                this[DataSetIndex.PlaylistDuplicate].PlaylistList = this[DataSetIndex.Playlist].PlaylistList;
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
