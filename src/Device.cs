@@ -163,6 +163,12 @@ namespace IPod {
             }
         }
 
+        public string VolumeLabel {
+            get {
+                return (string) GetProperty ("volume-label").Val;
+            }
+        }
+
         public Equalizer[] Equalizers {
             get {
                 lock (this) {
