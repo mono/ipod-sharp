@@ -29,19 +29,16 @@ namespace IPod {
         public int HeaderOne; // usually the size of this record
         public int HeaderTwo; // usually the size of this record + size of children
 
-        protected void Read (DatabaseRecord db, BinaryReader reader, string expectedName) {
-            this.Name = Encoding.ASCII.GetString (reader.ReadBytes (4));
+        public virtual void Read (DatabaseRecord db, BinaryReader reader) {
+            string n = Encoding.ASCII.GetString (reader.ReadBytes (4));
 
-            if (expectedName != null && this.Name != expectedName) {
-                throw new DatabaseReadException ("Expected record name of '{0}', got '{1}'", expectedName, this.Name);
+            if (this.Name != null && this.Name != n) {
+                throw new DatabaseReadException ("Expected record name of '{0}', got '{1}'", this.Name, n);
             }
-            
+
+            this.Name = n;
             this.HeaderOne = reader.ReadInt32 ();
             this.HeaderTwo = reader.ReadInt32 ();
-        }
-        
-        public virtual void Read (DatabaseRecord db, BinaryReader reader) {
-            Read (db, reader, null);
         }
         
         public abstract void Save (DatabaseRecord db, BinaryWriter writer);
@@ -89,7 +86,7 @@ namespace IPod {
         }
 
         public override void Read (DatabaseRecord db, BinaryReader reader) {
-            base.Read (db, reader, this.Name);
+            base.Read (db, reader);
             
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
@@ -230,7 +227,7 @@ namespace IPod {
         }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
-            base.Read (db, reader, this.Name);
+            base.Read (db, reader);
             
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
@@ -343,12 +340,21 @@ namespace IPod {
             }
         }
 
+        public PlaylistListRecord () {
+            PlaylistRecord record = new PlaylistRecord (true);
+            record.IsHidden = true;
+            record.PlaylistName = "IPOD";
+            playlists.Add (record);
+
+            this.Name = "mhlp";
+        }
+
         public IEnumerator GetEnumerator () {
             return playlists.GetEnumerator ();
         }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
-            base.Read (db, reader, "mhlp");
+            base.Read (db, reader);
 
             int numlists = this.HeaderTwo;
 
@@ -455,7 +461,7 @@ namespace IPod {
         }
 
         public override void Read (DatabaseRecord db, BinaryReader reader) {
-            base.Read (db, reader, "mhod");
+            base.Read (db, reader);
 
             byte[] body = reader.ReadBytes (this.HeaderTwo - 12);
             
@@ -652,7 +658,7 @@ namespace IPod {
 
         public override void Read (DatabaseRecord db, BinaryReader reader) {
 
-            base.Read (db, reader, this.Name);
+            base.Read (db, reader);
             
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
@@ -795,10 +801,14 @@ namespace IPod {
 
     internal class TrackListRecord : Record, IEnumerable {
 
-        private ArrayList tracks;
+        private ArrayList tracks = new ArrayList ();
 
         public TrackRecord[] Tracks {
             get { return (TrackRecord[]) tracks.ToArray (typeof (TrackRecord)); }
+        }
+
+        public TrackListRecord () {
+            this.Name = "mhlt";
         }
 
         public void Remove (int id) {
@@ -820,13 +830,13 @@ namespace IPod {
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
 
-            base.Read (db, reader, "mhlt");
+            base.Read (db, reader);
             
             reader.ReadBytes (this.HeaderOne - 12);
 
             int trackCount = this.HeaderTwo;
 
-            tracks = new ArrayList ();
+            tracks.Clear ();
             
             for (int i = 0; i < trackCount; i++) {
                 TrackRecord rec = new TrackRecord ();
@@ -880,8 +890,22 @@ namespace IPod {
             }
         }
 
+        public DataSetRecord () {
+            this.Name = "mhsd";
+        }
+
+        public DataSetRecord (DataSetIndex index) : this () {
+            this.Index = index;
+
+            if (Index == DataSetIndex.Library) {
+                TrackList = new TrackListRecord ();
+            } else {
+                PlaylistList = new PlaylistListRecord ();
+            }
+        }
+
         public override void Read (DatabaseRecord db, BinaryReader reader) {
-            base.Read (db, reader, "mhsd");
+            base.Read (db, reader);
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
@@ -940,11 +964,10 @@ namespace IPod {
 
         private int unknownOne = 1;
         private int unknownTwo = 2;
+        
+        private ArrayList datasets = new ArrayList ();
 
-        private ArrayList datasets;
-
-        public int Version;
-        public int ChildrenCount;
+        public int Version = 13;
         public long Id;
 
         public DataSetRecord this[DataSetIndex index] {
@@ -957,24 +980,38 @@ namespace IPod {
                 return null;
             }
         }
+
+        public DatabaseRecord () {
+            datasets = new ArrayList ();
+            datasets.Add (new DataSetRecord (DataSetIndex.Library));
+
+            DataSetRecord plrec = new DataSetRecord (DataSetIndex.Playlist);
+            datasets.Add (plrec);
+
+            DataSetRecord plrec2 = new DataSetRecord (DataSetIndex.PlaylistDuplicate);
+            plrec2.PlaylistList = plrec.PlaylistList;
+            datasets.Add (plrec2);
+
+            this.Name = "mhbd";
+        }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
-            base.Read (db, reader, "mhbd");
+            base.Read (db, reader);
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
             
             unknownOne = BitConverter.ToInt32 (body, 0);
             Version = BitConverter.ToInt32 (body, 4);
-            ChildrenCount = BitConverter.ToInt32 (body, 8);
+            int childrenCount = BitConverter.ToInt32 (body, 8);
             Id = BitConverter.ToInt64 (body, 12);
             unknownTwo = BitConverter.ToInt32 (body, 20);
 
             if (Version > 13)
                 throw new DatabaseReadException ("Detected unsupported database version {0}", Version);
             
-            datasets = new ArrayList ();
+            datasets.Clear ();
 
-            for (int i = 0; i < ChildrenCount; i++) {
+            for (int i = 0; i < childrenCount; i++) {
                 DataSetRecord rec = new DataSetRecord ();
                 rec.Read (this, reader);
                 datasets.Add (rec);
@@ -1004,7 +1041,7 @@ namespace IPod {
 
             writer.Write (unknownOne);
             writer.Write (Version);
-            writer.Write (ChildrenCount);
+            writer.Write (datasets.Count);
             writer.Write (Id);
             writer.Write (unknownTwo);
             writer.Write (new byte[PadLength]);
@@ -1045,6 +1082,10 @@ namespace IPod {
 
         private string SongDbPath {
             get { return device.MountPoint + "/iPod_Control/iTunes/iTunesDB"; }
+        }
+
+        private string SongDbBackupPath {
+            get { return SongDbPath + ".bak"; }
         }
 
         private string MusicBasePath {
@@ -1153,10 +1194,16 @@ namespace IPod {
 
             lock (this) {
 
+                Clear ();
+                
+                if (!File.Exists (SongDbPath)) {
+                    dbrec = new DatabaseRecord ();
+                    LoadOnTheGo ();
+                    return;
+                }
+
                 using (BinaryReader reader = new BinaryReader (File.Open (SongDbPath, FileMode.Open, FileAccess.Read))) {
 
-                    Clear ();
-                    
                     dbrec = new DatabaseRecord ();
                     dbrec.Read (null, reader);
 
@@ -1274,7 +1321,8 @@ namespace IPod {
                 SaveStarted (this, new EventArgs ());
 
             // Back up the current song db
-            File.Copy (SongDbPath, SongDbPath + ".bak", true);
+            if (File.Exists (SongDbPath))
+                File.Copy (SongDbPath, SongDbBackupPath, true);
             
             try {
                 // Save the songs db
@@ -1304,7 +1352,9 @@ namespace IPod {
 
             } catch (Exception e) {
                 // rollback the song db
-                File.Copy (SongDbPath + ".bak", SongDbPath, true);
+                if (File.Exists (SongDbBackupPath))
+                    File.Copy (SongDbBackupPath, SongDbPath, true);
+                
                 throw new DatabaseWriteException (e, "Failed to save database");
             } finally {
                 if (SaveEnded != null)

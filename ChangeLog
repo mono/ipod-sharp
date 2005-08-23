@@ -1,5 +1,11 @@
 2005-08-22  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: if the iTunesDB file does not exist, allow
+	one to be created.
+	* tests/ipod-test-db-blank.tar.gz: add a test for the above
+
+2005-08-22  James Willcox  <snorp@snorp.net>
+
 	* src/en/*: update docs
 
 2005-08-22  Aaron Bockover  <aaron@aaronbock.net>

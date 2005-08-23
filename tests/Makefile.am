@@ -10,6 +10,7 @@ $(TEST_ASSEMBLY): $(TEST_SOURCES) $(top_builddir)/src/ipod-sharp.dll
 all: $(TEST_ASSEMBLY)
 
 TEST_TARBALLS =					\
+	$(srcdir)/ipod-test-db-blank.tar.gz	\
 	$(srcdir)/ipod-test-db-v12-a.tar.gz	\
 	$(srcdir)/ipod-test-db-rev2-a.tar.gz	\
 	$(srcdir)/ipod-test-db-rev3-a.tar.gz	\
