@@ -1,3 +1,7 @@
+2005-08-23  James Willcox  <snorp@snorp.net>
+
+	* src/Capacities.cs: if the model is null, don't blow chunks
+
 2005-08-22  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: if the iTunesDB file does not exist, allow
