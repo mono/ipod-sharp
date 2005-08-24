@@ -1,3 +1,10 @@
+2005-08-24  James Willcox  <snorp@snorp.net>
+
+	* src/DeviceModel.cs: adjusted to match the new libipoddevice enum
+	* src/DeviceGeneration.cs: added
+	* src/Capacities.cs: moved into libipoddevice, so remove it here
+	* src/capacities.txt: ditto
+
 2005-08-23  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: add a VolumeLabel property

@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 namespace IPod {
 
     public class Initializer {
-        private static Initializer instance;
         private static bool inited;
         private static bool useDefaultContext;
 
@@ -33,9 +32,11 @@ namespace IPod {
         private static extern void dbus_g_thread_init ();
         
         public static bool UseDefaultContext {
-            set {
+            get {
+                return useDefaultContext;
+            } set {
                 useDefaultContext = value;
-            }
+            } 
         }
         
         public static void Init () {

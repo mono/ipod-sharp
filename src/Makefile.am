@@ -11,12 +11,12 @@ ipod_DATA = $(ASSEMBLY)
 
 ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
-	$(srcdir)/Capacities.cs	\
 	$(srcdir)/DatabaseReadException.cs	\
 	$(srcdir)/DatabaseWriteException.cs	\
 	$(srcdir)/Device.cs		\
-	$(srcdir)/DeviceEventListener.cs	\
 	$(srcdir)/DeviceAddedHandler.cs	\
+	$(srcdir)/DeviceEventListener.cs	\
+	$(srcdir)/DeviceGeneration.cs	\
 	$(srcdir)/DeviceRemovedHandler.cs	\
 	$(srcdir)/DeviceModel.cs	\
 	$(srcdir)/DeviceException.cs	\
@@ -27,7 +27,7 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Playlist.cs		\
 	$(srcdir)/SongDatabase.cs
 
-ASSEMBLY_RESOURCES = $(srcdir)/capacities.txt
+ASSEMBLY_RESOURCES =
 
 if BUILD_DOCS
 docdir = `@MONODOC@ --get-sourcesdir`

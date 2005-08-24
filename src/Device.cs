@@ -52,6 +52,13 @@ namespace IPod {
             }
         }
 
+        public DeviceGeneration Generation {
+            get {
+                uint rawtype = (uint) GetProperty ("device-generation").Val;
+                return (DeviceGeneration) rawtype;
+            }
+        }
+
         public string DevicePath {
             get {
                 return (string) GetProperty ("device-path").Val;
@@ -90,7 +97,7 @@ namespace IPod {
 
         public string AdvertisedCapacity {
             get {
-                return Capacities.GetCapacity (ModelNumber);
+                return (string) GetProperty ("advertised-capacity").Val;
             }
         }
 

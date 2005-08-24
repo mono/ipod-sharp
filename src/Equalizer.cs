@@ -51,7 +51,9 @@ namespace IPod {
         }
     }
 
-     internal class EqualizerRecord {
+    internal class EqualizerRecord {
+
+        private static UnicodeEncoding encoding = new UnicodeEncoding (false, false);
 
         public string PresetName;
         public int PreAmp;
@@ -73,7 +75,7 @@ namespace IPod {
             // anywhere between 8 and 14 that I've seen, and the preset name
             // is always 510 bytes.
             unknownOne = BitConverter.ToUInt16 (data, 4);
-            PresetName = Encoding.ASCII.GetString (data, 6, PresetNameLength).Trim ((char) 0);
+            PresetName = encoding.GetString (data, 6, PresetNameLength).Trim ((char) 0);
             PreAmp = BitConverter.ToInt32 (data, 6 + PresetNameLength);
             largeBandCount = BitConverter.ToInt32 (data, 10 + PresetNameLength);
             largeBandData = new byte[4 * largeBandCount];
@@ -95,7 +97,7 @@ namespace IPod {
             writer.Write (Encoding.ASCII.GetBytes (headerName));
             writer.Write (unknownOne);
 
-            byte[] nameBytes = Encoding.ASCII.GetBytes (PresetName);
+            byte[] nameBytes = encoding.GetBytes (PresetName);
             writer.Write (nameBytes, 0,
                           nameBytes.Length > PresetNameLength ? PresetNameLength : nameBytes.Length);
 
