@@ -2,6 +2,7 @@
 namespace IPod {
     
     public enum DeviceModel {
+        Invalid,
         Unknown,
         Color,
         ColorU2,

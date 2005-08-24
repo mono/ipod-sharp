@@ -24,6 +24,9 @@ namespace IPod {
         private static unsafe extern uint ipod_device_eject (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
+        private static unsafe extern uint ipod_device_reboot (IntPtr raw, out IntPtr error);
+
+        [DllImport ("ipoddevice")]
         private static unsafe extern bool ipod_device_save (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
@@ -260,6 +263,25 @@ namespace IPod {
                     throw new DeviceException (this, exc.Message, exc);
                 } else {
                     throw new DeviceException (this, "Failed to eject device");
+                }
+            case EjectResult.Busy:
+                throw new DeviceBusyException (this);
+            }
+        }
+
+        public void Reboot () {
+            IntPtr error = IntPtr.Zero;
+            EjectResult result = (EjectResult) ipod_device_reboot (Raw, out error);
+
+            switch (result) {
+            case EjectResult.Ok:
+                return;
+            case EjectResult.Error:
+                if (error != IntPtr.Zero) {
+                    GLib.GException exc = new GLib.GException (error);
+                    throw new DeviceException (this, exc.Message, exc);
+                } else {
+                    throw new DeviceException (this, "Failed to reboot device");
                 }
             case EjectResult.Busy:
                 throw new DeviceBusyException (this);

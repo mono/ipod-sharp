@@ -1,5 +1,10 @@
 2005-08-24  James Willcox  <snorp@snorp.net>
 
+	* src/DeviceModel.cs: updated again, added 'Invalid'
+	* src/Device.cs: add the Reboot method
+
+2005-08-24  James Willcox  <snorp@snorp.net>
+
 	* src/DeviceModel.cs: adjusted to match the new libipoddevice enum
 	* src/DeviceGeneration.cs: added
 	* src/Capacities.cs: moved into libipoddevice, so remove it here
