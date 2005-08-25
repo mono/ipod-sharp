@@ -189,15 +189,16 @@ namespace IPod {
             this.Name = "mhyp";
         }
 
-        public bool RemoveItem (int trackid) {
-            foreach (PlaylistItemRecord rec in playlistItems) {
-                if (rec.TrackId == trackid) {
-                    playlistItems.Remove (rec);
-                    return true;
-                }
-            }
+        public void Clear () {
+            playlistItems.Clear ();
+        }
 
-            return false;
+        public bool RemoveItem (int index) {
+            if (index < 0 || index >= playlistItems.Count)
+                return false;
+            
+            playlistItems.RemoveAt (index);
+            return true;
         }
 
         public void AddItem (PlaylistItemRecord rec) {

@@ -46,6 +46,14 @@ namespace IPod {
             }
         }
 
+        public Song this[int index] {
+            get {
+                return db.GetSongById (record.Items[index].TrackId);
+            } set {
+                record.Items[index].TrackId = value.Id;
+            }
+        }
+
         public string Name {
             get {
                 if (IsOnTheGo)
@@ -73,16 +81,30 @@ namespace IPod {
 
             record.InsertItem (index, item);
         }
+
+        public void Clear () {
+            record.Clear ();
+        }
         
         public void AddSong (Song song) {
             InsertSong (-1, song);
         }
 
-        public bool RemoveSong (Song song) {
+        public void RemoveSong (int index) {
             if (IsOnTheGo)
                 throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
 
-            return record.RemoveItem (song.Id);
+            record.RemoveItem (index);
+        }
+
+        public bool RemoveSong (Song song) {
+            int index = IndexOf (song);
+
+            if (index < 0)
+                return false;
+
+            RemoveSong (index);
+            return true;
         }
 
         internal bool RemoveOTGSong (Song song) {
@@ -90,14 +112,6 @@ namespace IPod {
                 return false;
 
             otgsongs.Remove (song);
-            return true;
-        }
-
-        public bool MoveSong (int index, Song song) {
-            if (!RemoveSong (song))
-                return false;
-
-            InsertSong (index, song);
             return true;
         }
 

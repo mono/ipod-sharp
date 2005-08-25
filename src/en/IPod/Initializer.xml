@@ -31,7 +31,7 @@
       </Docs>
     </Member>
     <Member MemberName="UseDefaultContext">
-      <MemberSignature Language="C#" Value="public static bool UseDefaultContext { set; };" />
+      <MemberSignature Language="C#" Value="public static bool UseDefaultContext { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
         <ReturnType>System.Boolean</ReturnType>

@@ -12,10 +12,8 @@ all: $(TEST_ASSEMBLY)
 TEST_TARBALLS =					\
 	$(srcdir)/ipod-test-db-blank.tar.gz	\
 	$(srcdir)/ipod-test-db-v12-a.tar.gz	\
-	$(srcdir)/ipod-test-db-rev2-a.tar.gz	\
 	$(srcdir)/ipod-test-db-rev3-a.tar.gz	\
-	$(srcdir)/ipod-test-db-rev4-a.tar.gz	\
-	$(srcdir)/ipod-test-db-shuffle-a.tar.gz
+	$(srcdir)/ipod-test-db-rev4-a.tar.gz
 
 check: $(TEST_ASSEMBLY)
 	cp $(top_builddir)/src/ipod-sharp.dll .

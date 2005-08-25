@@ -1,0 +1,66 @@
+<Type Name="DeviceGeneration" FullName="IPod.DeviceGeneration">
+  <TypeSignature Language="C#" Value="public enum DeviceGeneration" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Members>
+    <Member MemberName="Unknown">
+      <MemberSignature Language="C#" Value="Unknown" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceGeneration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="First">
+      <MemberSignature Language="C#" Value="First" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceGeneration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Second">
+      <MemberSignature Language="C#" Value="Second" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceGeneration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Third">
+      <MemberSignature Language="C#" Value="Third" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceGeneration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Fourth">
+      <MemberSignature Language="C#" Value="Fourth" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceGeneration</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

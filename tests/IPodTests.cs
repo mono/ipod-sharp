@@ -295,7 +295,8 @@ namespace IPod.Tests {
             Song mysong = list.Songs[4];
             mysong.Artist = "reordered";
 
-            list.MoveSong (0, mysong);
+            list.RemoveSong (4);
+            list.InsertSong (0, mysong);
             db.Save ();
             db.Reload ();
 
@@ -408,24 +409,6 @@ namespace IPod.Tests {
             device = GetDevice ();
 
             Assert.IsNull (FindEq (device, name));
-        }
-
-        [Test]
-        public void EqualizerOverflowTest () {
-            Device device = OpenDevice ();
-
-            Equalizer eq = AddEq (device);
-            
-            // the iTunesDB file only allows 510 chars here, so intentionally
-            // overflow it to make sure it gets truncated properly.
-            eq.Name = "my eq".PadRight (1000);
-
-            device.Save ();
-            device = GetDevice ();
-
-            eq = FindEq (device, "my eq".PadRight (510));
-
-            Assert.IsNotNull (eq);
         }
 
         // The following tests should all "fail".

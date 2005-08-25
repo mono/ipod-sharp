@@ -86,24 +86,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="MoveSong">
-      <MemberSignature Language="C#" Value="public bool MoveSong (int index, IPod.Song song);" />
-      <MemberType>Method</MemberType>
-      <ReturnValue>
-        <ReturnType>System.Boolean</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="index" Type="System.Int32" />
-        <Parameter Name="song" Type="IPod.Song" />
-      </Parameters>
-      <Docs>
-        <param name="index">To be added.</param>
-        <param name="song">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
+  
   <Member MemberName="IsOnTheGo">
       <MemberSignature Language="C#" Value="public bool IsOnTheGo { get; };" />
       <MemberType>Property</MemberType>
@@ -132,9 +115,57 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+  <Member MemberName="Clear">
+      <MemberSignature Language="C#" Value="public void Clear ();" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="RemoveSong">
+      <MemberSignature Language="C#" Value="public void RemoveSong (int index);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="index">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="Item">
+      <MemberSignature Language="C#" Value="public IPod.Song Item[int index] { set; get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Song</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="index" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="index">To be added.</param>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>Represents an iPod playlist</summary>
     <remarks>The Playlist class represents a specific playlist on the device.  Currently, only "simple" playlists are supported -- not smart playlists.</remarks>
   </Docs>
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.Reflection.DefaultMember(MemberName="Item")</AttributeName>
+    </Attribute>
+  </Attributes>
 </Type>

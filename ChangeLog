@@ -1,5 +1,14 @@
 2005-08-24  James Willcox  <snorp@snorp.net>
 
+	* src/Playlist.cs: fix the API so it takes indices instead of Songs
+	* src/SongDatabase.cs: do stuff for the above
+	* src/en/*: updated docs
+	* tests/IPodTests.cs: fix a test and remove an invalid one
+	* tests/Makefile.am: remove a couple of the tarballs from the test set
+	for now, since they are missing some files.
+
+2005-08-24  James Willcox  <snorp@snorp.net>
+
 	* src/DeviceModel.cs: updated again, added 'Invalid'
 	* src/Device.cs: add the Reboot method
 
