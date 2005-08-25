@@ -4,11 +4,16 @@ using System.Collections;
 
 namespace IPod {
 
+    public delegate void PlaylistSongHandler (object o, int index, Song song);
+    
     public class Playlist {
 
         private SongDatabase db;
         private PlaylistRecord record;
         private ArrayList otgsongs;
+
+        public event PlaylistSongHandler SongAdded;
+        public event PlaylistSongHandler SongRemoved;
 
         internal PlaylistRecord PlaylistRecord {
             get { return record; }
@@ -80,6 +85,9 @@ namespace IPod {
             item.TrackId = song.Id;
 
             record.InsertItem (index, item);
+
+            if (SongAdded != null)
+                SongAdded (this, index, song);
         }
 
         public void Clear () {
@@ -94,17 +102,23 @@ namespace IPod {
             if (IsOnTheGo)
                 throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
 
+            Song song = this[index];
             record.RemoveItem (index);
+
+            if (SongRemoved != null)
+                SongRemoved (this, index, song);
         }
 
         public bool RemoveSong (Song song) {
-            int index = IndexOf (song);
+            int index;
+            bool ret = false;
+            
+            while ((index = IndexOf (song)) >= 0) {
+                ret = true;
+                RemoveSong (index);
+            }
 
-            if (index < 0)
-                return false;
-
-            RemoveSong (index);
-            return true;
+            return ret;
         }
 
         internal bool RemoveOTGSong (Song song) {

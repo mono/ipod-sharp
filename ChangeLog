@@ -1,3 +1,8 @@
+2005-08-25  James Willcox  <snorp@snorp.net>
+
+	* src/Playlist.cs: add some events
+	* src/SongDatabase.cs: ditto
+
 2005-08-24  James Willcox  <snorp@snorp.net>
 
 	* src/Playlist.cs: fix the API so it takes indices instead of Songs

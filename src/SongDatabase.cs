@@ -1057,6 +1057,7 @@ namespace IPod {
         }
     }
 
+    public delegate void PlaylistHandler (object o, Playlist playlist);
     public delegate void SaveProgressHandler (SongDatabase db, Song currentSong, double currentPercent,
                                               int completed, int total);
 
@@ -1080,6 +1081,11 @@ namespace IPod {
         public event EventHandler SaveStarted;
         public event SaveProgressHandler SaveProgressChanged;
         public event EventHandler SaveEnded;
+
+        public event PlaylistHandler PlaylistAdded;
+        public event PlaylistHandler PlaylistRemoved;
+
+        public event EventHandler Reloaded;
 
         private string SongDbPath {
             get { return device.MountPoint + "/iPod_Control/iTunes/iTunesDB"; }
@@ -1228,6 +1234,9 @@ namespace IPod {
 
                     // Load the On-The-Go playlist
                     LoadOnTheGo ();
+
+                    if (Reloaded != null)
+                        Reloaded (this, new EventArgs ());
                 }
             }
         }
@@ -1448,7 +1457,7 @@ namespace IPod {
         public Playlist CreatePlaylist (string name) {
             if (name == null)
                 throw new ArgumentException ("name cannot be null");
-            
+
             PlaylistRecord playrec = new PlaylistRecord (false);
             playrec.PlaylistName = name;
             
@@ -1456,6 +1465,10 @@ namespace IPod {
 
             Playlist list = new Playlist (this, playrec);
             playlists.Add (list);
+
+            if (PlaylistAdded != null)
+                PlaylistAdded (this, list);
+            
             return list;
         }
 
@@ -1469,6 +1482,9 @@ namespace IPod {
                 
                 dbrec[DataSetIndex.Playlist].PlaylistList.RemovePlaylist (playlist.PlaylistRecord);
                 playlists.Remove (playlist);
+
+                if (PlaylistRemoved != null)
+                    PlaylistRemoved (this, playlist);
             }
         }
 
