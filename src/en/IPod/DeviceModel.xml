@@ -8,7 +8,6 @@
     <BaseTypeName>System.Enum</BaseTypeName>
   </Base>
   <Members>
-    
     <Member MemberName="Regular">
       <MemberSignature Language="C#" Value="Regular" />
       <MemberType>Field</MemberType>
@@ -39,7 +38,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="Invalid">
+    <Member MemberName="Invalid">
       <MemberSignature Language="C#" Value="Invalid" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -49,7 +48,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="Unknown">
+    <Member MemberName="Unknown">
       <MemberSignature Language="C#" Value="Unknown" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -59,7 +58,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="Color">
+    <Member MemberName="Color">
       <MemberSignature Language="C#" Value="Color" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -69,7 +68,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="ColorU2">
+    <Member MemberName="ColorU2">
       <MemberSignature Language="C#" Value="ColorU2" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -79,7 +78,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="RegularU2">
+    <Member MemberName="RegularU2">
       <MemberSignature Language="C#" Value="RegularU2" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -89,7 +88,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="MiniBlue">
+    <Member MemberName="MiniBlue">
       <MemberSignature Language="C#" Value="MiniBlue" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -99,7 +98,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="MiniPink">
+    <Member MemberName="MiniPink">
       <MemberSignature Language="C#" Value="MiniPink" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -109,7 +108,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="MiniGreen">
+    <Member MemberName="MiniGreen">
       <MemberSignature Language="C#" Value="MiniGreen" />
       <MemberType>Field</MemberType>
       <ReturnValue>
@@ -119,7 +118,7 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-  <Member MemberName="MiniGold">
+    <Member MemberName="MiniGold">
       <MemberSignature Language="C#" Value="MiniGold" />
       <MemberType>Field</MemberType>
       <ReturnValue>

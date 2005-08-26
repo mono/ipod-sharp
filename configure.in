@@ -40,6 +40,11 @@ if test "x$with_docs" = "xyes"; then
         if test "x$MONODOC" = "xno"; then
                 AC_MSG_ERROR([You need to install monodoc])
         fi
+
+        AC_PATH_PROG(MDASSEMBLER, mdassembler, no)
+        if test "x$MDASSEMBLER" = "xno"; then
+                AC_MSG_ERROR([You need to install mdassembler])
+        fi
         AM_CONDITIONAL(BUILD_DOCS, true)
 else
         AC_MSG_NOTICE([not building API documentation])

@@ -165,7 +165,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="TotalTracks">
+    <Member MemberName="TotalTracks">
       <MemberSignature Language="C#" Value="public int TotalTracks { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -177,7 +177,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="PlayCount">
+    <Member MemberName="PlayCount">
       <MemberSignature Language="C#" Value="public int PlayCount { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -189,7 +189,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="LastPlayed">
+    <Member MemberName="LastPlayed">
       <MemberSignature Language="C#" Value="public DateTime LastPlayed { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -201,7 +201,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Rating">
+    <Member MemberName="Rating">
       <MemberSignature Language="C#" Value="public IPod.SongRating Rating { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -213,7 +213,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="IsCompilation">
+    <Member MemberName="IsCompilation">
       <MemberSignature Language="C#" Value="public bool IsCompilation { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -225,7 +225,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="DateAdded">
+    <Member MemberName="DateAdded">
       <MemberSignature Language="C#" Value="public DateTime DateAdded { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -237,7 +237,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="PodcastUrl">
+    <Member MemberName="PodcastUrl">
       <MemberSignature Language="C#" Value="public string PodcastUrl { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -249,7 +249,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Category">
+    <Member MemberName="Category">
       <MemberSignature Language="C#" Value="public string Category { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -261,7 +261,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Grouping">
+    <Member MemberName="Grouping">
       <MemberSignature Language="C#" Value="public string Grouping { set; get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -273,7 +273,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="IsProtected">
+    <Member MemberName="IsProtected">
       <MemberSignature Language="C#" Value="public bool IsProtected { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>

@@ -266,7 +266,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="VolumeId">
+    <Member MemberName="VolumeId">
       <MemberSignature Language="C#" Value="public string VolumeId { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -278,7 +278,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="GType">
+    <Member MemberName="GType">
       <MemberSignature Language="C#" Value="public static GLib.GType GType { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -290,7 +290,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Changed">
+    <Member MemberName="Changed">
       <MemberSignature Language="C#" Value="public event EventHandler Changed;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
@@ -301,7 +301,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="AdvertisedCapacity">
+    <Member MemberName="AdvertisedCapacity">
       <MemberSignature Language="C#" Value="public string AdvertisedCapacity { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -313,7 +313,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="IsNew">
+    <Member MemberName="IsNew">
       <MemberSignature Language="C#" Value="public bool IsNew { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -325,7 +325,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="SerialNumber">
+    <Member MemberName="SerialNumber">
       <MemberSignature Language="C#" Value="public string SerialNumber { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -337,7 +337,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="ModelNumber">
+    <Member MemberName="ModelNumber">
       <MemberSignature Language="C#" Value="public string ModelNumber { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -349,7 +349,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="FirmwareVersion">
+    <Member MemberName="FirmwareVersion">
       <MemberSignature Language="C#" Value="public string FirmwareVersion { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -361,7 +361,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="VolumeUuid">
+    <Member MemberName="VolumeUuid">
       <MemberSignature Language="C#" Value="public string VolumeUuid { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -373,7 +373,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="CanWrite">
+    <Member MemberName="CanWrite">
       <MemberSignature Language="C#" Value="public bool CanWrite { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -385,7 +385,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Reboot">
+    <Member MemberName="Reboot">
       <MemberSignature Language="C#" Value="public void Reboot ();" />
       <MemberType>Method</MemberType>
       <ReturnValue>
@@ -397,7 +397,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Generation">
+    <Member MemberName="Generation">
       <MemberSignature Language="C#" Value="public IPod.DeviceGeneration Generation { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -409,7 +409,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="VolumeLabel">
+    <Member MemberName="VolumeLabel">
       <MemberSignature Language="C#" Value="public string VolumeLabel { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>

@@ -104,7 +104,6 @@
         <remarks />
       </Docs>
     </Member>
-    
     <Member MemberName="SaveStarted">
       <MemberSignature Language="C#" Value="public event EventHandler SaveStarted;" />
       <MemberType>Event</MemberType>
@@ -178,8 +177,7 @@
         <remarks>In the case of multiple playlists with the same name, this method will obviously return only the first one found that matches the given name.</remarks>
       </Docs>
     </Member>
-    
-  <Member MemberName="Version">
+    <Member MemberName="Version">
       <MemberSignature Language="C#" Value="public int Version { get; };" />
       <MemberType>Property</MemberType>
       <ReturnValue>
@@ -191,7 +189,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="PlaylistAdded">
+    <Member MemberName="PlaylistAdded">
       <MemberSignature Language="C#" Value="public event IPod.PlaylistHandler PlaylistAdded;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
@@ -202,7 +200,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="PlaylistRemoved">
+    <Member MemberName="PlaylistRemoved">
       <MemberSignature Language="C#" Value="public event IPod.PlaylistHandler PlaylistRemoved;" />
       <MemberType>Event</MemberType>
       <ReturnValue>
@@ -213,7 +211,7 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-  <Member MemberName="Reloaded">
+    <Member MemberName="Reloaded">
       <MemberSignature Language="C#" Value="public event EventHandler Reloaded;" />
       <MemberType>Event</MemberType>
       <ReturnValue>

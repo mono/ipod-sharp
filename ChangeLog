@@ -1,5 +1,11 @@
 2005-08-25  James Willcox  <snorp@snorp.net>
 
+	* configure.in: require mdassembler
+	* src/Makefile.am: use mdassembler (oops)
+	* src/en/*: updated
+
+2005-08-25  James Willcox  <snorp@snorp.net>
+
 	* src/en/*: update docs
 	* src/Makefile.am: don't rely on monodoc for the sources dir, use
 	pkg-config.

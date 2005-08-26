@@ -1,6 +1,6 @@
 
 DOC_UPDATER = @MONODOCER@ -delete
-DOC_ASSEMBLER = @MONODOC@ --assemble
+DOC_ASSEMBLER = @MDASSEMBLER@ --out ipod-sharp-docs --ecma
 
 MCS_FLAGS = -debug
 
@@ -46,7 +46,7 @@ update-docs: $(ASSEMBLY)
 	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en
 
 ipod-sharp-docs.zip ipod-sharp-docs.tree: $(srcdir)/en/*/*.xml
-	$(DOC_ASSEMBLER) --ecma $(srcdir)/en -o ipod-sharp-docs 
+	$(DOC_ASSEMBLER) $(srcdir)/en
 
 #install-data-hook:
 #	$(GACUTIL) /i $(ASSEMBLY) /package $(PACKAGE) /gacdir $(libdir) /root $(DESTDIR)$(libdir)
