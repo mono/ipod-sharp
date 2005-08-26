@@ -191,6 +191,39 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+  <Member MemberName="PlaylistAdded">
+      <MemberSignature Language="C#" Value="public event IPod.PlaylistHandler PlaylistAdded;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.PlaylistHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="PlaylistRemoved">
+      <MemberSignature Language="C#" Value="public event IPod.PlaylistHandler PlaylistRemoved;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.PlaylistHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  <Member MemberName="Reloaded">
+      <MemberSignature Language="C#" Value="public event EventHandler Reloaded;" />
+      <MemberType>Event</MemberType>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>Represents the database of songs and playlists on an iPod device</summary>

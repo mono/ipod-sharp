@@ -23,6 +23,8 @@
       <Type Name="SaveProgressHandler" />
       <Type Name="Initializer" />
       <Type Name="DeviceGeneration" />
+      <Type Name="PlaylistSongHandler" />
+      <Type Name="PlaylistHandler" />
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />

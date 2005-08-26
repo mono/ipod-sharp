@@ -1,5 +1,12 @@
 2005-08-25  James Willcox  <snorp@snorp.net>
 
+	* src/en/*: update docs
+	* src/Makefile.am: don't rely on monodoc for the sources dir, use
+	pkg-config.
+	* configure.in: don't require monodoc
+
+2005-08-25  James Willcox  <snorp@snorp.net>
+
 	* src/Playlist.cs: add some events
 	* src/SongDatabase.cs: ditto
 

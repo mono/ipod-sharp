@@ -30,7 +30,7 @@ ASSEMBLY_SOURCES =			\
 ASSEMBLY_RESOURCES =
 
 if BUILD_DOCS
-docdir = `@MONODOC@ --get-sourcesdir`
+docdir = `pkg-config monodoc --variable=sourcesdir`
 doc_DATA =              	\
 	ipod-sharp-docs.zip	\
 	ipod-sharp-docs.tree	\
