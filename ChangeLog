@@ -1,5 +1,9 @@
 2005-08-31  James Willcox  <snorp@snorp.net>
 
+	* configure.in: bump to 0.5.3
+
+2005-08-31  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: use the UserId property to determine whether or not
 	a song is protected.
 
