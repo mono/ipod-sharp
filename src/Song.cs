@@ -187,7 +187,7 @@ namespace IPod {
         }
 
         public bool IsProtected {
-            get { return record.WeirdDRMValue != 0; }
+            get { return record.UserId != 0; }
         }
 
         internal SongDatabase Database {
