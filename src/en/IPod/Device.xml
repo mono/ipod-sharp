@@ -28,8 +28,8 @@
         <Parameter Name="mountOrDevice" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="mountOrDevice">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="mountOrDevice">Either a device node (/dev/sda2), mount point (/media/ipod) or HAL Volume ID of an iPod.</param>
+        <summary>Creates a new Device object representing an iPod.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
