@@ -7,20 +7,6 @@ using Mono.Unix;
 
 namespace IPod {
 
-    internal class Utility {
-
-        private static DateTime startDate = DateTime.Parse ("1/1/1904");
-
-        public static uint DateToMacTime (DateTime date) {
-            TimeSpan span = date - startDate;
-            return (uint) span.TotalSeconds;
-        }
-
-        public static DateTime MacTimeToDate (uint time) {
-            return startDate + TimeSpan.FromSeconds (time);
-        }
-    }
-
     internal abstract class Record {
 
         public const int PadLength = 8;
@@ -151,8 +137,8 @@ namespace IPod {
     internal class PlaylistRecord : Record {
 
         private int unknownOne;
-        private int unknownTwo;
-        private int unknownThree;
+        //private int unknownTwo;
+        //private int unknownThree;
         private bool isLibrary;
 
         private ArrayList stringDetails = new ArrayList ();
@@ -489,12 +475,12 @@ namespace IPod {
                     Position = BitConverter.ToInt32 (body, 12);
 
                     int strlen = 0;
-                    int strenc = 0;
+                    //int strenc = 0;
             
                     if ((int) Type < 50) {
                         // 'string' mhods       
                         strlen = BitConverter.ToInt32 (body, 16);
-                        strenc = BitConverter.ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
+                        //strenc = BitConverter.ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
                         unknownThree = BitConverter.ToInt32 (body, 24);
                     }
                     
@@ -590,7 +576,7 @@ namespace IPod {
         private int unknownSix = 0x472c4400;
         private int unknownSeven;
         private int unknownEight = 0x0000000c;
-        private int unknownNine;
+        //private int unknownNine;
         private int unknownTen;
         private int playCountDup;
 
@@ -1339,7 +1325,7 @@ namespace IPod {
                 using (BinaryWriter writer = new BinaryWriter (new FileStream (SongDbPath, FileMode.Create))) {
                     dbrec.Save (dbrec, writer);
                 }
-                
+
                 foreach (Song song in songsToRemove) {
                     if (File.Exists (song.Filename))
                         File.Delete (song.Filename);
@@ -1354,8 +1340,14 @@ namespace IPod {
                     string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
 
                     CopySong (song, dest, completed++, songsToAdd.Count);
+                    song.Filename = dest;
                 }
 
+                // Save the shuffle songs db (will only create if device is shuffle);
+                try {
+                    ShuffleSongDatabase.Save (device);
+                } catch (Exception) {}
+                
                 // The play count file is invalid now, so we'll remove it (even though the iPod would anyway)
                 if (File.Exists (PlayCountsPath))
                     File.Delete (PlayCountsPath);

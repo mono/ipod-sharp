@@ -1,3 +1,17 @@
+2005-09-07  Aaron Bockover  <aaron@aaronbock.net>
+
+	* configure.in: bump to 0.5.4, require libipoddevice 0.3.2
+	* src/DeviceEventListener.cs: got rid of compiler warnings about unused
+	methods
+	* src/SongDatabase.cs: Added ShuffleSongDatabase.Save call to 
+	SongDatabase.Save, got rid of compiler warnings about unused vars, 
+	update Song.Filename after CopySong
+	* src/Device.cs: Added ControlPath property
+	* src/Utility.cs: Moved Utility class from SongDatabase.cs to here, added
+	new static method: Utility.ReverseByteOrder(short)
+	* src/ShuffleSongDatabase.cs: writer for the iTunesSD database unique
+	to the iPod Shuffle
+
 2005-08-31  James Willcox  <snorp@snorp.net>
 
 	* configure.in: bump to 0.5.3

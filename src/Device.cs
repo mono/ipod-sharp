@@ -62,6 +62,12 @@ namespace IPod {
             }
         }
 
+        public string ControlPath {
+            get {
+                return (string) GetProperty ("control-path").Val;
+            }
+        }
+
         public string DevicePath {
             get {
                 return (string) GetProperty ("device-path").Val;
