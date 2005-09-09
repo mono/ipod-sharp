@@ -55,6 +55,12 @@ namespace IPod {
             }
         }
 
+        public string ModelString {
+            get {
+                return (string)GetProperty ("device-model-string").Val;
+            }
+        }
+
         public DeviceGeneration Generation {
             get {
                 uint rawtype = (uint) GetProperty ("device-generation").Val;
@@ -136,7 +142,8 @@ namespace IPod {
 
         public bool CanWrite {
             get {
-                return (bool) GetProperty ("can-write").Val;
+                return (bool) GetProperty ("can-write").Val && 
+                    SongDatabase.Version <= 13;
             }
         }
 
@@ -231,8 +238,9 @@ namespace IPod {
         }
 
         private void EmitChanged () {
-            if (Changed != null) {
-                Changed (this, new EventArgs ());
+            EventHandler handler = Changed;
+            if (handler != null) {
+                handler (this, new EventArgs ());
             }
         }
 
@@ -254,6 +262,8 @@ namespace IPod {
             if (!ipod_device_rescan_disk (Raw)) {
                 throw new DeviceException (this, "Failed to rescan disk");
             }
+            
+            EmitChanged();
         }
 
         public void Eject () {

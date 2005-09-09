@@ -993,7 +993,7 @@ namespace IPod {
             Id = BitConverter.ToInt64 (body, 12);
             unknownTwo = BitConverter.ToInt32 (body, 20);
 
-            if (Version > 13)
+            if (Version > 14)
                 throw new DatabaseReadException ("Detected unsupported database version {0}", Version);
             
             datasets.Clear ();
@@ -1359,6 +1359,10 @@ namespace IPod {
                 
                 throw new DatabaseWriteException (e, "Failed to save database");
             } finally {
+                try {
+                    device.RescanDisk();
+                } catch(Exception) {}
+                
                 if (SaveEnded != null)
                     SaveEnded (this, new EventArgs ());
             }

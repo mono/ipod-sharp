@@ -1,3 +1,12 @@
+2005-09-08  Aaron Bockover  <aaron@aaronbock.net>
+
+	* configure.in: Require libipoddevice 0.3.3
+	* src/SongDatabase.cs: Throw an unsupported exception if DB version is 
+	greater than 14
+	* src/Device.cs: support libipoddevice "device-model-string" property,
+	bound as Device.ModelString, return false for Device.CanWrite if
+	SongDatabase.Version is 14 or greater (we can't write that out yet)
+
 2005-09-07  Aaron Bockover  <aaron@aaronbock.net>
 
 	* configure.in: bump to 0.5.4, require libipoddevice 0.3.2
