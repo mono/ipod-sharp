@@ -187,6 +187,15 @@ namespace IPod {
             return true;
         }
 
+        public void RemoveTrack (int id) {
+            foreach (PlaylistItemRecord item in playlistItems) {
+                if (item.TrackId == id) {
+                    playlistItems.Remove (item);
+                    break;
+                }
+            }
+        }
+
         public void AddItem (PlaylistItemRecord rec) {
             InsertItem (-1, rec);
         }
@@ -256,22 +265,50 @@ namespace IPod {
             }
         }
 
-        private void CreateLibraryIndices () {
+        private DetailRecord CreateIndexRecord (TrackListRecord tracks, IndexType type) {
+            DetailRecord record = new DetailRecord ();
+            record.Type = DetailType.LibraryIndex;
+            record.IndexType = type;
+
+            // blah, this is soooo sleaux
+            
+            ArrayList items = (ArrayList) playlistItems.Clone ();
+            TrackSorter sorter = new TrackSorter (tracks, type);
+            items.Sort (sorter);
+
+            ArrayList indices = new ArrayList ();
+            foreach (PlaylistItemRecord item in items) {
+                indices.Add (tracks.IndexOf (item.TrackId));
+            }
+
+            record.LibraryIndices = (int[]) indices.ToArray (typeof (int));
+            return record;
+        }
+
+        private void CreateLibraryIndices (TrackListRecord tracks) {
+
+            ArrayList details = new ArrayList ();
+            
             // remove any existing library index records
-            foreach (Record rec in (ArrayList) otherDetails.Clone ()) {
+            foreach (Record rec in (ArrayList) otherDetails) {
                 DetailRecord detail = rec as DetailRecord;
-                if (detail != null && detail.Type == DetailType.LibraryIndex) {
-                    otherDetails.Remove (rec);
+                if (detail != null && detail.Type != DetailType.LibraryIndex) {
+                    details.Add (rec);
                 }
             }
 
-            // TODO: actually create the new indices
+            otherDetails = details;
+            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Song));
+            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Album));
+            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Artist));
+            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Genre));
+            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Composer));
         }
         
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
 
             if (isLibrary) {
-                CreateLibraryIndices ();
+                CreateLibraryIndices (db[DataSetIndex.Library].TrackList);
             }
             
             MemoryStream stream = new MemoryStream ();
@@ -307,6 +344,45 @@ namespace IPod {
             writer.Write (otherDetails.Count);
             writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
+        }
+
+        private class TrackSorter : IComparer {
+
+            private TrackListRecord tracks;
+            private IndexType type;
+
+            public TrackSorter (TrackListRecord tracks, IndexType type) {
+                this.tracks = tracks;
+                this.type = type;
+            }
+            
+            public int Compare (object a, object b) {
+                TrackRecord trackA = tracks.LookupTrack ((a as PlaylistItemRecord).TrackId);
+                TrackRecord trackB = tracks.LookupTrack ((b as PlaylistItemRecord).TrackId);
+
+                if (trackA == null || trackB == null)
+                    return 0;
+                
+                switch (type) {
+                case IndexType.Song:
+                    return String.Compare (trackA.GetDetail (DetailType.Title).Value,
+                                           trackB.GetDetail (DetailType.Title).Value);
+                case IndexType.Artist:
+                    return String.Compare (trackA.GetDetail (DetailType.Artist).Value,
+                                           trackB.GetDetail (DetailType.Artist).Value);
+                case IndexType.Album:
+                    return String.Compare (trackA.GetDetail (DetailType.Album).Value,
+                                           trackB.GetDetail (DetailType.Album).Value);
+                case IndexType.Genre:
+                    return String.Compare (trackA.GetDetail (DetailType.Genre).Value,
+                                           trackB.GetDetail (DetailType.Genre).Value);
+                case IndexType.Composer:
+                    return String.Compare (trackA.GetDetail (DetailType.Composer).Value,
+                                           trackB.GetDetail (DetailType.Composer).Value);
+                default:
+                    return 0;
+                }
+            }
         }
     }
         
@@ -814,6 +890,24 @@ namespace IPod {
         public IEnumerator GetEnumerator () {
             return tracks.GetEnumerator ();
         }
+
+        public TrackRecord LookupTrack (int id) {
+            foreach (TrackRecord record in tracks) {
+                if (record.Id == id)
+                    return record;
+            }
+
+            return null;
+        }
+
+        public int IndexOf (int id) {
+            for (int i = 0; i < tracks.Count; i++) {
+                if ((tracks[i] as TrackRecord).Id == id)
+                    return i;
+            }
+
+            return -1;
+        }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
 
@@ -949,12 +1043,14 @@ namespace IPod {
 
     internal class DatabaseRecord : Record {
 
+        private const int SongIdStart = 1000;
+
         private int unknownOne = 1;
         private int unknownTwo = 2;
         
         private ArrayList datasets = new ArrayList ();
 
-        public int Version = 13;
+        public int Version = 14;
         public long Id;
 
         public DataSetRecord this[DataSetIndex index] {
@@ -1009,7 +1105,29 @@ namespace IPod {
                 this[DataSetIndex.PlaylistDuplicate].PlaylistList = this[DataSetIndex.Playlist].PlaylistList;
         }
 
+        private void ReassignTrackIds () {
+            Hashtable oldids = new Hashtable ();
+
+            int id = SongIdStart;
+            foreach (TrackRecord track in this[DataSetIndex.Library].TrackList.Tracks) {
+                oldids[track.Id] = id;
+                track.Id = id++;
+            }
+
+            foreach (PlaylistRecord pl in this[DataSetIndex.Playlist].PlaylistList.Playlists) {
+                foreach (PlaylistItemRecord item in pl.Items) {
+                    if (oldids[item.TrackId] == null)
+                        continue;
+                    
+                    item.TrackId = (int) oldids[item.TrackId];
+                }
+            }
+        }
+
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
+
+            ReassignTrackIds ();
+            
             MemoryStream stream = new MemoryStream ();
             BinaryWriter childWriter = new BinaryWriter (stream);
 
@@ -1421,7 +1539,7 @@ namespace IPod {
 
                     // remove from the song db
                     dbrec[DataSetIndex.Library].TrackList.Remove (song.Id);
-                    dbrec[DataSetIndex.Playlist].Library.RemoveItem (song.Track.Id);
+                    dbrec[DataSetIndex.Playlist].Library.RemoveTrack (song.Track.Id);
                     
                     // remove from the "normal" playlists
                     foreach (Playlist list in playlists) {

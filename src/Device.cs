@@ -142,8 +142,7 @@ namespace IPod {
 
         public bool CanWrite {
             get {
-                return (bool) GetProperty ("can-write").Val && 
-                    SongDatabase.Version <= 13;
+                return (bool) GetProperty ("can-write").Val;
             }
         }
 

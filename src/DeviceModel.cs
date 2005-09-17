@@ -13,6 +13,8 @@ namespace IPod {
         MiniPink,
         MiniGreen,
         MiniGold,
-        Shuffle
+        Shuffle,
+        NanoWhite,
+        NanoBlack
     }
 }

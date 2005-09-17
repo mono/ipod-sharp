@@ -1,3 +1,12 @@
+2005-09-15  James Willcox  <snorp@snorp.net>
+
+	* configure.in: bump to 0.5.5
+	* src/SongDatabase.cs: reassign the track ids on every save.
+	Apparently if the ids are not sequential without gaps, the iPod
+	will not show the songs after the gap.  Also, write out
+	library index records.
+	* src/Device.cs: enable write support on v14 databases.
+
 2005-09-08  Aaron Bockover  <aaron@aaronbock.net>
 
 	* configure.in: Require libipoddevice 0.3.3
