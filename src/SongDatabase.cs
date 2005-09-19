@@ -1489,6 +1489,8 @@ namespace IPod {
         internal string GetFilesystemPath (string ipodPath) {
             if (ipodPath == null)
                 return null;
+            else if (ipodPath == String.Empty)
+                return String.Empty;
             
             return device.MountPoint + ipodPath.Replace (":", "/");
         }
