@@ -1,5 +1,10 @@
 2005-09-22  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: if the OTG playlist file is empty, do not
+	try to read it.
+
+2005-09-22  James Willcox  <snorp@snorp.net>
+
 	* src/Initializer.cs: remove the UseDefaultContext property
 	(it will always use the default context), and make this class
 	internal again.

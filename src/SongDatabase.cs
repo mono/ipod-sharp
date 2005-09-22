@@ -1277,7 +1277,9 @@ namespace IPod {
         private void LoadOnTheGo () {
             string path = device.MountPoint + "/iPod_Control/iTunes/OTGPlaylistInfo";
 
-            if (!File.Exists (path)) {
+            FileInfo finfo = new FileInfo (path);
+            
+            if (!finfo.Exists || finfo.Length == 0) {
                 // make a blank one
                 otgPlaylist = new Playlist (this, new Song[0]);
                 return;
