@@ -1,5 +1,9 @@
 2005-09-22  James Willcox  <snorp@snorp.net>
 
+	* configure.in: bump version to 0.5.6
+
+2005-09-22  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: if the OTG playlist file is empty, do not
 	try to read it.
 
