@@ -1,3 +1,9 @@
+2005-09-22  Aaron Bockover  <aaron@aaronbock.net>
+
+	* src/Utility.cs: Use new DateTime(1904, 1, 1) instead of 
+	DateTime.Parse("1/1/1904")... reduce parsing overhead and eliminate
+	locale conflicts
+
 2005-09-15  James Willcox  <snorp@snorp.net>
 
 	* configure.in: bump to 0.5.5

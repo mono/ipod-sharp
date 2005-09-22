@@ -4,7 +4,7 @@ namespace IPod {
 
     internal class Utility {
 
-        private static DateTime startDate = DateTime.Parse ("1/1/1904");
+        private static DateTime startDate = new DateTime(1904, 1, 1);
 
         public static uint DateToMacTime (DateTime date) {
             TimeSpan span = date - startDate;
