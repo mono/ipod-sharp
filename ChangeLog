@@ -1,3 +1,9 @@
+2005-09-22  James Willcox  <snorp@snorp.net>
+
+	* src/Initializer.cs: remove the UseDefaultContext property
+	(it will always use the default context), and make this class
+	internal again.
+
 2005-09-22  Aaron Bockover  <aaron@aaronbock.net>
 
 	* src/Utility.cs: Use new DateTime(1904, 1, 1) instead of 

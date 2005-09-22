@@ -4,9 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace IPod {
 
-    public class Initializer {
+    internal class Initializer {
         private static bool inited;
-        private static bool useDefaultContext;
 
         private static IntPtr mainContext;
 
@@ -31,14 +30,6 @@ namespace IPod {
         [DllImport ("libdbus-glib-1.so.1")]
         private static extern void dbus_g_thread_init ();
         
-        public static bool UseDefaultContext {
-            get {
-                return useDefaultContext;
-            } set {
-                useDefaultContext = value;
-            } 
-        }
-        
         public static void Init () {
             lock (typeof (Initializer)) {
                 if (inited)
@@ -46,29 +37,13 @@ namespace IPod {
            			
                 inited = true;
                 
-                if(!useDefaultContext) {
-                    dbus_g_thread_init ();
-                    g_type_init ();
-                }
-                
                 GLib.GType.Register(Device.GType, typeof(Device));
                 GLib.GType.Register(DeviceEventListener.GType, 
                                     typeof (DeviceEventListener));
-                
-                mainContext = useDefaultContext ? 
-                    g_main_context_default() :
-                    g_main_context_new();
-                	
-                ipod_device_set_global_main_context (mainContext);
-                
-                if (!useDefaultContext) {
-                    Thread mainThread = new Thread (new ThreadStart (MainLoopThread));
-                    mainThread.IsBackground = true;
-                    mainThread.Start ();
-                }
             }
         }
 
+        /*
         private static void MainLoopThread () {
             while (true) {
                 try {
@@ -83,5 +58,6 @@ namespace IPod {
                 }
             }
         }
+        */
     }
 }
