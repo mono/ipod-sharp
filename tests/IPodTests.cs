@@ -76,16 +76,7 @@ namespace IPod.Tests {
             return path;
         }
 
-        private Song FindSong (SongDatabase db, int id) {
-            foreach (Song song in db.Songs) {
-                if (song.Id == id)
-                    return song;
-            }
-
-            return null;
-        }
-
-        // The following tests should all succeed.
+        // The following tests should all "succeed".
 
         [Test]
         public void SimpleTest () {
@@ -113,8 +104,10 @@ namespace IPod.Tests {
         public void RemoveSongTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
+            int origlen = db.Songs.Length;
+            
             Song song = AddSong (db);
-            int id = song.Id;
+            int index = origlen;
             
             foreach (Playlist pl in db.Playlists) {
                 pl.AddSong (song);
@@ -123,7 +116,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            Song foundSong = FindSong (db, id);
+            Song foundSong = db.Songs[index];
 
             Assert.IsNotNull (foundSong);
 
@@ -131,7 +124,7 @@ namespace IPod.Tests {
 
             foreach (Playlist pl in db.Playlists) {
                 foreach (Song ps in pl.Songs) {
-                    Assert.IsFalse (id == ps.Id);
+                    Assert.IsFalse (foundSong.Id == ps.Id);
                 }
             }
 
@@ -140,23 +133,24 @@ namespace IPod.Tests {
 
             foreach (Playlist pl in db.Playlists) {
                 foreach (Song ps in pl.Songs) {
-                    Assert.IsFalse (id == ps.Id);
+                    Assert.IsFalse (foundSong.Id == ps.Id);
                 }
             }
 
-            Assert.IsNull (FindSong (db, id));
+            Assert.AreEqual (db.Songs.Length, origlen);
         }
 
         [Test]
         public void UpdateSongTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            int id = AddSong (db).Id;
-
+            AddSong (db);
+            int index = db.Songs.Length - 1;
+            
             db.Save ();
             db.Reload ();
 
-            Song song = FindSong (db, id);
+            Song song = db.Songs[index];
 
             Assert.IsNotNull (song);
 
@@ -182,7 +176,7 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            song = FindSong (db, id);
+            song = db.Songs[index];
 
             Assert.IsNotNull (song);
             Assert.AreEqual ("عَلَيْكُم", song.Artist);

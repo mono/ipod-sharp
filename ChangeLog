@@ -1,5 +1,10 @@
 2005-09-22  James Willcox  <snorp@snorp.net>
 
+	* tests/IPodTests.cs: fix two of the tests, as they wrongly assumed
+	that song ids were persistent.
+
+2005-09-22  James Willcox  <snorp@snorp.net>
+
 	* configure.in: bump version to 0.5.6
 
 2005-09-22  James Willcox  <snorp@snorp.net>
