@@ -36,6 +36,8 @@ namespace IPod {
                     return;
            			
                 inited = true;
+
+                g_type_init ();
                 
                 GLib.GType.Register(Device.GType, typeof(Device));
                 GLib.GType.Register(DeviceEventListener.GType, 

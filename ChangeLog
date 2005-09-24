@@ -1,3 +1,9 @@
+2005-09-24  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: nuke all of the locks.  The consumer
+	is responsible for all locking now.
+	* src/Device.cs: ditto
+
 2005-09-22  James Willcox  <snorp@snorp.net>
 
 	* tests/IPodTests.cs: fix two of the tests, as they wrongly assumed

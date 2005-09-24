@@ -1215,9 +1215,7 @@ namespace IPod {
 
         public Playlist[] Playlists {
             get {
-                lock (playlists) {
-                    return (Playlist[]) playlists.ToArray (typeof (Playlist));
-                }
+                return (Playlist[]) playlists.ToArray (typeof (Playlist));
             }
         }
 
@@ -1305,45 +1303,42 @@ namespace IPod {
 
         public void Reload () {
 
-            lock (this) {
-
-                Clear ();
+            Clear ();
                 
-                if (!File.Exists (SongDbPath)) {
-                    dbrec = new DatabaseRecord ();
-                    LoadOnTheGo ();
-                    return;
+            if (!File.Exists (SongDbPath)) {
+                dbrec = new DatabaseRecord ();
+                LoadOnTheGo ();
+                return;
+            }
+
+            using (BinaryReader reader = new BinaryReader (File.Open (SongDbPath, FileMode.Open, FileAccess.Read))) {
+
+                dbrec = new DatabaseRecord ();
+                dbrec.Read (null, reader);
+
+                // Load the songs
+                foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList) {
+                    Song song = new Song (this, track);
+                    songs.Add (song);
                 }
 
-                using (BinaryReader reader = new BinaryReader (File.Open (SongDbPath, FileMode.Open, FileAccess.Read))) {
+                // Load the play counts
+                LoadPlayCounts ();
 
-                    dbrec = new DatabaseRecord ();
-                    dbrec.Read (null, reader);
-
-                    // Load the songs
-                    foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList) {
-                        Song song = new Song (this, track);
-                        songs.Add (song);
-                    }
-
-                    // Load the play counts
-                    LoadPlayCounts ();
-
-                    // Load the playlists
-                    foreach (PlaylistRecord listrec in dbrec[DataSetIndex.Playlist].PlaylistList) {
-                        if (listrec.IsHidden)
-                            continue;
+                // Load the playlists
+                foreach (PlaylistRecord listrec in dbrec[DataSetIndex.Playlist].PlaylistList) {
+                    if (listrec.IsHidden)
+                        continue;
                         
-                        Playlist list = new Playlist (this, listrec);
-                        playlists.Add (list);
-                    }
-
-                    // Load the On-The-Go playlist
-                    LoadOnTheGo ();
-
-                    if (Reloaded != null)
-                        Reloaded (this, new EventArgs ());
+                    Playlist list = new Playlist (this, listrec);
+                    playlists.Add (list);
                 }
+
+                // Load the On-The-Go playlist
+                LoadOnTheGo ();
+
+                if (Reloaded != null)
+                    Reloaded (this, new EventArgs ());
             }
         }
 
@@ -1532,44 +1527,40 @@ namespace IPod {
         }
 
         public void RemoveSong (Song song) {
-            lock (this) {
-                if (songs.Contains (song)) {
-                    songs.Remove (song);
+            if (songs.Contains (song)) {
+                songs.Remove (song);
 
-                    if (songsToAdd.Contains (song))
-                        songsToAdd.Remove (song);
-                    else
-                        songsToRemove.Add (song);
+                if (songsToAdd.Contains (song))
+                    songsToAdd.Remove (song);
+                else
+                    songsToRemove.Add (song);
 
-                    // remove from the song db
-                    dbrec[DataSetIndex.Library].TrackList.Remove (song.Id);
-                    dbrec[DataSetIndex.Playlist].Library.RemoveTrack (song.Track.Id);
+                // remove from the song db
+                dbrec[DataSetIndex.Library].TrackList.Remove (song.Id);
+                dbrec[DataSetIndex.Playlist].Library.RemoveTrack (song.Track.Id);
                     
-                    // remove from the "normal" playlists
-                    foreach (Playlist list in playlists) {
-                        list.RemoveSong (song);
-                    }
-
-                    // remove from On-The-Go playlist
-                    otgPlaylist.RemoveOTGSong (song);
+                // remove from the "normal" playlists
+                foreach (Playlist list in playlists) {
+                    list.RemoveSong (song);
                 }
+
+                // remove from On-The-Go playlist
+                otgPlaylist.RemoveOTGSong (song);
             }
         }
 
         public Song CreateSong () {
-            lock (this) {
-                TrackRecord track = new TrackRecord ();
-                track.Id = GetNextSongId ();
-                track.Date = Utility.DateToMacTime (DateTime.Now);
-                track.LastModifiedTime = track.Date;
-                track.DatabaseId = (long) new Random ().Next ();
-                
-                Song song = new Song (this, track);
-
-                AddSong (song, false);
-                
-                return song;
-            }
+            TrackRecord track = new TrackRecord ();
+            track.Id = GetNextSongId ();
+            track.Date = Utility.DateToMacTime (DateTime.Now);
+            track.LastModifiedTime = track.Date;
+            track.DatabaseId = (long) new Random ().Next ();
+            
+            Song song = new Song (this, track);
+            
+            AddSong (song, false);
+            
+            return song;
         }
 
         public Playlist CreatePlaylist (string name) {
@@ -1591,27 +1582,23 @@ namespace IPod {
         }
 
         public void RemovePlaylist (Playlist playlist) {
-            lock (playlists) {
-                if (playlist == null) {
-                    throw new InvalidOperationException ("playist is null");
-                } else if (playlist.IsOnTheGo) {
-                    throw new InvalidOperationException ("The On-The-Go playlist cannot be removed.");
-                }
-                
-                dbrec[DataSetIndex.Playlist].PlaylistList.RemovePlaylist (playlist.PlaylistRecord);
-                playlists.Remove (playlist);
-
-                if (PlaylistRemoved != null)
-                    PlaylistRemoved (this, playlist);
+            if (playlist == null) {
+                throw new InvalidOperationException ("playist is null");
+            } else if (playlist.IsOnTheGo) {
+                throw new InvalidOperationException ("The On-The-Go playlist cannot be removed.");
             }
+            
+            dbrec[DataSetIndex.Playlist].PlaylistList.RemovePlaylist (playlist.PlaylistRecord);
+            playlists.Remove (playlist);
+
+            if (PlaylistRemoved != null)
+                PlaylistRemoved (this, playlist);
         }
 
         public Playlist LookupPlaylist (string name) {
-            lock (playlists) {
-                foreach (Playlist list in playlists) {
-                    if (list.Name == name)
-                        return list;
-                }
+            foreach (Playlist list in playlists) {
+                if (list.Name == name)
+                    return list;
             }
 
             return null;

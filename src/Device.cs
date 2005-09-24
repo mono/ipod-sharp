@@ -193,12 +193,10 @@ namespace IPod {
 
         public Equalizer[] Equalizers {
             get {
-                lock (this) {
-                    if (equalizers == null)
-                        LoadEqualizers ();
-
-                    return (Equalizer[]) equalizers.ToArray (typeof (Equalizer));
-                }
+                if (equalizers == null)
+                    LoadEqualizers ();
+                
+                return (Equalizer[]) equalizers.ToArray (typeof (Equalizer));
             }
         }
 
@@ -340,25 +338,21 @@ namespace IPod {
         }
 
         public Equalizer CreateEqualizer () {
-            lock (this) {
-                if (equalizers == null)
-                    LoadEqualizers ();
+            if (equalizers == null)
+                LoadEqualizers ();
                 
-                EqualizerRecord rec = new EqualizerRecord ();
-                Equalizer eq = new Equalizer (rec);
-
-                eqsrec.Add (rec);
-                equalizers.Add (eq);
-
-                return eq;
-            }
+            EqualizerRecord rec = new EqualizerRecord ();
+            Equalizer eq = new Equalizer (rec);
+            
+            eqsrec.Add (rec);
+            equalizers.Add (eq);
+            
+            return eq;
         }
 
         public void RemoveEqualizer (Equalizer eq) {
-            lock (this) {
-                equalizers.Remove (eq);
-                eqsrec.Remove (eq.EqualizerRecord);
-            }
+            equalizers.Remove (eq);
+            eqsrec.Remove (eq.EqualizerRecord);
         }
         
         public static Device[] ListDevices () {
