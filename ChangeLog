@@ -1,3 +1,9 @@
+2005-10-12  Aaron Bockover  <aaron@aaronbock.net>
+
+	* src/DeviceModel.cs: Add enums for VideoWhite, VideoBlack iPods
+	* src/DeviceGenerations.cs: Add Fifth Generation Enum
+	* configure.ac: Require libipoddevice 0.3.4, bump to 0.5.8
+
 2005-10-12  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: up the newest known db version to 15, which

@@ -15,6 +15,9 @@ namespace IPod {
         MiniGold,
         Shuffle,
         NanoWhite,
-        NanoBlack
+        NanoBlack,
+        VideoWhite,
+        VideoBlack
     }
 }
+
