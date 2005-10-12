@@ -1050,7 +1050,7 @@ namespace IPod {
         
         private ArrayList datasets = new ArrayList ();
 
-        public int Version = 14;
+        public int Version = 15;
         public long Id;
 
         public DataSetRecord this[DataSetIndex index] {
@@ -1089,7 +1089,7 @@ namespace IPod {
             Id = BitConverter.ToInt64 (body, 12);
             unknownTwo = BitConverter.ToInt32 (body, 20);
 
-            if (Version > 14)
+            if (Version > 15)
                 throw new DatabaseReadException ("Detected unsupported database version {0}", Version);
             
             datasets.Clear ();

@@ -1,3 +1,10 @@
+2005-10-12  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: up the newest known db version to 15, which
+	is what iTunes 6 uses.  Adding/removing songs still works without
+	further modification.
+	* configure.in: bump to 0.5.7
+
 2005-09-24  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: nuke all of the locks.  The consumer
