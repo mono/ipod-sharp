@@ -1168,7 +1168,7 @@ namespace IPod {
     public class SongDatabase {
 
         private const int CopyBufferSize = 8192;
-        private const double PercentThreshold = 0.10;
+        private const double PercentThreshold = 0.01;
         
         private DatabaseRecord dbrec;
 
