@@ -1043,6 +1043,7 @@ namespace IPod {
 
     internal class DatabaseRecord : Record {
 
+        private const int MaxSupportedVersion = 16;
         private const int SongIdStart = 1000;
 
         private int unknownOne = 1;
@@ -1050,7 +1051,7 @@ namespace IPod {
         
         private ArrayList datasets = new ArrayList ();
 
-        public int Version = 15;
+        public int Version = MaxSupportedVersion;
         public long Id;
 
         public DataSetRecord this[DataSetIndex index] {
@@ -1089,7 +1090,7 @@ namespace IPod {
             Id = BitConverter.ToInt64 (body, 12);
             unknownTwo = BitConverter.ToInt32 (body, 20);
 
-            if (Version > 15)
+            if (Version > MaxSupportedVersion)
                 throw new DatabaseReadException ("Detected unsupported database version {0}", Version);
             
             datasets.Clear ();
