@@ -1,3 +1,7 @@
+2005-10-31  Aaron Bockover  <aaron@aaronbock.net>
+
+	* configure.in: bump to 0.5.9
+
 2005-10-28  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: bump the supported db version to 16
