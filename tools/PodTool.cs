@@ -96,7 +96,7 @@ namespace IPod.Tools {
                     song.Artist = "WOO WOO";
                     song.Album = "WOO WOO";
                     song.Title = "WOO WOO";
-                    song.Duration = new TimeSpan(333 * TimeSpan.TicksPerSecond * 1000);
+                    song.Duration = new TimeSpan(333 * TimeSpan.TicksPerMillisecond);
                     song.FileName = "/tmp/foobar.mp3";
                 }
                 break;
