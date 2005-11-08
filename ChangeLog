@@ -1,3 +1,13 @@
+2005-11-08  Aaron Bockover  <aaron@aaronbock.net>
+
+	* autogen.sh: Updated to reference configure.ac
+	* configure.ac: Moved from configure.in; we keep with the times
+	* configure.in: Removed, renamed to configure.ac; configure.in convention
+	is depcrecated
+	* configure.in: bump to 0.5.10, require libipoddevice 0.3.5
+	* src/Device.cs (ArtworkFormats): fixed offset problem; there is
+	two bytes of padding (0xffff) after each struct entry
+
 2005-11-08  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: add ArtworkFormats field
