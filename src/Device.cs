@@ -21,36 +21,34 @@ namespace IPod {
         PhotoTvScreen
     }
 
-    [StructLayout (LayoutKind.Sequential)]
-    internal struct ArtworkData {
-        public int Type;
-        public short Width;
-        public short Height;
-        public short CorrelationId;
-    }
-
     public class ArtworkFormat {
 
-        private ArtworkData data;
+        private ArtworkType type;
+        private short width;
+        private short height;
+        private short correlationId;
 
         public ArtworkType Type {
-            get { return (ArtworkType) data.Type; }
+            get { return type; }
         }
 
         public short Width {
-            get { return data.Width; }
+            get { return width; }
         }
 
         public short Height {
-            get { return data.Height; }
+            get { return height; }
         }
 
         public short CorrelationId {
-            get { return data.CorrelationId; }
+            get { return correlationId; }
         }
         
-        internal ArtworkFormat (ArtworkData data) {
-            this.data = data;
+        internal ArtworkFormat (ArtworkType type, short width, short height, short correlationId) {
+            this.type = type;
+            this.width = width;
+            this.height = height;
+            this.correlationId = correlationId;
         }
     }
 
@@ -245,23 +243,22 @@ namespace IPod {
                 int offset = 0;
 
                 while (true) {
-                    ArtworkData data;
-                    data.Type = Marshal.ReadInt32 (array, offset);
+                    int type = Marshal.ReadInt32 (array, offset);
                     offset += 4;
 
-                    if (data.Type == -1)
+                    if (type == -1)
                         break;
 
-                    data.Width = Marshal.ReadInt16 (array, offset);
+                    short width = Marshal.ReadInt16 (array, offset);
                     offset += 2;
 
-                    data.Height = Marshal.ReadInt16 (array, offset);
+                    short height = Marshal.ReadInt16 (array, offset);
                     offset += 2;
 
-                    data.CorrelationId = Marshal.ReadInt16 (array, offset);
+                    short correlationId = Marshal.ReadInt16 (array, offset);
                     offset += 2;
 
-                    list.Add (new ArtworkFormat (data));
+                    list.Add (new ArtworkFormat ((ArtworkType) type, width, height, correlationId));
                 }
 
                 return (ArtworkFormat[]) list.ToArray (typeof (ArtworkFormat));
