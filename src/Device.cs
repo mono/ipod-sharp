@@ -238,7 +238,7 @@ namespace IPod {
                 if (array == IntPtr.Zero) {
                     return new ArtworkFormat[0];
                 }
-
+                
                 ArrayList list = new ArrayList ();
                 int offset = 0;
 
@@ -257,6 +257,8 @@ namespace IPod {
 
                     short correlationId = Marshal.ReadInt16 (array, offset);
                     offset += 2;
+
+                    offset += 2; // two bytes of padding after the struct; if you read it, it's always 0xffff
 
                     list.Add (new ArtworkFormat ((ArtworkType) type, width, height, correlationId));
                 }
