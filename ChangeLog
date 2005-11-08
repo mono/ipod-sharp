@@ -1,5 +1,10 @@
 2005-11-08  James Willcox  <snorp@snorp.net>
 
+	* src/Device.cs: add ArtworkFormats field
+	* src/Initializer.cs: cleanup unused methods
+
+2005-11-08  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: s/Filename/FileName/ and s/Length/Duration/
 
 2005-10-31  Aaron Bockover  <aaron@aaronbock.net>

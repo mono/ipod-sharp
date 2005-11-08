@@ -12,6 +12,48 @@ namespace IPod {
         Busy
     };
 
+    public enum ArtworkType : int {
+        CoverSmall,
+        CoverLarge,
+        PhotoSmall,
+        PhotoLarge,
+        PhotoFullScreen,
+        PhotoTvScreen
+    }
+
+    [StructLayout (LayoutKind.Sequential)]
+    internal struct ArtworkData {
+        public int Type;
+        public short Width;
+        public short Height;
+        public short CorrelationId;
+    }
+
+    public class ArtworkFormat {
+
+        private ArtworkData data;
+
+        public ArtworkType Type {
+            get { return (ArtworkType) data.Type; }
+        }
+
+        public short Width {
+            get { return data.Width; }
+        }
+
+        public short Height {
+            get { return data.Height; }
+        }
+
+        public short CorrelationId {
+            get { return data.CorrelationId; }
+        }
+        
+        internal ArtworkFormat (ArtworkData data) {
+            this.data = data;
+        }
+    }
+
     public class Device : GLib.Object {
 
         [DllImport ("ipoddevice")]
@@ -188,6 +230,41 @@ namespace IPod {
         public string VolumeLabel {
             get {
                 return (string) GetProperty ("volume-label").Val;
+            }
+        }
+
+        public ArtworkFormat[] ArtworkFormats {
+            get {
+                IntPtr array = (IntPtr) GetProperty ("artwork-formats").Val;
+
+                if (array == IntPtr.Zero) {
+                    return new ArtworkFormat[0];
+                }
+
+                ArrayList list = new ArrayList ();
+                int offset = 0;
+
+                while (true) {
+                    ArtworkData data;
+                    data.Type = Marshal.ReadInt32 (array, offset);
+                    offset += 4;
+
+                    if (data.Type == -1)
+                        break;
+
+                    data.Width = Marshal.ReadInt16 (array, offset);
+                    offset += 2;
+
+                    data.Height = Marshal.ReadInt16 (array, offset);
+                    offset += 2;
+
+                    data.CorrelationId = Marshal.ReadInt16 (array, offset);
+                    offset += 2;
+
+                    list.Add (new ArtworkFormat (data));
+                }
+
+                return (ArtworkFormat[]) list.ToArray (typeof (ArtworkFormat));
             }
         }
 
