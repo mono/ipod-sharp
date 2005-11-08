@@ -25,7 +25,7 @@ namespace IPod.Tools {
             if (title == null || title == String.Empty)
                 title = "Unknown";
 
-            string ext = Path.GetExtension (song.Filename);
+            string ext = Path.GetExtension (song.FileName);
             
             int index = 0;
             string path = null;
@@ -74,7 +74,7 @@ namespace IPod.Tools {
                     if (!Directory.Exists (dir))
                         Directory.CreateDirectory (dir);
                     
-                    File.Copy (song.Filename, path);
+                    File.Copy (song.FileName, path);
                 }
                 break;
             case "--dump-songs":
@@ -96,8 +96,8 @@ namespace IPod.Tools {
                     song.Artist = "WOO WOO";
                     song.Album = "WOO WOO";
                     song.Title = "WOO WOO";
-                    song.Length = 333000;
-                    song.Filename = "/tmp/foobar.mp3";
+                    song.Duration = new TimeSpan(333 * TimeSpan.TicksPerSecond * 1000);
+                    song.FileName = "/tmp/foobar.mp3";
                 }
                 break;
             case "--remove-song":

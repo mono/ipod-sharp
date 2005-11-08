@@ -1,5 +1,6 @@
 2005-11-08  Aaron Bockover  <aaron@aaronbock.net>
 
+	* tools/PodTool.cs: Updated to reflect Duration/FileName Song API changes
 	* autogen.sh: Updated to reference configure.ac
 	* configure.ac: Moved from configure.in; we keep with the times
 	* configure.in: Removed, renamed to configure.ac; configure.in convention
