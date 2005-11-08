@@ -94,7 +94,7 @@ namespace IPod {
             writer.Write((byte)0x00);
             
             // file name (UTF-16, record is 522 bytes)
-            string file = song.Filename;
+            string file = song.FileName;
             if(file.StartsWith(device.MountPoint)) {
                 file = file.Substring(device.MountPoint.Length);
             }

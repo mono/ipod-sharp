@@ -1397,12 +1397,12 @@ namespace IPod {
             BinaryWriter writer = null;
             
             try {
-                FileInfo info = new FileInfo (song.Filename);
+                FileInfo info = new FileInfo (song.FileName);
                 long length = info.Length;
                 long count = 0;
                 double lastPercent = 0.0;
 
-                reader = new BinaryReader (new BufferedStream (File.Open (song.Filename, FileMode.Open, FileAccess.Read)));
+                reader = new BinaryReader (new BufferedStream (File.Open (song.FileName, FileMode.Open, FileAccess.Read)));
                 writer = new BinaryWriter (new BufferedStream (File.Open (dest, FileMode.Create)));
                 
                 do {
@@ -1443,8 +1443,8 @@ namespace IPod {
                 }
 
                 foreach (Song song in songsToRemove) {
-                    if (File.Exists (song.Filename))
-                        File.Delete (song.Filename);
+                    if (File.Exists (song.FileName))
+                        File.Delete (song.FileName);
                 }
                 
                 if (!Directory.Exists (MusicBasePath))
@@ -1456,7 +1456,7 @@ namespace IPod {
                     string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
 
                     CopySong (song, dest, completed++, songsToAdd.Count);
-                    song.Filename = dest;
+                    song.FileName = dest;
                 }
 
                 // Save the shuffle songs db (will only create if device is shuffle);

@@ -27,7 +27,7 @@ namespace IPod {
             get { return record.Id; }
         }
 
-        public string Filename {
+        public string FileName {
             get {
                 if (filename != null) {
                     return filename;
@@ -40,7 +40,7 @@ namespace IPod {
                     throw new ArgumentException ("filename cannot be null");
                 
                 DetailRecord detail = record.GetDetail (DetailType.Location);
-                detail.Value = db.GetPodPath (SanitizeFilename (value));
+                detail.Value = db.GetPodPath (SanitizeFileName (value));
 
                 FileInfo info = new FileInfo (value);
                 record.Size = (int) info.Length;
@@ -58,9 +58,9 @@ namespace IPod {
             get { return record.Size; }
         }
 
-        public int Length {
-            get { return record.Length; }
-            set { record.Length = value; }
+        public TimeSpan Duration {
+            get { return TimeSpan.FromMilliseconds (record.Length); }
+            set { record.Length = (int) value.TotalMilliseconds; }
         }
 
         public int TrackNumber {
@@ -204,7 +204,7 @@ namespace IPod {
         }
         
         public override string ToString () {
-            return String.Format ("({0}) {1} - {2} - {3} ({4})", Id, Artist, Album, Title, Filename);
+            return String.Format ("({0}) {1} - {2} - {3} ({4})", Id, Artist, Album, Title, FileName);
         }
 
         public override bool Equals (object a) {
@@ -220,7 +220,7 @@ namespace IPod {
             return Id.GetHashCode ();
         }
 
-        private string SanitizeFilename (string path) {
+        private string SanitizeFileName (string path) {
             return path.Replace ('?', '_');
         }
     }

@@ -159,7 +159,7 @@ namespace IPod.Tests {
             song.Artist = "عَلَيْكُم";
             song.Album = "ሠላም";
             song.Year = 1000;
-            song.Length = 9999;
+            song.Duration = TimeSpan.FromMilliseconds (9999);
             song.TrackNumber = 8;
             song.TotalTracks = 9;
             song.BitRate = 444;
@@ -182,7 +182,7 @@ namespace IPod.Tests {
             Assert.AreEqual ("عَلَيْكُم", song.Artist);
             Assert.AreEqual ("ሠላም", song.Album);
             Assert.AreEqual (1000, song.Year);
-            Assert.AreEqual (9999, song.Length);
+            Assert.AreEqual (TimeSpan.FromMilliseconds (9999), song.Duration);
             Assert.AreEqual (8, song.TrackNumber);
             Assert.AreEqual (9, song.TotalTracks);
             Assert.AreEqual (444, song.BitRate);
@@ -304,8 +304,8 @@ namespace IPod.Tests {
             song.Artist = "FOO FOO FOO " + nextSong;
             song.Album = "BAR BAR BAR " + nextSong;
             song.Title = "BAZ BAZ BAZ " + nextSong;
-            song.Length = 99999;
-            song.Filename = GetTempSongFile ();
+            song.Duration = TimeSpan.FromMilliseconds (99999);
+            song.FileName = GetTempSongFile ();
 
             return song;
         }
@@ -409,22 +409,22 @@ namespace IPod.Tests {
 
         [Test]
         [ExpectedException (typeof (ArgumentException))]
-        public void NullSongFilenameTest () {
+        public void NullSongFileNameTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
             Song song = AddSong (db);
-            song.Filename = null;
+            song.FileName = null;
 
             db.Save ();
         }
 
         [Test]
         [ExpectedException (typeof (System.IO.FileNotFoundException))]
-        public void MissingSongFilenameTest () {
+        public void MissingSongFileNameTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
             Song song = AddSong (db);
-            song.Filename = "/tmp/ipod-sharp-test-missing.mp3";
+            song.FileName = "/tmp/ipod-sharp-test-missing.mp3";
 
             db.Save ();
         }
