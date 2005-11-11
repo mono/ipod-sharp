@@ -63,17 +63,26 @@ namespace IPod {
         private int unknownOne = 0;
         private int unknownTwo = 0;
         private ArrayList details = new ArrayList ();
+        private DetailRecord posrec;
 
         public int TrackId;
+        public int Position {
+            get { return posrec.Position; }
+            set { posrec.Position = value; }
+        }
+        
         public int Timestamp;
 
         public PlaylistItemRecord () {
             this.Name = "mhip";
+            posrec = new DetailRecord ();
+            posrec.Type = DetailType.Misc;
+            details.Add (posrec);
         }
 
         public override void Read (DatabaseRecord db, BinaryReader reader) {
             base.Read (db, reader);
-            
+
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
             int numDataObjects = BitConverter.ToInt32 (body, 0);
@@ -82,21 +91,22 @@ namespace IPod {
             TrackId = BitConverter.ToInt32 (body, 12);
             Timestamp = BitConverter.ToInt32 (body, 16);
 
+            details.Clear ();
+
             for (int i = 0; i < numDataObjects; i++) {
                 DetailRecord detail = new DetailRecord ();
                 detail.Read (db, reader);
                 details.Add (detail);
+
+                // it's possible there will be more than one of these, but the last one
+                // should always be the "right" one.  Sigh.
+                if (detail.Type == DetailType.Misc) {
+                    posrec = detail;
+                }
             }
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
-
-            // we need to create this for new playlist items
-            if (details.Count == 0) {
-                DetailRecord detail = new DetailRecord ();
-                detail.Type = DetailType.Misc;
-                details.Add (detail);
-            }
 
             int childrenLength = 0;
             byte[] childrenData = new byte[0];
@@ -104,7 +114,7 @@ namespace IPod {
             foreach (DetailRecord child in details) {
                 int childLength = 0;
                 byte[] childData = null;
-                
+
                 SaveChild (db, child, out childData, out childLength);
                 childrenLength += childLength;
 
@@ -134,6 +144,37 @@ namespace IPod {
         }
     }
 
+    internal enum SortOrder : int {
+        Manual = 1,
+        Unknown,
+        Title,
+        Album,
+        Artist,
+        BitRate,
+        Genre,
+        Kind,
+        DateModified,
+        Track,
+        Size,
+        Time,
+        Year,
+        SampleRate,
+        Comment,
+        DateAdded,
+        Equalizer,
+        Composer,
+        Unknown2,
+        PlayCount,
+        LastPlayed,
+        Disc,
+        Rating,
+        ReleaseDate,
+        Bpm,
+        Grouping,
+        Category,
+        Description
+    }
+
     internal class PlaylistRecord : Record {
 
         private int unknownOne;
@@ -150,6 +191,8 @@ namespace IPod {
         public bool IsHidden;
         public int Timestamp;
         public int Id;
+        public bool IsPodcast;
+        public SortOrder Order = SortOrder.Manual;
 
         public string PlaylistName {
             get { return nameRecord.Value; }
@@ -224,7 +267,7 @@ namespace IPod {
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
             base.Read (db, reader);
-            
+
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
             int numdetails = BitConverter.ToInt32 (body, 0);
@@ -237,6 +280,11 @@ namespace IPod {
             Timestamp = BitConverter.ToInt32 (body, 12);
             Id = BitConverter.ToInt32 (body, 16);
             unknownOne = BitConverter.ToInt32 (body, 20);
+
+            if (db.Version >= 13) {
+                IsPodcast = BitConverter.ToInt16 (body, 30) == 1 ? true : false;
+                Order = (SortOrder) BitConverter.ToInt32 (body, 32);
+            }
 
             stringDetails.Clear ();
             otherDetails.Clear ();
@@ -298,11 +346,14 @@ namespace IPod {
             }
 
             otherDetails = details;
+
+            /* this is causing problems, leave it out for now
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Song));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Album));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Artist));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Genre));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Composer));
+            */
         }
         
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
@@ -322,7 +373,9 @@ namespace IPod {
                 rec.Save (db, childWriter);
             }
 
+            int pos = 1;
             foreach (PlaylistItemRecord item in playlistItems) {
+                item.Position = pos++;
                 item.Save (db, childWriter);
             }
 
@@ -332,8 +385,17 @@ namespace IPod {
             childWriter.Close ();
             
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
-            writer.Write (44 + PadLength);
-            writer.Write (44 + PadLength + childDataLength);
+
+            int reclen;
+
+            if (db.Version >= 13) {
+                reclen = 48;
+            } else {
+                reclen = 42;
+            }
+            
+            writer.Write (reclen + PadLength);
+            writer.Write (reclen + PadLength + childDataLength);
             writer.Write (stringDetails.Count + otherDetails.Count);
             writer.Write (playlistItems.Count);
             writer.Write (IsHidden ? 1 : 0);
@@ -341,7 +403,13 @@ namespace IPod {
             writer.Write (Id);
             writer.Write (unknownOne);
             writer.Write (stringDetails.Count);
-            writer.Write (otherDetails.Count);
+            writer.Write ((short) otherDetails.Count);
+
+            if (db.Version >= 13) {
+                writer.Write (IsPodcast ? (short) 1 : (short) 0);
+                writer.Write ((int) Order);
+            }
+            
             writer.Write (new byte[PadLength]);
             writer.Write (childData, 0, childDataLength);
         }

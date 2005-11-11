@@ -408,7 +408,7 @@ namespace IPod.Tests {
         // The following tests should all "fail".
 
         [Test]
-        [ExpectedException (typeof (ArgumentException))]
+        [ExpectedException (typeof (ArgumentNullException))]
         public void NullSongFileNameTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 

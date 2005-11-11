@@ -48,7 +48,7 @@ namespace IPod {
                 return uri;
             } set {
                 if (value == null)
-                    throw new ArgumentException ("Uri cannot be null");
+                    throw new ArgumentNullException ("Uri cannot be null");
 
                 if (value.Scheme != Uri.UriSchemeFile)
                     throw new ArgumentException ("only file scheme is allowed");
