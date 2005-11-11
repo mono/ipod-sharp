@@ -1,3 +1,7 @@
+2005-11-08  James Willcox  <snorp@snorp.net>
+
+	* src/Song.cs: add a Uri property.
+
 2005-11-08  Aaron Bockover  <aaron@aaronbock.net>
 
 	* tools/PodTool.cs: Updated to reflect Duration/FileName Song API changes

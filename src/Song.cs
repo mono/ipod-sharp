@@ -1,5 +1,6 @@
 
 using System;
+using System.Text;
 using System.IO;
 
 namespace IPod {
@@ -15,13 +16,15 @@ namespace IPod {
     
     public class Song {
 
+        private static char[] CharsToQuote = { ';', '?', ':', '@', '&', '=', '$', ',', '#' };
+
         private TrackRecord record;
         private SongDatabase db;
 
         internal int playCount;
         internal DateTime lastPlayed;
 
-        private string filename;
+        private Uri uri;
         
         public int Id {
             get { return record.Id; }
@@ -29,25 +32,36 @@ namespace IPod {
 
         public string FileName {
             get {
-                if (filename != null) {
-                    return filename;
-                } else {
+                return this.Uri.LocalPath;
+            } set {
+                this.Uri = PathToFileUri (value);
+            }
+        }
+
+        public Uri Uri {
+            get {
+                if (uri == null) {
                     DetailRecord detail = record.GetDetail (DetailType.Location);
-                    return db.GetFilesystemPath (detail.Value);
+                    uri = PathToFileUri (db.GetFilesystemPath (detail.Value));
                 }
+
+                return uri;
             } set {
                 if (value == null)
-                    throw new ArgumentException ("filename cannot be null");
+                    throw new ArgumentException ("Uri cannot be null");
+
+                if (value.Scheme != Uri.UriSchemeFile)
+                    throw new ArgumentException ("only file scheme is allowed");
                 
                 DetailRecord detail = record.GetDetail (DetailType.Location);
-                detail.Value = db.GetPodPath (SanitizeFileName (value));
+                detail.Value = db.GetPodPath (value.LocalPath);
 
-                FileInfo info = new FileInfo (value);
+                FileInfo info = new FileInfo (value.LocalPath);
                 record.Size = (int) info.Length;
 
-                filename = value;
+                uri = value;
 
-                if (filename.ToLower ().EndsWith ("mp3"))
+                if (uri.LocalPath.ToLower ().EndsWith ("mp3"))
                     record.Type = TrackRecordType.MP3;
                 else
                     record.Type = TrackRecordType.AAC;
@@ -220,8 +234,27 @@ namespace IPod {
             return Id.GetHashCode ();
         }
 
-        private string SanitizeFileName (string path) {
-            return path.Replace ('?', '_');
+
+        private static Uri PathToFileUri (string path) {
+            path = Path.GetFullPath(path);
+
+            StringBuilder builder = new StringBuilder ();
+            builder.Append (Uri.UriSchemeFile);
+            builder.Append (Uri.SchemeDelimiter);
+
+            int i;
+            while ((i = path.IndexOfAny (CharsToQuote)) != -1) {
+                if(i > 0) {
+                    builder.Append (path.Substring(0, i));
+                }
+
+                builder.Append (Uri.HexEscape (path[i]));
+                path = path.Substring (i + 1);
+            }
+
+            builder.Append (path);
+
+            return new Uri (builder.ToString (), true);
         }
     }
 }
