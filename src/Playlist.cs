@@ -11,6 +11,7 @@ namespace IPod {
         private SongDatabase db;
         private PlaylistRecord record;
         private ArrayList otgsongs;
+        private string otgtitle;
 
         public event PlaylistSongHandler SongAdded;
         public event PlaylistSongHandler SongRemoved;
@@ -19,7 +20,8 @@ namespace IPod {
             get { return record; }
         }
 
-        internal Playlist (SongDatabase db, Song[] otgsongs) {
+        internal Playlist (SongDatabase db, string title, Song[] otgsongs) {
+            this.otgtitle = title;
             this.otgsongs = new ArrayList (otgsongs);
         }
         
@@ -61,8 +63,8 @@ namespace IPod {
 
         public string Name {
             get {
-                if (IsOnTheGo)
-                    return "On-The-Go";
+                if (otgtitle != null)
+                    return otgtitle;
                 
                 return record.PlaylistName;
             } set {

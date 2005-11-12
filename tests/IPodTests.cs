@@ -440,7 +440,12 @@ namespace IPod.Tests {
         public void ModifyOTGNameTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            db.OnTheGoPlaylist.Name = "foobar";
+            Playlist[] lists = db.OnTheGoPlaylists;
+            
+            if (lists.Length == 0)
+                throw new InvalidOperationException ("no lists");
+            
+            lists[0].Name = "foobar";
         }
 
         [Test]
@@ -449,7 +454,13 @@ namespace IPod.Tests {
             SongDatabase db = OpenDevice ().SongDatabase;
 
             Song song = AddSong (db);
-            db.OnTheGoPlaylist.AddSong (song);
+
+            Playlist[] lists = db.OnTheGoPlaylists;
+            
+            if (lists.Length == 0)
+                throw new InvalidOperationException ("no lists");
+
+            lists[0].AddSong (song);
         }
 
         [Test]
@@ -457,11 +468,13 @@ namespace IPod.Tests {
         public void RemoveOTGSongTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            Playlist otg = db.OnTheGoPlaylist;
+            Playlist[] lists = db.OnTheGoPlaylists;
 
-            // make nunit happy if there were no songs
-            if (otg.Songs.Length == 0)
+            // make nunit happy if there were no songs or playlists
+            if (lists.Length == 0 || lists[0].Songs.Length == 0)
                 throw new InvalidOperationException ("no songs");
+
+            Playlist otg = lists[0];
             
             foreach (Song song in otg.Songs) {
                 otg.RemoveSong (song);
@@ -473,7 +486,15 @@ namespace IPod.Tests {
         public void RemoveOTGPlaylistTest () {
             SongDatabase db = OpenDevice ().SongDatabase;
 
-            db.RemovePlaylist (db.OnTheGoPlaylist);
+            Playlist[] lists = db.OnTheGoPlaylists;
+
+            // make nunit stfu
+            if (lists.Length == 0)
+                throw new InvalidOperationException ("no playlists");
+
+            foreach (Playlist pl in lists) {
+                db.RemovePlaylist (pl);
+            }
         }
 
         [Test]

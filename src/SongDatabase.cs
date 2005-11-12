@@ -1287,7 +1287,7 @@ namespace IPod {
         private ArrayList songsToRemove = new ArrayList ();
 
         private ArrayList playlists = new ArrayList ();
-        private Playlist otgPlaylist;
+        private ArrayList otgPlaylists = new ArrayList ();
         
         private Random random = new Random();
         private Device device;
@@ -1329,8 +1329,8 @@ namespace IPod {
             }
         }
 
-        public Playlist OnTheGoPlaylist {
-            get { return otgPlaylist; }
+        public Playlist[] OnTheGoPlaylists {
+            get { return (Playlist[]) otgPlaylists.ToArray (typeof (Playlist)); }
         }
 
         public int Version {
@@ -1348,6 +1348,7 @@ namespace IPod {
             songsToAdd.Clear ();
             songsToRemove.Clear ();
             playlists.Clear ();
+            otgPlaylists.Clear ();
         }
 
         private void LoadPlayCounts () {
@@ -1382,15 +1383,17 @@ namespace IPod {
             }
         }
 
-        private void LoadOnTheGo () {
+        private bool LoadOnTheGo (int num) {
             string path = device.MountPoint + "/iPod_Control/iTunes/OTGPlaylistInfo";
+
+            if (num != 0) {
+                path += "_" + num;
+            }                
 
             FileInfo finfo = new FileInfo (path);
             
             if (!finfo.Exists || finfo.Length == 0) {
-                // make a blank one
-                otgPlaylist = new Playlist (this, new Song[0]);
-                return;
+                return false;
             }
             
             ArrayList otgsongs = new ArrayList ();
@@ -1408,7 +1411,19 @@ namespace IPod {
                 }
             }
 
-            otgPlaylist = new Playlist (this, (Song[]) otgsongs.ToArray (typeof (Song)));
+            string title = "On-The-Go";
+
+            if (num != 0) {
+                title += " " + num;
+            }
+            
+            otgPlaylists.Add (new Playlist (this, title, (Song[]) otgsongs.ToArray (typeof (Song))));
+            return true;
+        }
+
+        private void LoadOnTheGo () {
+            int i = 0;
+            while (LoadOnTheGo (i++));
         }
 
         public void Reload () {
@@ -1676,8 +1691,10 @@ namespace IPod {
                     list.RemoveSong (song);
                 }
 
-                // remove from On-The-Go playlist
-                otgPlaylist.RemoveOTGSong (song);
+                // remove from On-The-Go playlists
+                foreach (Playlist list in otgPlaylists) {
+                    list.RemoveOTGSong (song);
+                }
             }
         }
 
