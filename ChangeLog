@@ -1,5 +1,10 @@
 2005-11-08  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: rework progress reporting a bit and make
+	Save do a sync(2) so Device.Eject doesn't take forever.
+
+2005-11-08  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: don't write library indices, as they are
 	screwing things up for some reason.  Also add some things that
 	are in new db versions (podcast playlist flag, etc).

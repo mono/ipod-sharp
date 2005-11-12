@@ -32,7 +32,10 @@ namespace IPod {
 
         public string FileName {
             get {
-                return this.Uri.LocalPath;
+                if (this.Uri == null)
+                    return null;
+                else 
+                    return this.Uri.LocalPath;
             } set {
                 this.Uri = PathToFileUri (value);
             }
@@ -236,7 +239,10 @@ namespace IPod {
 
 
         private static Uri PathToFileUri (string path) {
-            path = Path.GetFullPath(path);
+            if (path == null)
+                return null;
+            
+            path = Path.GetFullPath (path);
 
             StringBuilder builder = new StringBuilder ();
             builder.Append (Uri.UriSchemeFile);

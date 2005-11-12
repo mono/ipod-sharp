@@ -575,7 +575,7 @@ namespace IPod {
         private byte[] chapterData;
         
         public DetailType Type;
-        public string Value = String.Empty;
+        public string Value;
         public int Position = 1;
 
         public IndexType IndexType;
@@ -1230,9 +1230,47 @@ namespace IPod {
         }
     }
 
+    public class SaveProgressArgs : EventArgs {
+
+        private Song song;
+        private double songPercent;
+        private int completed;
+        private int total;
+        
+        public Song CurrentSong {
+            get { return song; }
+        }
+
+        public double SongProgress {
+            get { return songPercent; }
+        }
+
+        public double TotalProgress {
+            get {
+                double fraction = (double) completed / (double) total;
+
+                return fraction + (1.0 / (double) total) * songPercent;
+            }
+        }
+
+        public int SongsCompleted {
+            get { return completed; }
+        }
+
+        public int SongsTotal {
+            get { return total; }
+        }
+
+        public SaveProgressArgs (Song song, double songPercent, int completed, int total) {
+            this.song = song;
+            this.songPercent = songPercent;
+            this.completed = completed;
+            this.total = total;
+        }
+    }
+
     public delegate void PlaylistHandler (object o, Playlist playlist);
-    public delegate void SaveProgressHandler (SongDatabase db, Song currentSong, double currentPercent,
-                                              int completed, int total);
+    public delegate void SaveProgressHandler (object o, SaveProgressArgs args);
 
     public class SongDatabase {
 
@@ -1480,7 +1518,15 @@ namespace IPod {
 
                     double percent = (double) count / (double) length;
                     if (percent >= lastPercent + PercentThreshold && SaveProgressChanged != null) {
-                        SaveProgressChanged (this, song, (double) count / (double) length, completed, total);
+                        SaveProgressArgs args = new SaveProgressArgs (song, (double) count / (double) length,
+                                                                      completed, total);
+
+                        try {
+                            SaveProgressChanged (this, args);
+                        } catch (Exception e) {
+                            Console.Error.WriteLine ("Exception in progress handler: " + e);
+                        }
+                        
                         lastPercent = percent;
                     }
                 } while (count < length);
@@ -1496,6 +1542,16 @@ namespace IPod {
         public void Save () {
 
             CheckFreeSpace ();
+
+            // make sure all the new songs have file names, and that they exist
+            foreach (Song song in songsToAdd) {
+                if (song.FileName == null)
+                    throw new DatabaseWriteException (String.Format ("Song '{0}' has no file assigned", song.Title));
+                else if (!File.Exists (song.FileName)) {
+                    throw new DatabaseWriteException (String.Format ("File '{0}' for song '{1}' does not exist",
+                                                                     song.FileName, song.Title));
+                }
+            }
 
             if (SaveStarted != null)
                 SaveStarted (this, new EventArgs ());
@@ -1536,16 +1592,20 @@ namespace IPod {
                 if (File.Exists (PlayCountsPath))
                     File.Delete (PlayCountsPath);
 
+                Syscall.sync ();
             } catch (Exception e) {
                 // rollback the song db
                 if (File.Exists (SongDbBackupPath))
                     File.Copy (SongDbBackupPath, SongDbPath, true);
-                
+
                 throw new DatabaseWriteException (e, "Failed to save database");
             } finally {
                 try {
                     device.RescanDisk();
                 } catch(Exception) {}
+
+                songsToAdd.Clear ();
+                songsToRemove.Clear ();
                 
                 if (SaveEnded != null)
                     SaveEnded (this, new EventArgs ());
