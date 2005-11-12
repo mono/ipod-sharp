@@ -655,6 +655,9 @@ namespace IPod {
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
 
+            if (Value == null)
+                Value = String.Empty;
+
             writer.Write (Encoding.ASCII.GetBytes (this.Name));
             writer.Write (24);
 
