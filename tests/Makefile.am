@@ -16,7 +16,10 @@ TEST_TARBALLS =					\
 	$(srcdir)/ipod-test-db-rev4-a.tar.gz	\
 	$(srcdir)/ipod-test-db-nano-v14-a.tar.gz
 
-check: $(TEST_ASSEMBLY)
+ipod-sharp.dll:
+	ln -s $(top_builddir)/src/ipod-sharp.dll .
+
+check: $(TEST_ASSEMBLY) ipod-sharp.dll
 	for asm in $(TEST_TARBALLS); do NUNIT_DIR=$(srcdir) $(srcdir)/runtests.sh $$asm; done;
 
 CLEANFILES = $(TEST_ASSEMBLY)
