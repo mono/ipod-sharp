@@ -1,3 +1,7 @@
+2005-11-16  James Willcox  <snorp@snorp.net>
+
+	* configure.ac: bump to 0.5.11
+
 2005-11-12  James Willcox  <snorp@snorp.net>
 
 	* src/SongDatabase.cs: support multiple On-The-Go playlists
