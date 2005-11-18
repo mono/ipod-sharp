@@ -57,12 +57,13 @@ namespace IPod {
             obj.OnDeviceRemoved (GLib.Marshaller.Utf8PtrToString(udi));
         }
 
+#pragma warning disable 0169
         private static void OverrideDeviceRemoved (GLib.GType gtype) {
             if (DeviceRemovedVMCallback == null)
                 DeviceRemovedVMCallback = new DeviceRemovedVMDelegate (deviceremoved_cb);
             OverrideVirtualMethod (gtype, "device-removed", DeviceRemovedVMCallback);
         }
-
+ 
         [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideDeviceRemoved")]
         protected virtual void OnDeviceRemoved (string udi) {
             GLib.Value ret = GLib.Value.Empty;
@@ -76,6 +77,7 @@ namespace IPod {
             foreach (GLib.Value v in vals)
                 v.Dispose ();
         }
+#pragma warning restore 0169
 
         [GLib.Signal("device-removed")]
         public event IPod.DeviceRemovedHandler DeviceRemoved {
@@ -104,6 +106,7 @@ namespace IPod {
             handler (GLib.Object.GetObject (arg0), args);
         }
 
+#pragma warning disable 0169
         [GLib.CDeclCallback]
         delegate void DeviceAddedVMDelegate (IntPtr listener, IntPtr udi);
 
@@ -119,6 +122,7 @@ namespace IPod {
                 DeviceAddedVMCallback = new DeviceAddedVMDelegate (deviceadded_cb);
             OverrideVirtualMethod (gtype, "device-added", DeviceAddedVMCallback);
         }
+#pragma warning restore 0169
 
         [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideDeviceAdded")]
         protected virtual void OnDeviceAdded (string udi) {
@@ -155,12 +159,14 @@ namespace IPod {
             DeviceEventListener obj = GLib.Object.GetObject (listener, false) as DeviceEventListener;
             obj.OnNotifyDeviceAdded ();
         }
-
+        
+#pragma warning disable 0169
         private static void OverrideNotifyDeviceAdded (GLib.GType gtype) {
             if (NotifyDeviceAddedVMCallback == null)
                 NotifyDeviceAddedVMCallback = new NotifyDeviceAddedVMDelegate (notifydeviceadded_cb);
             OverrideVirtualMethod (gtype, "notify-device-added", NotifyDeviceAddedVMCallback);
         }
+#pragma warning restore 0169
 
         [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideNotifyDeviceAdded")]
         protected virtual void OnNotifyDeviceAdded () {
@@ -196,11 +202,13 @@ namespace IPod {
             obj.OnNotifyDeviceRemoved ();
         }
 
+#pragma warning disable 0169
         private static void OverrideNotifyDeviceRemoved (GLib.GType gtype) {
             if (NotifyDeviceRemovedVMCallback == null)
                 NotifyDeviceRemovedVMCallback = new NotifyDeviceRemovedVMDelegate (notifydeviceremoved_cb);
             OverrideVirtualMethod (gtype, "notify-device-removed", NotifyDeviceRemovedVMCallback);
         }
+#pragma warning restore 0169
 
         [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideNotifyDeviceRemoved")]
         protected virtual void OnNotifyDeviceRemoved () {

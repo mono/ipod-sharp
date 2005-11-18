@@ -1,4 +1,3 @@
-
 using System;
 using System.IO;
 using System.Text;
@@ -313,6 +312,7 @@ namespace IPod {
             }
         }
 
+#pragma warning disable 0169
         private DetailRecord CreateIndexRecord (TrackListRecord tracks, IndexType type) {
             DetailRecord record = new DetailRecord ();
             record.Type = DetailType.LibraryIndex;
@@ -332,6 +332,7 @@ namespace IPod {
             record.LibraryIndices = (int[]) indices.ToArray (typeof (int));
             return record;
         }
+#pragma warning restore 0169
 
         private void CreateLibraryIndices (TrackListRecord tracks) {
 
@@ -1610,7 +1611,7 @@ namespace IPod {
                 if (File.Exists (PlayCountsPath))
                     File.Delete (PlayCountsPath);
 
-                Syscall.sync ();
+                Mono.Unix.Native.Syscall.sync ();
             } catch (Exception e) {
                 // rollback the song db
                 if (File.Exists (SongDbBackupPath))

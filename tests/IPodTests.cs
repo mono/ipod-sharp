@@ -432,7 +432,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (DeviceException))]
         public void NoDatabaseFoundTest () {
-            Device device = new Device ("/tmp/no-database-here-move-along");
+            new Device ("/tmp/no-database-here-move-along");
         }
 
         [Test]

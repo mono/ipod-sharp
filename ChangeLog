@@ -1,3 +1,13 @@
+2005-11-18  Aaron Bockover  <aaron@aaronbock.net>
+
+	* tests/IPodTests.cs: Device device = new Device() changed to just 
+	new Device() since the local var is never used
+	* src/SongDatabase.cs: Use Mono.Unix.Native.Syscall, Mono.Unix.Syscall is
+	obsolete
+	* src/DeviceEventListener.cs
+	* src/SongDatabase.cs: Use #pragma warning disable/restore to hide
+	warnings we know about
+
 2005-11-17  James Willcox  <snorp@snorp.net>
 
 	* configure.ac: bump to 0.5.11.1 (0.5.11 had build issues)
