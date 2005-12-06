@@ -1,3 +1,10 @@
+2005-12-06  Aaron Bockover  <aaron@aaronbock.net>
+
+	* configure.ac: Version 0.5.12
+	* src/SongDatabase.cs: Send a null song in a progress event so 
+	consumer app will know the sync is passed copy/write and in 
+	the 'sync()' phase	
+
 2005-11-18  Aaron Bockover  <aaron@aaronbock.net>
 
 	* tests/IPodTests.cs: Device device = new Device() changed to just 
