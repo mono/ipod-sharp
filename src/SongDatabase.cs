@@ -1115,7 +1115,7 @@ namespace IPod {
 
     internal class DatabaseRecord : Record {
 
-        private const int MaxSupportedVersion = 16;
+        private const int MaxSupportedVersion = 17;
         private const int SongIdStart = 1000;
 
         private int unknownOne = 1;
