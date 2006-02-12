@@ -1,5 +1,9 @@
 2006-02-12  James Willcox  <snorp@snorp.net>
 
+	* configure.ac: bump to 0.5.13
+
+2006-02-12  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: fix the SaveProgressArgs.TotalProgress property
 	* ui/ProgressDialog.cs: show a 'Finishing' message when
 	the sync() is occurring.
