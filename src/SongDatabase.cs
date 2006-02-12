@@ -1616,10 +1616,12 @@ namespace IPod {
                     File.Delete (PlayCountsPath);
 
                 // Force progress to 100% so the app can now we're in the "sync()" phase
-                try {
-                    SaveProgressChanged (this, new SaveProgressArgs (null, 1.0, 1, 1));
-                } catch (Exception e) {
-                    Console.Error.WriteLine ("Exception in progress handler: " + e);
+                if (SaveProgressChanged != null) {
+                    try {
+                        SaveProgressChanged (this, new SaveProgressArgs (null, 1.0, 1, 1));
+                    } catch (Exception e) {
+                        Console.Error.WriteLine ("Exception in progress handler: " + e);
+                    }
                 }
 
                 Mono.Unix.Native.Syscall.sync ();

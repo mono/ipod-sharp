@@ -1,5 +1,10 @@
 2006-02-12  James Willcox  <snorp@snorp.net>
 
+	* src/SongDatabase.cs: don't try to emit SaveProgressChanged
+	if nobody is listening.
+
+2006-02-12  James Willcox  <snorp@snorp.net>
+
 	* configure.ac: bump to 0.5.13
 
 2006-02-12  James Willcox  <snorp@snorp.net>
