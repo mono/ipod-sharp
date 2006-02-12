@@ -84,12 +84,16 @@ namespace IPod {
 
         private void OnSaveProgressChanged (object o, SaveProgressArgs args) {
             lock (this) {
-                string padstr = String.Format ("Adding {0} of {0}", args.SongsTotal);
-
-                message = String.Format ("Adding {0} of {1}", args.SongsCompleted + 1, args.SongsTotal);
-                message = message.PadLeft (padstr.Length);
-
-                message = String.Format ("<b>{0}: {1}</b>", message, GLib.Markup.EscapeText (args.CurrentSong.Title));
+                if (args.CurrentSong != null) {
+                    string padstr = String.Format ("Adding {0} of {0}", args.SongsTotal);
+                    
+                    message = String.Format ("Adding {0} of {1}", args.SongsCompleted + 1, args.SongsTotal);
+                    message = message.PadLeft (padstr.Length);
+                    
+                    message = String.Format ("<b>{0}: {1}</b>", message, GLib.Markup.EscapeText (args.CurrentSong.Title));
+                } else {
+                    message = String.Format ("<b>Finishing...</b>");
+                }
 
                 fraction = args.TotalProgress;
                 

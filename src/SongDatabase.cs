@@ -1251,9 +1251,13 @@ namespace IPod {
 
         public double TotalProgress {
             get {
-                double fraction = (double) completed / (double) total;
-
-                return fraction + (1.0 / (double) total) * songPercent;
+                if (completed == total) {
+                    return 1.0;
+                } else {
+                    double fraction = (double) completed / (double) total;
+                    
+                    return fraction + (1.0 / (double) total) * songPercent;
+                }
             }
         }
 

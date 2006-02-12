@@ -1,3 +1,9 @@
+2006-02-12  James Willcox  <snorp@snorp.net>
+
+	* src/SongDatabase.cs: fix the SaveProgressArgs.TotalProgress property
+	* ui/ProgressDialog.cs: show a 'Finishing' message when
+	the sync() is occurring.
+
 2005-12-06  Aaron Bockover  <aaron@aaronbock.net>
 
 	* configure.ac: Version 0.5.12
