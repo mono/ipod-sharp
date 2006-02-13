@@ -1485,8 +1485,8 @@ namespace IPod {
             }
         }
 
-        private bool IsSongOnDevice(Song song) {
-            return song.FileName.StartsWith (MusicBasePath + Path.DirectorySeparatorChar + "F");
+        internal bool IsSongOnDevice(string path) {
+            return path.StartsWith (MusicBasePath + Path.DirectorySeparatorChar + "F");
         }
 
         private string FormatSpace (UInt64 bytes) {
@@ -1506,7 +1506,7 @@ namespace IPod {
             }
 
             foreach (Song song in songsToAdd) {
-                if (!IsSongOnDevice (song)) {
+                if (!IsSongOnDevice (song.FileName)) {
                     required += (UInt64) song.Size;
                 }
             }
@@ -1620,7 +1620,7 @@ namespace IPod {
                 
                 // Copy songs to iPod; if song is already in the Music directory structure, do not copy
                 foreach (Song song in songsToAdd) {
-                    if (!IsSongOnDevice (song)) {
+                    if (!IsSongOnDevice (song.FileName)) {
                         string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
                         CopySong (song, dest, completed++, songsToAdd.Count);
                         song.FileName = dest;
@@ -1685,7 +1685,15 @@ namespace IPod {
             return device.MountPoint + ipodPath.Replace (":", "/");
         }
 
-       internal string GetPodPath (string path) {
+        internal string GetPodPath (string path) {
+            if (path == null || !path.StartsWith (device.MountPoint))
+                return null;
+
+            string ret = path.Replace (device.MountPoint, "");
+            return ret.Replace ("/", ":");
+        }
+
+        internal string GetUniquePodPath (string path) {
             if (path == null)
                 return null;
             

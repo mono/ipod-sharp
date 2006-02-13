@@ -61,7 +61,11 @@ namespace IPod {
                     throw new ArgumentException ("only file scheme is allowed");
 
                 DetailRecord detail = record.GetDetail (DetailType.Location);
-                detail.Value = db.GetPodPath (value.LocalPath);
+                
+                if (db.IsSongOnDevice (value.LocalPath))
+                    detail.Value = db.GetPodPath (value.LocalPath);
+                else
+                    detail.Value = db.GetUniquePodPath (value.LocalPath);
 
                 FileInfo info = new FileInfo (value.LocalPath);
                 record.Size = (int) info.Length;
