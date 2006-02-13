@@ -1,5 +1,10 @@
 2006-02-12  James Willcox  <snorp@snorp.net>
 
+	* src/Song.cs: when setting the Uri for a song, don't do
+	anything if the new value is the same as the old.
+
+2006-02-12  James Willcox  <snorp@snorp.net>
+
 	* src/SongDatabase.cs: don't try to emit SaveProgressChanged
 	if nobody is listening.
 
