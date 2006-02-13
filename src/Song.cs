@@ -16,7 +16,7 @@ namespace IPod {
     
     public class Song {
 
-        private static char[] CharsToQuote = { ';', '?', ':', '@', '&', '=', '$', ',', '#' };
+        private static char[] CharsToQuote = { ';', '?', ':', '@', '&', '=', '$', ',', '#', '%' };
 
         private TrackRecord record;
         private SongDatabase db;

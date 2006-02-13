@@ -1,5 +1,12 @@
 2006-02-12  Aaron Bockover  <aaron@abock.org>
 
+	* configure.ac: Bump to 0.5.15 (snorp is release happy)
+	* src/Song.cs: Added % to array of chars that need escaping
+	* src/SongDatabase.cs: Do not try to copy a song that is already on
+	the iPod
+
+2006-02-12  Aaron Bockover  <aaron@abock.org>
+
 	* src/Device.cs:
 	* src/SongDatabase.cs: Allow "loading" an empty song database; useful
 	if the real database cannot be loaded (unsupported version), and the

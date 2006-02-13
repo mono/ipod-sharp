@@ -1115,7 +1115,7 @@ namespace IPod {
 
     internal class DatabaseRecord : Record {
 
-        private const int MaxSupportedVersion = 17;
+        private const int MaxSupportedVersion = 16;
         private const int SongIdStart = 1000;
 
         private int unknownOne = 1;
@@ -1612,11 +1612,13 @@ namespace IPod {
                 
                 int completed = 0;
                 
+                // Copy songs to iPod; if song is already in the Music directory structure, do not copy
                 foreach (Song song in songsToAdd) {
-                    string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
-
-                    CopySong (song, dest, completed++, songsToAdd.Count);
-                    song.FileName = dest;
+                    if (!song.FileName.StartsWith (MusicBasePath + Path.DirectorySeparatorChar + "F")) {
+                        string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
+                        CopySong (song, dest, completed++, songsToAdd.Count);
+                        song.FileName = dest;
+                    }
                 }
 
                 // Save the shuffle songs db (will only create if device is shuffle);
@@ -1634,6 +1636,17 @@ namespace IPod {
                         SaveProgressChanged (this, new SaveProgressArgs (null, 1.0, 1, 1));
                     } catch (Exception e) {
                         Console.Error.WriteLine ("Exception in progress handler: " + e);
+                    }
+                }
+
+                // Remove empty Music "F" directories
+                DirectoryInfo music_dir = new DirectoryInfo (MusicBasePath);
+                foreach (DirectoryInfo f_dir in music_dir.GetDirectories ()) {
+                    try {
+                        if (f_dir.GetFiles ().Length == 0) {
+                            f_dir.Delete();
+                        }
+                    } catch {
                     }
                 }
 
