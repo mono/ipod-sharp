@@ -1,3 +1,10 @@
+2006-02-12  Aaron Bockover  <aaron@abock.org>
+
+	* src/Device.cs:
+	* src/SongDatabase.cs: Allow "loading" an empty song database; useful
+	if the real database cannot be loaded (unsupported version), and the
+	consuming application wants to scan the iPod to recreate a database
+
 2006-02-12  James Willcox  <snorp@snorp.net>
 
 	* configure.ac: bump to 0.5.14 (sigh)

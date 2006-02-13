@@ -278,12 +278,9 @@ namespace IPod {
 
         public SongDatabase SongDatabase {
             get {
-                if (!IsIPod) {
-                    throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
+                if(songs == null) {
+                    LoadSongDatabase ();
                 }
-
-                if (songs == null)
-                    songs = new SongDatabase (this);
 
                 return songs;
             }
@@ -308,6 +305,24 @@ namespace IPod {
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
+        }
+        
+        public void LoadSongDatabase () {
+            LoadSongDatabase (false);
+        }
+        
+        public void LoadSongDatabase (bool createFresh) {
+            if (!IsIPod) {
+                throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
+            }
+
+            if (songs == null)
+                songs = new SongDatabase (this, createFresh);
+        }
+        
+        public void CreateEmptySongDatabase () {
+            songs = null;
+            LoadSongDatabase(true);
         }
 
         private void EmitChanged () {

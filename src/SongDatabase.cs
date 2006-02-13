@@ -1342,10 +1342,19 @@ namespace IPod {
             get { return dbrec.Version; }
         }
 
-        internal SongDatabase (Device device) {
-            this.device = device;
-            Reload ();
+        internal SongDatabase (Device device) : this (device, false) {
         }
+        
+        internal SongDatabase (Device device, bool createFresh) {
+            this.device = device;
+            
+            if(createFresh && File.Exists(SongDbPath)) {
+                File.Copy (SongDbPath, SongDbBackupPath, true);
+            }
+            
+            Reload (createFresh);
+        }
+        
         
         private void Clear () {
             dbrec = null;
@@ -1432,10 +1441,14 @@ namespace IPod {
         }
 
         public void Reload () {
+            Reload(false);
+        }
 
+        private void Reload (bool createFresh) {
+        
             Clear ();
                 
-            if (!File.Exists (SongDbPath)) {
+            if (!File.Exists (SongDbPath) || createFresh) {
                 dbrec = new DatabaseRecord ();
                 LoadOnTheGo ();
                 return;
