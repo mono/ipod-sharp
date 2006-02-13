@@ -1,3 +1,12 @@
+2006-02-13  Aaron Bockover  <aaron@abock.org>
+
+	0.5.15 Released
+	
+	* src/SongDatabase.cs: Set MaxSupportedVersion back to 17 (whoops); 
+	(CheckFreeSpace): do not include file size in 'required' if the
+	file is already in the device's Music/F*/* structure, and will not
+	be copied; moved that check to 'IsSongOnDevice'
+
 2006-02-12  Aaron Bockover  <aaron@abock.org>
 
 	* configure.ac: Bump to 0.5.15 (snorp is release happy)

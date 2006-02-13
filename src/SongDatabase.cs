@@ -1115,7 +1115,7 @@ namespace IPod {
 
     internal class DatabaseRecord : Record {
 
-        private const int MaxSupportedVersion = 16;
+        private const int MaxSupportedVersion = 17;
         private const int SongIdStart = 1000;
 
         private int unknownOne = 1;
@@ -1485,6 +1485,10 @@ namespace IPod {
             }
         }
 
+        private bool IsSongOnDevice(Song song) {
+            return song.FileName.StartsWith (MusicBasePath + Path.DirectorySeparatorChar + "F");
+        }
+
         private string FormatSpace (UInt64 bytes) {
             return String.Format ("{0} MB", bytes/1024/1024);
         }
@@ -1502,7 +1506,9 @@ namespace IPod {
             }
 
             foreach (Song song in songsToAdd) {
-                required += (UInt64) song.Size;
+                if (!IsSongOnDevice (song)) {
+                    required += (UInt64) song.Size;
+                }
             }
 
             if (required >= available)
@@ -1614,7 +1620,7 @@ namespace IPod {
                 
                 // Copy songs to iPod; if song is already in the Music directory structure, do not copy
                 foreach (Song song in songsToAdd) {
-                    if (!song.FileName.StartsWith (MusicBasePath + Path.DirectorySeparatorChar + "F")) {
+                    if (!IsSongOnDevice (song)) {
                         string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
                         CopySong (song, dest, completed++, songsToAdd.Count);
                         song.FileName = dest;
