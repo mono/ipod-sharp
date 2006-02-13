@@ -1,5 +1,9 @@
 2006-02-12  James Willcox  <snorp@snorp.net>
 
+	* configure.ac: bump to 0.5.14 (sigh)
+
+2006-02-12  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: oops, do a value comparison when comparing
 	the Uri.
 
