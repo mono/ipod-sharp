@@ -1,5 +1,10 @@
 2006-02-12  James Willcox  <snorp@snorp.net>
 
+	* src/Song.cs: oops, do a value comparison when comparing
+	the Uri.
+
+2006-02-12  James Willcox  <snorp@snorp.net>
+
 	* src/Song.cs: when setting the Uri for a song, don't do
 	anything if the new value is the same as the old.
 
