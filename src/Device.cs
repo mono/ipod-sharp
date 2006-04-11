@@ -373,25 +373,6 @@ namespace IPod {
             }
         }
 
-        public void Reboot () {
-            IntPtr error = IntPtr.Zero;
-            EjectResult result = (EjectResult) ipod_device_reboot (Raw, out error);
-
-            switch (result) {
-            case EjectResult.Ok:
-                return;
-            case EjectResult.Error:
-                if (error != IntPtr.Zero) {
-                    GLib.GException exc = new GLib.GException (error);
-                    throw new DeviceException (this, exc.Message, exc);
-                } else {
-                    throw new DeviceException (this, "Failed to reboot device");
-                }
-            case EjectResult.Busy:
-                throw new DeviceBusyException (this);
-            }
-        }
-
         public void Save () {
             IntPtr error = IntPtr.Zero;
 
