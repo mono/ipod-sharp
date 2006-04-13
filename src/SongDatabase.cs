@@ -1515,7 +1515,10 @@ namespace IPod {
                 int numTracks = dbrec.ToInt32 (header, 12);
 
                 for (int i = 0; i < numTracks; i++) {
-                    int index = dbrec.MaybeSwap (reader.ReadInt32 ());
+                    int index = reader.ReadInt32 ();
+
+                    if (dbrec.IsBE)
+                        index = Utility.Swap (index);
 
                     otgsongs.Add (songs[index]);
                 }
