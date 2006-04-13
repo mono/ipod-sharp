@@ -1,3 +1,11 @@
+2006-04-13  James Willcox  <snorp@snorp.net>
+
+	* src/EndianBinaryWriter.cs: added, allows one to control what
+	byte order stuff is written as
+	* src/SongDatabase.cs: be a lot more careful about byte order,
+	and pave the way for the annoying reverse byte order databases
+	found on Motorola SLVR.
+
 2006-04-10  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: remove Reboot(), as libipoddevice no longer as it

@@ -83,7 +83,7 @@ namespace IPod {
             if (IsOnTheGo)
                 throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
             
-            PlaylistItemRecord item = new PlaylistItemRecord ();
+            PlaylistItemRecord item = record.CreateItem ();
             item.TrackId = song.Id;
 
             record.InsertItem (index, item);

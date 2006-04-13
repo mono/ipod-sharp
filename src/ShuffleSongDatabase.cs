@@ -30,7 +30,7 @@ namespace IPod {
         
             // number of song entries in the file
             writer.Write((byte)0x00);
-            writer.Write(Utility.ReverseByteOrder((short)songCount));
+            writer.Write(Utility.Swap ((short)songCount));
             
             // unknown (0x010600)
             writer.Write((byte)0x01);
@@ -51,7 +51,7 @@ namespace IPod {
         
             // size of entry 
             writer.Write((byte)0x00);
-            writer.Write(Utility.ReverseByteOrder((short)0x022e));
+            writer.Write(Utility.Swap ((short)0x022e));
             
             // unknown (0x5aa501)
             writer.Write((byte)0x5a);
@@ -74,7 +74,7 @@ namespace IPod {
             
             // volume (-100 to 0 to 100)
             writer.Write((byte)0x00);
-            writer.Write(Utility.ReverseByteOrder((short)0x0064));
+            writer.Write(Utility.Swap ((short)0x0064));
             
             // file type (0x01 = MP3, 0x02 = AAC, 0x04 = WAV)
             writer.Write(new byte [2]);

@@ -13,9 +13,18 @@ namespace IPod {
         public string Name;
         public int HeaderOne; // usually the size of this record
         public int HeaderTwo; // usually the size of this record + size of children
+        public bool IsBE = false;
+
+        public Record (bool isbe) {
+            this.IsBE = isbe;
+        }
 
         public virtual void Read (DatabaseRecord db, BinaryReader reader) {
-            string n = Encoding.ASCII.GetString (reader.ReadBytes (4));
+            byte[] nameBytes = reader.ReadBytes (4);
+            if (IsBE)
+                nameBytes = Utility.Swap (nameBytes);
+            
+            string n = Encoding.ASCII.GetString (nameBytes);
 
             if (this.Name != null && this.Name != n) {
                 throw new DatabaseReadException ("Expected record name of '{0}', got '{1}'", this.Name, n);
@@ -24,13 +33,62 @@ namespace IPod {
             this.Name = n;
             this.HeaderOne = reader.ReadInt32 ();
             this.HeaderTwo = reader.ReadInt32 ();
+
+            if (IsBE) {
+                this.HeaderOne = Utility.Swap (this.HeaderOne);
+                this.HeaderTwo = Utility.Swap (this.HeaderTwo);
+            }
         }
-        
+
+        protected void WriteName (BinaryWriter writer) {
+            byte[] nameBytes = Encoding.ASCII.GetBytes (this.Name);
+            if (IsBE)
+                nameBytes = Utility.Swap (nameBytes);
+            
+            writer.Write (nameBytes);
+        }
+
+        public long ToInt64 (byte[] buf, int offset) {
+            return MaybeSwap (BitConverter.ToInt64 (buf, offset));
+        }
+
+        public int ToInt32 (byte[] buf, int offset) {
+            return MaybeSwap (BitConverter.ToInt32 (buf, offset));
+        }
+
+        public uint ToUInt32 (byte[] buf, int offset) {
+            return (uint) ToInt32 (buf, offset);
+        }
+
+        public short ToInt16 (byte[] buf, int offset) {
+            return MaybeSwap (BitConverter.ToInt16 (buf, offset));
+        }
+
+        public ushort ToUInt16 (byte[] buf, int offset) {
+            return (ushort) ToInt16 (buf, offset);
+        }
+
+        public short MaybeSwap (short val) {
+            return Utility.MaybeSwap (val, IsBE);
+        }
+
+        public int MaybeSwap (int val) {
+            return Utility.MaybeSwap (val, IsBE);
+        }
+
+        public long MaybeSwap (long val) {
+            return Utility.MaybeSwap (val, IsBE);
+        }
+
+        public byte[] MaybeSwap (byte[] val) {
+            return Utility.MaybeSwap (val, IsBE);
+        }
+
         public abstract void Save (DatabaseRecord db, BinaryWriter writer);
 
         protected void SaveChild (DatabaseRecord db, Record record, out byte[] data, out int length) {
             MemoryStream stream = new MemoryStream ();
-            BinaryWriter writer = new BinaryWriter (stream);
+            BinaryWriter writer = new EndianBinaryWriter (stream, IsBE);
             record.Save (db, writer);
             writer.Flush ();
             length = (int) stream.Length;
@@ -42,6 +100,9 @@ namespace IPod {
     internal class GenericRecord : Record {
 
         private byte[] data;
+
+        public GenericRecord (bool isbe) : base (isbe) {
+        }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
             base.Read (db, reader);
@@ -50,7 +111,7 @@ namespace IPod {
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (this.HeaderOne);
             writer.Write (this.HeaderTwo);
             writer.Write (this.data);
@@ -72,9 +133,9 @@ namespace IPod {
         
         public int Timestamp;
 
-        public PlaylistItemRecord () {
+        public PlaylistItemRecord (bool isbe) : base (isbe) {
             this.Name = "mhip";
-            posrec = new DetailRecord ();
+            posrec = new DetailRecord (isbe);
             posrec.Type = DetailType.Misc;
             details.Add (posrec);
         }
@@ -84,16 +145,16 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            int numDataObjects = BitConverter.ToInt32 (body, 0);
-            unknownOne = BitConverter.ToInt32 (body, 4);
-            unknownTwo = BitConverter.ToInt32 (body, 8);
-            TrackId = BitConverter.ToInt32 (body, 12);
-            Timestamp = BitConverter.ToInt32 (body, 16);
+            int numDataObjects = ToInt32 (body, 0);
+            unknownOne = ToInt32 (body, 4);
+            unknownTwo = ToInt32 (body, 8);
+            TrackId = ToInt32 (body, 12);
+            Timestamp = ToInt32 (body, 16);
 
             details.Clear ();
 
             for (int i = 0; i < numDataObjects; i++) {
-                DetailRecord detail = new DetailRecord ();
+                DetailRecord detail = new DetailRecord (IsBE);
                 detail.Read (db, reader);
                 details.Add (detail);
 
@@ -123,7 +184,7 @@ namespace IPod {
                 childrenData = newChildrenData;
             }
 
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (32 + PadLength);
             
             // as of version 13, the detail record counts as a child
@@ -197,7 +258,7 @@ namespace IPod {
             get { return nameRecord.Value; }
             set {
                 if (nameRecord == null) {
-                    nameRecord = new DetailRecord ();
+                    nameRecord = new DetailRecord (IsBE);
                     nameRecord.Type = DetailType.Title;
                     stringDetails.Add (nameRecord);
                 }
@@ -212,7 +273,7 @@ namespace IPod {
             }
         }
 
-        public PlaylistRecord (bool isLibrary) {
+        public PlaylistRecord (bool isLibrary, bool isbe) : base (isbe) {
             this.isLibrary = isLibrary;
             this.Name = "mhyp";
         }
@@ -250,6 +311,10 @@ namespace IPod {
             }
         }
 
+        public PlaylistItemRecord CreateItem () {
+            return new PlaylistItemRecord (IsBE);
+        }
+
         public int IndexOf (int trackid) {
 
             int i = 0;
@@ -269,20 +334,20 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            int numdetails = BitConverter.ToInt32 (body, 0);
-            int numitems = BitConverter.ToInt32 (body, 4);
-            int hiddenFlag = BitConverter.ToInt32 (body, 8);
+            int numdetails = ToInt32 (body, 0);
+            int numitems = ToInt32 (body, 4);
+            int hiddenFlag = ToInt32 (body, 8);
 
             if (hiddenFlag == 1)
                 IsHidden = true;
 
-            Timestamp = BitConverter.ToInt32 (body, 12);
-            Id = BitConverter.ToInt32 (body, 16);
-            unknownOne = BitConverter.ToInt32 (body, 20);
+            Timestamp = ToInt32 (body, 12);
+            Id = ToInt32 (body, 16);
+            unknownOne = ToInt32 (body, 20);
 
             if (db.Version >= 13) {
-                IsPodcast = BitConverter.ToInt16 (body, 30) == 1 ? true : false;
-                Order = (SortOrder) BitConverter.ToInt32 (body, 32);
+                IsPodcast = ToInt16 (body, 30) == 1 ? true : false;
+                Order = (SortOrder) ToInt32 (body, 32);
             }
 
             stringDetails.Clear ();
@@ -291,22 +356,22 @@ namespace IPod {
 
             for (int i = 0; i < numdetails; i++) {
                 if (i == 0) {
-                    nameRecord = new DetailRecord ();
+                    nameRecord = new DetailRecord (IsBE);
                     nameRecord.Read (db, reader);
                     stringDetails.Add (nameRecord);
                 } else if (isLibrary) {
-                    DetailRecord rec = new DetailRecord ();
+                    DetailRecord rec = new DetailRecord (IsBE);
                     rec.Read (db, reader);
                     otherDetails.Add (rec);
                 } else {
-                    GenericRecord rec = new GenericRecord ();
+                    GenericRecord rec = new GenericRecord (IsBE);
                     rec.Read (db, reader);
                     otherDetails.Add (rec);
                 }
             }
 
             for (int i = 0; i < numitems; i++) {
-                PlaylistItemRecord item = new PlaylistItemRecord ();
+                PlaylistItemRecord item = new PlaylistItemRecord (IsBE);
                 item.Read (db, reader);
                 playlistItems.Add (item);
             }
@@ -314,7 +379,7 @@ namespace IPod {
 
 #pragma warning disable 0169
         private DetailRecord CreateIndexRecord (TrackListRecord tracks, IndexType type) {
-            DetailRecord record = new DetailRecord ();
+            DetailRecord record = new DetailRecord (IsBE);
             record.Type = DetailType.LibraryIndex;
             record.IndexType = type;
 
@@ -364,7 +429,7 @@ namespace IPod {
             }
             
             MemoryStream stream = new MemoryStream ();
-            BinaryWriter childWriter = new BinaryWriter (stream);
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
             foreach (Record rec in stringDetails) {
                 rec.Save (db, childWriter);
@@ -384,8 +449,8 @@ namespace IPod {
             byte[] childData = stream.GetBuffer ();
             int childDataLength = (int) stream.Length;
             childWriter.Close ();
-            
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+
+            WriteName (writer);
 
             int reclen;
 
@@ -472,8 +537,8 @@ namespace IPod {
             }
         }
 
-        public PlaylistListRecord () {
-            PlaylistRecord record = new PlaylistRecord (true);
+        public PlaylistListRecord (bool isbe) : base (isbe) {
+            PlaylistRecord record = new PlaylistRecord (true, isbe);
             record.IsHidden = true;
             record.PlaylistName = "IPOD";
             playlists.Add (record);
@@ -500,14 +565,14 @@ namespace IPod {
                 if (i == 0)
                     isLibrary = true;
                 
-                PlaylistRecord list = new PlaylistRecord (isLibrary);
+                PlaylistRecord list = new PlaylistRecord (isLibrary, IsBE);
                 list.Read (db, reader);
                 playlists.Add (list);
             }
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (12 + PadLength);
             writer.Write (playlists.Count);
             writer.Write (new byte[PadLength]);
@@ -582,12 +647,12 @@ namespace IPod {
         public IndexType IndexType;
         public int[] LibraryIndices;
 
-        public DetailRecord () {
+        public DetailRecord (bool isbe) : base (isbe) {
             this.Name = "mhod";
             this.HeaderOne = 24; // this is always the value for mhods
         }
 
-        public DetailRecord (DetailType type, string value) : this () {
+        public DetailRecord (DetailType type, string value, bool isbe) : this (isbe) {
             this.Type = type;
             this.Value = value;
         }
@@ -597,13 +662,13 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderTwo - 12);
             
-            Type = (DetailType) BitConverter.ToInt32 (body, 0);
+            Type = (DetailType) ToInt32 (body, 0);
 
             if ((int) Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex)
                 throw new DatabaseReadException ("Unsupported detail type: " + Type);
 
-            unknownOne = BitConverter.ToInt32 (body, 4);
-            unknownTwo = BitConverter.ToInt32 (body, 8);
+            unknownOne = ToInt32 (body, 4);
+            unknownTwo = ToInt32 (body, 8);
             
             if ((int) Type < 50) {
                 if (Type == DetailType.PodcastUrl ||
@@ -617,40 +682,48 @@ namespace IPod {
                     Array.Copy (body, 12, chapterData, 0, body.Length - 12);
                 } else {
                     
-                    Position = BitConverter.ToInt32 (body, 12);
+                    Position = ToInt32 (body, 12);
 
                     int strlen = 0;
                     //int strenc = 0;
             
                     if ((int) Type < 50) {
                         // 'string' mhods       
-                        strlen = BitConverter.ToInt32 (body, 16);
-                        //strenc = BitConverter.ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
-                        unknownThree = BitConverter.ToInt32 (body, 24);
+                        strlen = ToInt32 (body, 16);
+                        //strenc = ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
+                        unknownThree = ToInt32 (body, 24);
                     }
-                    
+
                     // the strenc field is not what it was thought to be
                     // latest DBs have the field set to 1 even when the encoding
                     // is UTF-16. For now I'm just encoding as UTF-16
-                    Value = encoding.GetString(body, 28, strlen);
-                    if(Value.Length != strlen / 2)
+                    if (strlen >= 2 && body[29] == '\0') {
+                        Value = encoding.GetString (body, 28, strlen);
+                    } else {
                         Value = Encoding.UTF8.GetString(body, 28, strlen);
+                    }
                 }
             } else if (Type == DetailType.LibraryIndex) {
-                IndexType = (IndexType) BitConverter.ToInt32 (body, 12);
+                IndexType = (IndexType) ToInt32 (body, 12);
 
-                int numEntries = BitConverter.ToInt32 (body, 16);
+                /*
+
+                this is totally hosing stuff up on SLVR, and we don't use it anyway,
+                so nuke it for now.
+                
+                int numEntries = ToInt32 (body, 16);
 
                 ArrayList entries = new ArrayList ();
                 
                 for (int i = 0; i < numEntries; i++) {
-                    int entry = BitConverter.ToInt32 (body, 56 + (i * 4));
+                    int entry = ToInt32 (body, 56 + (i * 4));
                     entries.Add (entry);
                 }
 
                 LibraryIndices = (int[]) entries.ToArray (typeof (int));
+                */
             } else if (Type == DetailType.Misc) {
-                Position = BitConverter.ToInt32 (body, 12);
+                Position = ToInt32 (body, 12);
             }
         }
 
@@ -659,7 +732,7 @@ namespace IPod {
             if (Value == null)
                 Value = String.Empty;
 
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (24);
 
             byte[] valbytes = null;
@@ -672,7 +745,13 @@ namespace IPod {
                     valbytes = chapterData;
                     writer.Write (24 + valbytes.Length);
                 } else {
-                    valbytes = encoding.GetBytes (Value);
+                    if (IsBE) {
+                        // ugh. it looks like the big endian databases normally use utf8
+                        valbytes = Encoding.UTF8.GetBytes (Value);
+                    } else {
+                        valbytes = encoding.GetBytes (Value);
+                    }
+                    
                     writer.Write (40 + valbytes.Length);
                 }
             } else if (Type == DetailType.LibraryIndex) {
@@ -766,7 +845,7 @@ namespace IPod {
             get { return (DetailRecord[]) details.ToArray (typeof (DetailRecord)); }
         }
 
-        public TrackRecord () {
+        public TrackRecord (bool isbe) : base (isbe) {
             this.Name = "mhit";
         }
 
@@ -784,7 +863,7 @@ namespace IPod {
                     return detail;
             }
 
-            DetailRecord rec = new DetailRecord ();
+            DetailRecord rec = new DetailRecord (IsBE);
             rec.Type = type;
             AddDetail (rec);
             
@@ -797,51 +876,51 @@ namespace IPod {
             
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            int numDetails = BitConverter.ToInt32 (body, 0);
-            Id = BitConverter.ToInt32 (body, 4);
-            Hidden = BitConverter.ToInt32 (body, 8) == 1 ? false : true;
-            Type = (TrackRecordType) BitConverter.ToInt16 (body, 16);
+            int numDetails = ToInt32 (body, 0);
+            Id = ToInt32 (body, 4);
+            Hidden = ToInt32 (body, 8) == 1 ? false : true;
+            Type = (TrackRecordType) ToInt16 (body, 16);
             CompilationFlag = body[18];
             Rating = body[19];
-            Date = BitConverter.ToUInt32 (body, 20);
-            Size = BitConverter.ToInt32 (body, 24);
-            Length = BitConverter.ToInt32 (body, 28);
-            TrackNumber = BitConverter.ToInt32 (body, 32);
-            TotalTracks = BitConverter.ToInt32 (body, 36);
-            Year = BitConverter.ToInt32 (body, 40);
-            BitRate = BitConverter.ToInt32 (body, 44);
-            unknownThree = BitConverter.ToInt16 (body, 48);
-            SampleRate = BitConverter.ToUInt16 (body, 50);
-            Volume = BitConverter.ToInt32 (body, 52);
-            StartTime = BitConverter.ToInt32 (body, 56);
-            StopTime = BitConverter.ToInt32 (body, 60);
-            SoundCheck = BitConverter.ToInt32 (body, 64);
-            PlayCount = BitConverter.ToInt32 (body, 68);
-            playCountDup = BitConverter.ToInt32 (body, 72);
-            LastPlayedTime = BitConverter.ToUInt32 (body, 76);
-            DiscNumber = BitConverter.ToInt32 (body, 80);
-            TotalDiscs = BitConverter.ToInt32 (body, 84);
-            UserId = BitConverter.ToInt32 (body, 88);
-            LastModifiedTime = BitConverter.ToUInt32 (body, 92);
-            BookmarkTime = BitConverter.ToInt32 (body, 96);
-            DatabaseId = BitConverter.ToInt64 (body, 100);
+            Date = ToUInt32 (body, 20);
+            Size = ToInt32 (body, 24);
+            Length = ToInt32 (body, 28);
+            TrackNumber = ToInt32 (body, 32);
+            TotalTracks = ToInt32 (body, 36);
+            Year = ToInt32 (body, 40);
+            BitRate = ToInt32 (body, 44);
+            unknownThree = ToInt16 (body, 48);
+            SampleRate = ToUInt16 (body, 50);
+            Volume = ToInt32 (body, 52);
+            StartTime = ToInt32 (body, 56);
+            StopTime = ToInt32 (body, 60);
+            SoundCheck = ToInt32 (body, 64);
+            PlayCount = ToInt32 (body, 68);
+            playCountDup = ToInt32 (body, 72);
+            LastPlayedTime = ToUInt32 (body, 76);
+            DiscNumber = ToInt32 (body, 80);
+            TotalDiscs = ToInt32 (body, 84);
+            UserId = ToInt32 (body, 88);
+            LastModifiedTime = ToUInt32 (body, 92);
+            BookmarkTime = ToInt32 (body, 96);
+            DatabaseId = ToInt64 (body, 100);
             Checked = body[108];
             ApplicationRating = body[109];
-            BPM = BitConverter.ToInt16 (body, 110);
-            ArtworkCount = BitConverter.ToInt16 (body, 114);
-            unknownFour = BitConverter.ToInt16 (body, 112);
-            ArtworkSize = BitConverter.ToInt32 (body, 116);
-            unknownFive = BitConverter.ToInt32 (body, 120);
-            unknownSix = BitConverter.ToInt32 (body, 124);
-            unknownSeven = BitConverter.ToInt32 (body, 128);
-            unknownEight = BitConverter.ToInt32 (body, 132);
-            WeirdDRMValue = BitConverter.ToInt32 (body, 136);
-            unknownTen = BitConverter.ToInt32 (body, 140);
+            BPM = ToInt16 (body, 110);
+            ArtworkCount = ToInt16 (body, 114);
+            unknownFour = ToInt16 (body, 112);
+            ArtworkSize = ToInt32 (body, 116);
+            unknownFive = ToInt32 (body, 120);
+            unknownSix = ToInt32 (body, 124);
+            unknownSeven = ToInt32 (body, 128);
+            unknownEight = ToInt32 (body, 132);
+            WeirdDRMValue = ToInt32 (body, 136);
+            unknownTen = ToInt32 (body, 140);
 
             details.Clear ();
 
             for (int i = 0; i < numDetails; i++) {
-                DetailRecord rec = new DetailRecord ();
+                DetailRecord rec = new DetailRecord (IsBE);
                 rec.Read (db, reader);
                 details.Add (rec);
             }
@@ -850,7 +929,7 @@ namespace IPod {
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
 
             MemoryStream stream = new MemoryStream ();
-            BinaryWriter childWriter = new BinaryWriter (stream);
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
             foreach (DetailRecord rec in details) {
                 rec.Save (db, childWriter);
@@ -868,7 +947,7 @@ namespace IPod {
                 len = 156;
             }
             
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (len);
             writer.Write (len + childDataLength);
 
@@ -942,7 +1021,7 @@ namespace IPod {
             get { return (TrackRecord[]) tracks.ToArray (typeof (TrackRecord)); }
         }
 
-        public TrackListRecord () {
+        public TrackListRecord (bool isbe) : base (isbe) {
             this.Name = "mhlt";
         }
 
@@ -992,7 +1071,7 @@ namespace IPod {
             tracks.Clear ();
             
             for (int i = 0; i < trackCount; i++) {
-                TrackRecord rec = new TrackRecord ();
+                TrackRecord rec = new TrackRecord (IsBE);
                 rec.Read (db, reader);
                 tracks.Add (rec);
             }
@@ -1001,7 +1080,7 @@ namespace IPod {
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
 
             MemoryStream stream = new MemoryStream ();
-            BinaryWriter childWriter = new BinaryWriter (stream);
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
             foreach (TrackRecord rec in tracks) {
                 rec.Save (db, childWriter);
@@ -1012,7 +1091,7 @@ namespace IPod {
             int childDataLength = (int) stream.Length;
             childWriter.Close ();
 
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (12 + PadLength);
             writer.Write (tracks.Count);
             writer.Write (new byte[PadLength]);
@@ -1043,17 +1122,17 @@ namespace IPod {
             }
         }
 
-        public DataSetRecord () {
+        public DataSetRecord (bool isbe) : base (isbe) {
             this.Name = "mhsd";
         }
 
-        public DataSetRecord (DataSetIndex index) : this () {
+        public DataSetRecord (DataSetIndex index, bool isbe) : this (isbe) {
             this.Index = index;
 
             if (Index == DataSetIndex.Library) {
-                TrackList = new TrackListRecord ();
+                TrackList = new TrackListRecord (isbe);
             } else {
-                PlaylistList = new PlaylistListRecord ();
+                PlaylistList = new PlaylistListRecord (isbe);
             }
         }
 
@@ -1062,16 +1141,16 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            Index = (DataSetIndex) BitConverter.ToInt32 (body, 0);
+            Index = (DataSetIndex) ToInt32 (body, 0);
 
             switch (Index) {
             case DataSetIndex.Library:
-                this.TrackList = new TrackListRecord ();
+                this.TrackList = new TrackListRecord (IsBE);
                 this.TrackList.Read (db, reader);
                 break;
             case DataSetIndex.Playlist:
             case DataSetIndex.PlaylistDuplicate:
-                this.PlaylistList = new PlaylistListRecord ();
+                this.PlaylistList = new PlaylistListRecord (IsBE);
                 this.PlaylistList.Read (db, reader);
                 break;
             default:
@@ -1085,7 +1164,7 @@ namespace IPod {
             int childDataLength;
 
             MemoryStream stream = new MemoryStream ();
-            BinaryWriter childWriter = new BinaryWriter (stream);
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
             switch (Index) {
             case DataSetIndex.Library:
@@ -1104,7 +1183,7 @@ namespace IPod {
             childDataLength = (int) stream.Length;
             childWriter.Close ();
 
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (16 + PadLength);
             writer.Write (16 + PadLength + childDataLength);
             writer.Write ((int) Index);
@@ -1137,14 +1216,14 @@ namespace IPod {
             }
         }
 
-        public DatabaseRecord () {
+        public DatabaseRecord (bool isbe) : base (isbe) {
             datasets = new ArrayList ();
-            datasets.Add (new DataSetRecord (DataSetIndex.Library));
+            datasets.Add (new DataSetRecord (DataSetIndex.Library, isbe));
 
-            DataSetRecord plrec = new DataSetRecord (DataSetIndex.Playlist);
+            DataSetRecord plrec = new DataSetRecord (DataSetIndex.Playlist, isbe);
             datasets.Add (plrec);
 
-            DataSetRecord plrec2 = new DataSetRecord (DataSetIndex.PlaylistDuplicate);
+            DataSetRecord plrec2 = new DataSetRecord (DataSetIndex.PlaylistDuplicate, isbe);
             plrec2.PlaylistList = plrec.PlaylistList;
             datasets.Add (plrec2);
 
@@ -1156,11 +1235,11 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
             
-            unknownOne = BitConverter.ToInt32 (body, 0);
-            Version = BitConverter.ToInt32 (body, 4);
-            int childrenCount = BitConverter.ToInt32 (body, 8);
-            Id = BitConverter.ToInt64 (body, 12);
-            unknownTwo = BitConverter.ToInt32 (body, 20);
+            unknownOne = ToInt32 (body, 0);
+            Version = ToInt32 (body, 4);
+            int childrenCount = ToInt32 (body, 8);
+            Id = ToInt64 (body, 12);
+            unknownTwo = ToInt32 (body, 20);
 
             if (Version > MaxSupportedVersion)
                 throw new DatabaseReadException ("Detected unsupported database version {0}", Version);
@@ -1168,7 +1247,7 @@ namespace IPod {
             datasets.Clear ();
 
             for (int i = 0; i < childrenCount; i++) {
-                DataSetRecord rec = new DataSetRecord ();
+                DataSetRecord rec = new DataSetRecord (IsBE);
                 rec.Read (this, reader);
                 datasets.Add (rec);
             }
@@ -1202,7 +1281,7 @@ namespace IPod {
             ReassignTrackIds ();
             
             MemoryStream stream = new MemoryStream ();
-            BinaryWriter childWriter = new BinaryWriter (stream);
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
             foreach (DataSetRecord rec in datasets) {
                 rec.Save (db, childWriter);
@@ -1213,7 +1292,7 @@ namespace IPod {
             int childDataLength = (int) stream.Length;
             childWriter.Close ();
 
-            writer.Write (Encoding.ASCII.GetBytes (this.Name));
+            WriteName (writer);
             writer.Write (36 + PadLength);
             writer.Write (36 + PadLength + childDataLength);
 
@@ -1297,6 +1376,8 @@ namespace IPod {
         private Random random = new Random();
         private Device device;
 
+        private string controlPath;
+
         public event EventHandler SaveStarted;
         public event SaveProgressHandler SaveProgressChanged;
         public event EventHandler SaveEnded;
@@ -1306,8 +1387,22 @@ namespace IPod {
 
         public event EventHandler Reloaded;
 
+        private string ControlPath {
+            get { return device.ControlPath; }
+        }
+
+        private string ControlDirectoryName {
+            get {
+                // so lame
+                if (device.ControlPath.IndexOf ("iPod_Control") >= 0)
+                    return "iPod_Control";
+                else
+                    return "iTunes_Control";
+            }
+        }
+
         private string SongDbPath {
-            get { return device.MountPoint + "/iPod_Control/iTunes/iTunesDB"; }
+            get { return ControlPath + "iTunes/iTunesDB"; }
         }
 
         private string SongDbBackupPath {
@@ -1315,11 +1410,11 @@ namespace IPod {
         }
 
         private string MusicBasePath {
-            get { return device.MountPoint + "/iPod_Control/Music"; }
+            get { return ControlPath + "Music"; }
         }
 
         private string PlayCountsPath {
-            get { return device.MountPoint + "/iPod_Control/iTunes/Play Counts"; }
+            get { return ControlPath + "iTunes/Play Counts"; }
         }
 
         public Song[] Songs {
@@ -1369,19 +1464,20 @@ namespace IPod {
             if (!File.Exists (PlayCountsPath))
                 return;
             
-            using (BinaryReader reader = new BinaryReader (File.Open (PlayCountsPath, FileMode.Open, FileAccess.Read))) {
+            using (BinaryReader reader = new
+                   BinaryReader (File.Open (PlayCountsPath, FileMode.Open, FileAccess.Read))) {
 
                 byte[] header = reader.ReadBytes (96);
-                int entryLength = BitConverter.ToInt32 (header, 8);
-                int numEntries = BitConverter.ToInt32 (header, 12);
+                int entryLength = dbrec.ToInt32 (header, 8);
+                int numEntries = dbrec.ToInt32 (header, 12);
 
                 for (int i = 0; i < numEntries; i++) {
                     
                     byte[] entry = reader.ReadBytes (entryLength);
                     
-                    (songs[i] as Song).playCount = BitConverter.ToInt32 (entry, 0);
+                    (songs[i] as Song).playCount = dbrec.ToInt32 (entry, 0);
 
-                    uint lastPlayed = BitConverter.ToUInt32 (entry, 4);
+                    uint lastPlayed = dbrec.ToUInt32 (entry, 4);
                     if (lastPlayed > 0) {
                         (songs[i] as Song).Track.LastPlayedTime = lastPlayed;
                     }
@@ -1390,7 +1486,7 @@ namespace IPod {
                     if (entryLength >= 16) {
                         // Why is this one byte in iTunesDB and 4 here?
                         
-                        int rating = BitConverter.ToInt32 (entry, 12);
+                        int rating = dbrec.ToInt32 (entry, 12);
                         (songs[i] as Song).Track.Rating  = (byte) rating;
                     }
                 }
@@ -1398,7 +1494,7 @@ namespace IPod {
         }
 
         private bool LoadOnTheGo (int num) {
-            string path = device.MountPoint + "/iPod_Control/iTunes/OTGPlaylistInfo";
+            string path = ControlPath + "iTunes/OTGPlaylistInfo";
 
             if (num != 0) {
                 path += "_" + num;
@@ -1416,10 +1512,10 @@ namespace IPod {
 
                 byte[] header = reader.ReadBytes (20);
 
-                int numTracks = BitConverter.ToInt32 (header, 12);
+                int numTracks = dbrec.ToInt32 (header, 12);
 
                 for (int i = 0; i < numTracks; i++) {
-                    int index = reader.ReadInt32 ();
+                    int index = dbrec.MaybeSwap (reader.ReadInt32 ());
 
                     otgsongs.Add (songs[index]);
                 }
@@ -1447,16 +1543,20 @@ namespace IPod {
         private void Reload (bool createFresh) {
         
             Clear ();
+
+            // This blows, we need to use the device model number or something
+            bool useBE = ControlPath.EndsWith ("iTunes_Control");
                 
             if (!File.Exists (SongDbPath) || createFresh) {
-                dbrec = new DatabaseRecord ();
+                dbrec = new DatabaseRecord (useBE);
                 LoadOnTheGo ();
                 return;
             }
 
             using (BinaryReader reader = new BinaryReader (File.Open (SongDbPath, FileMode.Open, FileAccess.Read))) {
 
-                dbrec = new DatabaseRecord ();
+                // FIXME
+                dbrec = new DatabaseRecord (useBE);
                 dbrec.Read (null, reader);
 
                 // Load the songs
@@ -1486,7 +1586,7 @@ namespace IPod {
         }
 
         internal bool IsSongOnDevice(string path) {
-            return path.StartsWith (MusicBasePath + Path.DirectorySeparatorChar + "F");
+            return path.StartsWith (MusicBasePath + "/F");
         }
 
         private string FormatSpace (UInt64 bytes) {
@@ -1604,7 +1704,8 @@ namespace IPod {
             
             try {
                 // Save the songs db
-                using (BinaryWriter writer = new BinaryWriter (new FileStream (SongDbPath, FileMode.Create))) {
+                using (BinaryWriter writer = new EndianBinaryWriter (new FileStream (SongDbPath, FileMode.Create),
+                                                                     dbrec.IsBE)) {
                     dbrec.Save (dbrec, writer);
                 }
 
@@ -1697,7 +1798,8 @@ namespace IPod {
             if (path == null)
                 return null;
             
-            return ":iPod_Control:Music:" + MakeUniquePodSongPath(path);
+            return String.Format (":{0}:Music:{1}", ControlDirectoryName, MakeUniquePodSongPath(path));
+
         }
 
         private int GetNextSongId () {
@@ -1714,7 +1816,7 @@ namespace IPod {
         private void AddSong (Song song, bool existing) {
             dbrec[DataSetIndex.Library].TrackList.Add (song.Track);
 
-            PlaylistItemRecord item = new PlaylistItemRecord ();
+            PlaylistItemRecord item = new PlaylistItemRecord (dbrec.IsBE);
             item.TrackId = song.Track.Id;
  
             dbrec[DataSetIndex.Playlist].Library.AddItem (item);
@@ -1753,7 +1855,7 @@ namespace IPod {
         }
 
         public Song CreateSong () {
-            TrackRecord track = new TrackRecord ();
+            TrackRecord track = new TrackRecord (dbrec.IsBE);
             track.Id = GetNextSongId ();
             track.Date = Utility.DateToMacTime (DateTime.Now);
             track.LastModifiedTime = track.Date;
@@ -1770,7 +1872,7 @@ namespace IPod {
             if (name == null)
                 throw new ArgumentException ("name cannot be null");
 
-            PlaylistRecord playrec = new PlaylistRecord (false);
+            PlaylistRecord playrec = new PlaylistRecord (false, dbrec.IsBE);
             playrec.PlaylistName = name;
             
             dbrec[DataSetIndex.Playlist].PlaylistList.AddPlaylist (playrec);

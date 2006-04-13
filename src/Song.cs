@@ -249,7 +249,7 @@ namespace IPod {
         private static Uri PathToFileUri (string path) {
             if (path == null)
                 return null;
-            
+
             path = Path.GetFullPath (path);
 
             StringBuilder builder = new StringBuilder ();

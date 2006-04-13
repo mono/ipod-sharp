@@ -81,11 +81,12 @@ namespace IPod {
         private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
         private SongDatabase songs;
+        private string controlPath;
 
         public event EventHandler Changed;
 
         private string EqDbPath {
-            get { return this.MountPoint + "/iPod_Control/iTunes/iTunesEQPresets"; }
+            get { return ControlPath + "/iTunes/iTunesEQPresets"; }
         }
         
         public DeviceModel Model {

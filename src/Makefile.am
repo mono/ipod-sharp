@@ -21,6 +21,7 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/DeviceModel.cs	\
 	$(srcdir)/DeviceException.cs	\
 	$(srcdir)/DeviceBusyException.cs	\
+	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
 	$(srcdir)/Initializer.cs	\
 	$(srcdir)/Song.cs		\
