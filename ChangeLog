@@ -1,5 +1,11 @@
 2006-04-13  James Willcox  <snorp@snorp.net>
 
+	* src/Song.cs: add LatestPlayCount property, which indicates the play
+	count since the last sync.
+	* src/SongDatabase.cs: read the play count correctly
+
+2006-04-13  James Willcox  <snorp@snorp.net>
+
 	* src/EndianBinaryWriter.cs: added, allows one to control what
 	byte order stuff is written as
 	* src/SongDatabase.cs: be a lot more careful about byte order,

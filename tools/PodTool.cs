@@ -112,6 +112,12 @@ namespace IPod.Tools {
                     db.RemoveSong (song);
                 }
                 break;
+            case "--playcounts":
+                foreach (Song song in db.Songs) {
+                    Console.WriteLine ("{0}: total {1}, latest {2}", song.Title,
+                                       song.PlayCount, song.LatestPlayCount);
+                }
+                break;
             default:
                 Usage ();
                 break;

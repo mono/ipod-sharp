@@ -1475,7 +1475,8 @@ namespace IPod {
                     
                     byte[] entry = reader.ReadBytes (entryLength);
                     
-                    (songs[i] as Song).playCount = dbrec.ToInt32 (entry, 0);
+                    (songs[i] as Song).LatestPlayCount = dbrec.ToInt32 (entry, 0);
+                    (songs[i] as Song).PlayCount += (songs[i] as Song).LatestPlayCount;
 
                     uint lastPlayed = dbrec.ToUInt32 (entry, 4);
                     if (lastPlayed > 0) {

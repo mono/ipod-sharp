@@ -20,6 +20,7 @@ namespace IPod {
 
         private TrackRecord record;
         private SongDatabase db;
+        private int latestPlayCount;
 
         internal int playCount;
         internal DateTime lastPlayed;
@@ -166,6 +167,11 @@ namespace IPod {
         public int PlayCount {
             get { return record.PlayCount; }
             set { record.PlayCount = value; }
+        }
+
+        public int LatestPlayCount {
+            get { return latestPlayCount; }
+            internal set { latestPlayCount = value; }
         }
 
         public bool IsCompilation {
