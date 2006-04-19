@@ -1,3 +1,7 @@
+2006-04-19  James Willcox  <snorp@snorp.net>
+
+	* src/EndianBinaryWriter.cs: write out the correct endianness
+
 2006-04-13  James Willcox  <snorp@snorp.net>
 
 	* src/Song.cs: add LatestPlayCount property, which indicates the play

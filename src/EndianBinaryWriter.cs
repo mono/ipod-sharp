@@ -12,15 +12,15 @@ namespace IPod {
         }
         
         public override void Write (int val) {
-            base.Write (Utility.MaybeSwap (val, isbe));
+            base.Write (Utility.MaybeSwap (BitConverter.GetBytes (val), isbe));
         }
 
         public override void Write (short val) {
-            base.Write (Utility.MaybeSwap (val, isbe));
+            base.Write (Utility.MaybeSwap (BitConverter.GetBytes (val), isbe));
         }
 
         public override void Write (long val) {
-            base.Write (Utility.MaybeSwap (val, isbe));
+            base.Write (Utility.MaybeSwap (BitConverter.GetBytes (val), isbe));
         }
 
         public override void Write (uint val) {
