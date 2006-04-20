@@ -1,3 +1,7 @@
+2006-04-20  James Willcox  <snorp@snorp.net>
+
+	* configure.ac: bump to 0.5.16
+
 2006-04-19  James Willcox  <snorp@snorp.net>
 
 	* src/EndianBinaryWriter.cs: write out the correct endianness
