@@ -4,7 +4,7 @@ using System.Text;
 
 namespace IPod {
     
-    public class ShuffleSongDatabase  {
+    internal class ShuffleSongDatabase  {
         
         public static bool Save(Device device) {
             

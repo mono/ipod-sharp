@@ -149,18 +149,6 @@
         <remarks>Any modifications made to the current database are cleared when this method is called.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="OnTheGoPlaylist">
-      <MemberSignature Language="C#" Value="public IPod.Playlist OnTheGoPlaylist { get; };" />
-      <MemberType>Property</MemberType>
-      <ReturnValue>
-        <ReturnType>IPod.Playlist</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>Represents the "On-The-Go" playlists on the iPod.</summary>
-        <value>Represents the "On-The-Go" playlists on the iPod.</value>
-        <remarks>This playlist cannot be modified.  Attempts to add/remove songs to this playlist, or remove the playlist will result in a <see cref="T:System.InvalidOperationException" />.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="LookupPlaylist">
       <MemberSignature Language="C#" Value="public IPod.Playlist LookupPlaylist (string name);" />
       <MemberType>Method</MemberType>
@@ -219,6 +207,18 @@
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnTheGoPlaylists">
+      <MemberSignature Language="C#" Value="public IPod.Playlist[] OnTheGoPlaylists { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Playlist[]</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

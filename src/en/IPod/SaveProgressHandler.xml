@@ -1,5 +1,5 @@
 <Type Name="SaveProgressHandler" FullName="IPod.SaveProgressHandler">
-  <TypeSignature Language="C#" Value="public delegate void SaveProgressHandler(IPod.SongDatabase db, IPod.Song currentSong, double currentPercent, int completed, int total);" />
+  <TypeSignature Language="C#" Value="public delegate void SaveProgressHandler(object o, IPod.SaveProgressArgs args);" />
   <AssemblyInfo>
     <AssemblyName>ipod-sharp</AssemblyName>
     <AssemblyVersion>0.0.1.0</AssemblyVersion>
@@ -8,21 +8,15 @@
     <BaseTypeName>System.Delegate</BaseTypeName>
   </Base>
   <Parameters>
-    <Parameter Name="db" Type="IPod.SongDatabase" />
-    <Parameter Name="currentSong" Type="IPod.Song" />
-    <Parameter Name="currentPercent" Type="System.Double" />
-    <Parameter Name="completed" Type="System.Int32" />
-    <Parameter Name="total" Type="System.Int32" />
+    <Parameter Name="o" Type="System.Object" />
+    <Parameter Name="args" Type="IPod.SaveProgressArgs" />
   </Parameters>
   <ReturnValue>
     <ReturnType>System.Void</ReturnType>
   </ReturnValue>
   <Docs>
-    <param name="db">To be added.</param>
-    <param name="currentSong">To be added.</param>
-    <param name="currentPercent">To be added.</param>
-    <param name="completed">To be added.</param>
-    <param name="total">To be added.</param>
+    <param name="o">To be added.</param>
+    <param name="args">To be added.</param>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>
   </Docs>

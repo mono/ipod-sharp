@@ -25,6 +25,9 @@
       <Type Name="DeviceGeneration" />
       <Type Name="PlaylistSongHandler" />
       <Type Name="PlaylistHandler" />
+      <Type Name="ArtworkFormat" />
+      <Type Name="SaveProgressArgs" />
+      <Type Name="ArtworkType" />
     </Namespace>
     <Namespace Name="IPod">
       <Type Name="Device" />

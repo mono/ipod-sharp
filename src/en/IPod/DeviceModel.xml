@@ -128,6 +128,46 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
+    <Member MemberName="NanoWhite">
+      <MemberSignature Language="C#" Value="NanoWhite" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoBlack">
+      <MemberSignature Language="C#" Value="NanoBlack" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="VideoWhite">
+      <MemberSignature Language="C#" Value="VideoWhite" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="VideoBlack">
+      <MemberSignature Language="C#" Value="VideoBlack" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
   </Members>
   <Docs>
     <summary>Represents a specific iPod model.</summary>
