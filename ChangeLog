@@ -1,3 +1,8 @@
+2006-05-03  Aaron Bockover  <aaron@abock.org>
+
+	* src/SongDatabase.cs (LoadPlayCounts): handle an invalid header (less
+	than 16 bytes) and catch conversion exceptions
+	
 2006-04-23  James Willcox  <snorp@snorp.net>
 
 	* src/ShuffleSongDatabase.cs: make internal instead of public

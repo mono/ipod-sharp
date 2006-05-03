@@ -1468,8 +1468,19 @@ namespace IPod {
                    BinaryReader (File.Open (PlayCountsPath, FileMode.Open, FileAccess.Read))) {
 
                 byte[] header = reader.ReadBytes (96);
-                int entryLength = dbrec.ToInt32 (header, 8);
-                int numEntries = dbrec.ToInt32 (header, 12);
+                int entryLength = 0;
+                int numEntries = 0;
+
+                if(header.Length < 16) {
+                    return;
+                }
+
+                try {
+                    entryLength = dbrec.ToInt32 (header, 8);
+                    numEntries = dbrec.ToInt32 (header, 12);
+                } catch { 
+                    return;
+                }
 
                 for (int i = 0; i < numEntries; i++) {
                     
