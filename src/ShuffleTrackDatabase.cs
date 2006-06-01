@@ -16,21 +16,21 @@ namespace IPod {
             using(BinaryWriter writer = new BinaryWriter(new FileStream(
                 sdbFile, FileMode.Create))) {
                 
-                WriteHeader(writer, device.TrackDatabase.Songs.Length);
+                WriteHeader(writer, device.TrackDatabase.Tracks.Length);
                 
-                foreach(Song song in device.TrackDatabase.Songs) {
-                    WriteSongEntry(writer, device, song);
+                foreach(Track track in device.TrackDatabase.Tracks) {
+                    WriteTrackEntry(writer, device, track);
                 }
             }
             
             return true;
         }
         
-        private static void WriteHeader(BinaryWriter writer, int songCount) {
+        private static void WriteHeader(BinaryWriter writer, int trackCount) {
         
-            // number of song entries in the file
+            // number of track entries in the file
             writer.Write((byte)0x00);
-            writer.Write(Utility.Swap ((short)songCount));
+            writer.Write(Utility.Swap ((short)trackCount));
             
             // unknown (0x010600)
             writer.Write((byte)0x01);
@@ -46,8 +46,8 @@ namespace IPod {
             writer.Write(new byte [9]);
         }
     
-        private static void WriteSongEntry(BinaryWriter writer, Device device, 
-            Song song) {
+        private static void WriteTrackEntry(BinaryWriter writer, Device device, 
+            Track track) {
         
             // size of entry 
             writer.Write((byte)0x00);
@@ -78,7 +78,7 @@ namespace IPod {
             
             // file type (0x01 = MP3, 0x02 = AAC, 0x04 = WAV)
             writer.Write(new byte [2]);
-            switch(song.Track.Type) {
+            switch(track.TrackRecord.Type) {
                 case TrackRecordType.MP3:
                     writer.Write((byte)0x01);
                     break;
@@ -94,7 +94,7 @@ namespace IPod {
             writer.Write((byte)0x00);
             
             // file name (UTF-16, record is 522 bytes)
-            string file = song.FileName;
+            string file = track.FileName;
             if(file.StartsWith(device.MountPoint)) {
                 file = file.Substring(device.MountPoint.Length);
             }

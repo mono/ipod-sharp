@@ -414,7 +414,7 @@ namespace IPod {
             otherDetails = details;
 
             /* this is causing problems, leave it out for now
-            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Song));
+            otherDetails.Add (CreateIndexRecord (tracks, IndexType.Track));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Album));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Artist));
             otherDetails.Add (CreateIndexRecord (tracks, IndexType.Genre));
@@ -498,7 +498,7 @@ namespace IPod {
                     return 0;
                 
                 switch (type) {
-                case IndexType.Song:
+                case IndexType.Track:
                     return String.Compare (trackA.GetDetail (DetailType.Title).Value,
                                            trackB.GetDetail (DetailType.Title).Value);
                 case IndexType.Artist:
@@ -624,7 +624,7 @@ namespace IPod {
     }
 
     internal enum IndexType {
-        Song = 3,
+        Track = 3,
         Album = 4,
         Artist = 5,
         Genre = 7,
@@ -1195,7 +1195,7 @@ namespace IPod {
     internal class DatabaseRecord : Record {
 
         private const int MaxSupportedVersion = 17;
-        private const int SongIdStart = 1000;
+        private const int TrackIdStart = 1000;
 
         private int unknownOne = 1;
         private int unknownTwo = 2;
@@ -1260,7 +1260,7 @@ namespace IPod {
         private void ReassignTrackIds () {
             Hashtable oldids = new Hashtable ();
 
-            int id = SongIdStart;
+            int id = TrackIdStart;
             foreach (TrackRecord track in this[DataSetIndex.Library].TrackList.Tracks) {
                 oldids[track.Id] = id;
                 track.Id = id++;
@@ -1315,17 +1315,17 @@ namespace IPod {
 
     public class SaveProgressArgs : EventArgs {
 
-        private Song song;
-        private double songPercent;
+        private Track track;
+        private double trackPercent;
         private int completed;
         private int total;
         
-        public Song CurrentSong {
-            get { return song; }
+        public Track CurrentTrack {
+            get { return track; }
         }
 
-        public double SongProgress {
-            get { return songPercent; }
+        public double TrackProgress {
+            get { return trackPercent; }
         }
 
         public double TotalProgress {
@@ -1335,22 +1335,22 @@ namespace IPod {
                 } else {
                     double fraction = (double) completed / (double) total;
                     
-                    return fraction + (1.0 / (double) total) * songPercent;
+                    return fraction + (1.0 / (double) total) * trackPercent;
                 }
             }
         }
 
-        public int SongsCompleted {
+        public int TracksCompleted {
             get { return completed; }
         }
 
-        public int SongsTotal {
+        public int TracksTotal {
             get { return total; }
         }
 
-        public SaveProgressArgs (Song song, double songPercent, int completed, int total) {
-            this.song = song;
-            this.songPercent = songPercent;
+        public SaveProgressArgs (Track track, double trackPercent, int completed, int total) {
+            this.track = track;
+            this.trackPercent = trackPercent;
             this.completed = completed;
             this.total = total;
         }
@@ -1366,9 +1366,9 @@ namespace IPod {
         
         private DatabaseRecord dbrec;
 
-        private ArrayList songs = new ArrayList ();
-        private ArrayList songsToAdd = new ArrayList ();
-        private ArrayList songsToRemove = new ArrayList ();
+        private ArrayList tracks = new ArrayList ();
+        private ArrayList tracksToAdd = new ArrayList ();
+        private ArrayList tracksToRemove = new ArrayList ();
 
         private ArrayList playlists = new ArrayList ();
         private ArrayList otgPlaylists = new ArrayList ();
@@ -1401,12 +1401,12 @@ namespace IPod {
             }
         }
 
-        private string SongDbPath {
+        private string TrackDbPath {
             get { return ControlPath + "iTunes/iTunesDB"; }
         }
 
-        private string SongDbBackupPath {
-            get { return SongDbPath + ".bak"; }
+        private string TrackDbBackupPath {
+            get { return TrackDbPath + ".bak"; }
         }
 
         private string MusicBasePath {
@@ -1417,9 +1417,9 @@ namespace IPod {
             get { return ControlPath + "iTunes/Play Counts"; }
         }
 
-        public Song[] Songs {
+        public Track[] Tracks {
             get {
-                return (Song[]) songs.ToArray (typeof (Song));
+                return (Track[]) tracks.ToArray (typeof (Track));
             }
         }
 
@@ -1443,8 +1443,8 @@ namespace IPod {
         internal TrackDatabase (Device device, bool createFresh) {
             this.device = device;
             
-            if(createFresh && File.Exists(SongDbPath)) {
-                File.Copy (SongDbPath, SongDbBackupPath, true);
+            if(createFresh && File.Exists(TrackDbPath)) {
+                File.Copy (TrackDbPath, TrackDbBackupPath, true);
             }
             
             Reload (createFresh);
@@ -1453,9 +1453,9 @@ namespace IPod {
         
         private void Clear () {
             dbrec = null;
-            songs.Clear ();
-            songsToAdd.Clear ();
-            songsToRemove.Clear ();
+            tracks.Clear ();
+            tracksToAdd.Clear ();
+            tracksToRemove.Clear ();
             playlists.Clear ();
             otgPlaylists.Clear ();
         }
@@ -1475,12 +1475,12 @@ namespace IPod {
                     
                     byte[] entry = reader.ReadBytes (entryLength);
                     
-                    (songs[i] as Song).LatestPlayCount = dbrec.ToInt32 (entry, 0);
-                    (songs[i] as Song).PlayCount += (songs[i] as Song).LatestPlayCount;
+                    (tracks[i] as Track).LatestPlayCount = dbrec.ToInt32 (entry, 0);
+                    (tracks[i] as Track).PlayCount += (tracks[i] as Track).LatestPlayCount;
 
                     uint lastPlayed = dbrec.ToUInt32 (entry, 4);
                     if (lastPlayed > 0) {
-                        (songs[i] as Song).Track.LastPlayedTime = lastPlayed;
+                        (tracks[i] as Track).TrackRecord.LastPlayedTime = lastPlayed;
                     }
 
                     // if it has rating info, get it
@@ -1488,7 +1488,7 @@ namespace IPod {
                         // Why is this one byte in iTunesDB and 4 here?
                         
                         int rating = dbrec.ToInt32 (entry, 12);
-                        (songs[i] as Song).Track.Rating  = (byte) rating;
+                        (tracks[i] as Track).TrackRecord.Rating  = (byte) rating;
                     }
                 }
             }
@@ -1507,7 +1507,7 @@ namespace IPod {
                 return false;
             }
             
-            ArrayList otgsongs = new ArrayList ();
+            ArrayList otgtracks = new ArrayList ();
             
             using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open, FileAccess.Read))) {
 
@@ -1521,7 +1521,7 @@ namespace IPod {
                     if (dbrec.IsBE)
                         index = Utility.Swap (index);
 
-                    otgsongs.Add (songs[index]);
+                    otgtracks.Add (tracks[index]);
                 }
             }
 
@@ -1531,7 +1531,7 @@ namespace IPod {
                 title += " " + num;
             }
             
-            otgPlaylists.Add (new Playlist (this, title, (Song[]) otgsongs.ToArray (typeof (Song))));
+            otgPlaylists.Add (new Playlist (this, title, (Track[]) otgtracks.ToArray (typeof (Track))));
             return true;
         }
 
@@ -1551,22 +1551,22 @@ namespace IPod {
             // This blows, we need to use the device model number or something
             bool useBE = ControlPath.EndsWith ("iTunes_Control");
                 
-            if (!File.Exists (SongDbPath) || createFresh) {
+            if (!File.Exists (TrackDbPath) || createFresh) {
                 dbrec = new DatabaseRecord (useBE);
                 LoadOnTheGo ();
                 return;
             }
 
-            using (BinaryReader reader = new BinaryReader (File.Open (SongDbPath, FileMode.Open, FileAccess.Read))) {
+            using (BinaryReader reader = new BinaryReader (File.Open (TrackDbPath, FileMode.Open, FileAccess.Read))) {
 
                 // FIXME
                 dbrec = new DatabaseRecord (useBE);
                 dbrec.Read (null, reader);
 
-                // Load the songs
+                // Load the tracks
                 foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList) {
-                    Song song = new Song (this, track);
-                    songs.Add (song);
+                    Track t = new Track (this, track);
+                    tracks.Add (t);
                 }
 
                 // Load the play counts
@@ -1589,7 +1589,7 @@ namespace IPod {
             }
         }
 
-        internal bool IsSongOnDevice(string path) {
+        internal bool IsTrackOnDevice(string path) {
             return path.StartsWith (MusicBasePath + "/F");
         }
 
@@ -1605,13 +1605,13 @@ namespace IPod {
             UInt64 required = 0;
 
             // we're going to free some up, so add that
-            foreach (Song song in songsToRemove) {
-                available += (UInt64) song.Size;
+            foreach (Track track in tracksToRemove) {
+                available += (UInt64) track.Size;
             }
 
-            foreach (Song song in songsToAdd) {
-                if (!IsSongOnDevice (song.FileName)) {
-                    required += (UInt64) song.Size;
+            foreach (Track track in tracksToAdd) {
+                if (!IsTrackOnDevice (track.FileName)) {
+                    required += (UInt64) track.Size;
                 }
             }
 
@@ -1622,7 +1622,7 @@ namespace IPod {
         }
 
         
-        private string MakeUniquePodSongPath(string filename) {
+        private string MakeUniquePodTrackPath(string filename) {
             const string allowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             
             string basePath = MusicBasePath + "/";
@@ -1644,17 +1644,17 @@ namespace IPod {
             return uniqueName.Replace("/", ":");
         }
 
-        private void CopySong (Song song, string dest, int completed, int total) {
+        private void CopyTrack (Track track, string dest, int completed, int total) {
             BinaryReader reader = null;
             BinaryWriter writer = null;
             
             try {
-                FileInfo info = new FileInfo (song.FileName);
+                FileInfo info = new FileInfo (track.FileName);
                 long length = info.Length;
                 long count = 0;
                 double lastPercent = 0.0;
 
-                reader = new BinaryReader (new BufferedStream (File.Open (song.FileName, FileMode.Open, FileAccess.Read)));
+                reader = new BinaryReader (new BufferedStream (File.Open (track.FileName, FileMode.Open, FileAccess.Read)));
                 writer = new BinaryWriter (new BufferedStream (File.Open (dest, FileMode.Create)));
                 
                 do {
@@ -1664,7 +1664,7 @@ namespace IPod {
 
                     double percent = (double) count / (double) length;
                     if (percent >= lastPercent + PercentThreshold && SaveProgressChanged != null) {
-                        SaveProgressArgs args = new SaveProgressArgs (song, (double) count / (double) length,
+                        SaveProgressArgs args = new SaveProgressArgs (track, (double) count / (double) length,
                                                                       completed, total);
 
                         try {
@@ -1689,33 +1689,33 @@ namespace IPod {
 
             CheckFreeSpace ();
 
-            // make sure all the new songs have file names, and that they exist
-            foreach (Song song in songsToAdd) {
-                if (song.FileName == null)
-                    throw new DatabaseWriteException (String.Format ("Song '{0}' has no file assigned", song.Title));
-                else if (!File.Exists (song.FileName)) {
-                    throw new DatabaseWriteException (String.Format ("File '{0}' for song '{1}' does not exist",
-                                                                     song.FileName, song.Title));
+            // make sure all the new tracks have file names, and that they exist
+            foreach (Track track in tracksToAdd) {
+                if (track.FileName == null)
+                    throw new DatabaseWriteException (String.Format ("Track '{0}' has no file assigned", track.Title));
+                else if (!File.Exists (track.FileName)) {
+                    throw new DatabaseWriteException (String.Format ("File '{0}' for track '{1}' does not exist",
+                                                                     track.FileName, track.Title));
                 }
             }
 
             if (SaveStarted != null)
                 SaveStarted (this, new EventArgs ());
 
-            // Back up the current song db
-            if (File.Exists (SongDbPath))
-                File.Copy (SongDbPath, SongDbBackupPath, true);
+            // Back up the current track db
+            if (File.Exists (TrackDbPath))
+                File.Copy (TrackDbPath, TrackDbBackupPath, true);
             
             try {
-                // Save the songs db
-                using (BinaryWriter writer = new EndianBinaryWriter (new FileStream (SongDbPath, FileMode.Create),
+                // Save the tracks db
+                using (BinaryWriter writer = new EndianBinaryWriter (new FileStream (TrackDbPath, FileMode.Create),
                                                                      dbrec.IsBE)) {
                     dbrec.Save (dbrec, writer);
                 }
 
-                foreach (Song song in songsToRemove) {
-                    if (File.Exists (song.FileName))
-                        File.Delete (song.FileName);
+                foreach (Track track in tracksToRemove) {
+                    if (File.Exists (track.FileName))
+                        File.Delete (track.FileName);
                 }
                 
                 if (!Directory.Exists (MusicBasePath))
@@ -1723,16 +1723,16 @@ namespace IPod {
                 
                 int completed = 0;
                 
-                // Copy songs to iPod; if song is already in the Music directory structure, do not copy
-                foreach (Song song in songsToAdd) {
-                    if (!IsSongOnDevice (song.FileName)) {
-                        string dest = GetFilesystemPath (song.Track.GetDetail (DetailType.Location).Value);
-                        CopySong (song, dest, completed++, songsToAdd.Count);
-                        song.FileName = dest;
+                // Copy tracks to iPod; if track is already in the Music directory structure, do not copy
+                foreach (Track track in tracksToAdd) {
+                    if (!IsTrackOnDevice (track.FileName)) {
+                        string dest = GetFilesystemPath (track.TrackRecord.GetDetail (DetailType.Location).Value);
+                        CopyTrack (track, dest, completed++, tracksToAdd.Count);
+                        track.FileName = dest;
                     }
                 }
 
-                // Save the shuffle songs db (will only create if device is shuffle);
+                // Save the shuffle tracks db (will only create if device is shuffle);
                 try {
                     ShuffleTrackDatabase.Save (device);
                 } catch (Exception) {}
@@ -1763,9 +1763,9 @@ namespace IPod {
 
                 Mono.Unix.Native.Syscall.sync ();
             } catch (Exception e) {
-                // rollback the song db
-                if (File.Exists (SongDbBackupPath))
-                    File.Copy (SongDbBackupPath, SongDbPath, true);
+                // rollback the track db
+                if (File.Exists (TrackDbBackupPath))
+                    File.Copy (TrackDbBackupPath, TrackDbPath, true);
 
                 throw new DatabaseWriteException (e, "Failed to save database");
             } finally {
@@ -1773,8 +1773,8 @@ namespace IPod {
                     device.RescanDisk();
                 } catch(Exception) {}
 
-                songsToAdd.Clear ();
-                songsToRemove.Clear ();
+                tracksToAdd.Clear ();
+                tracksToRemove.Clear ();
                 
                 if (SaveEnded != null)
                     SaveEnded (this, new EventArgs ());
@@ -1802,11 +1802,11 @@ namespace IPod {
             if (path == null)
                 return null;
             
-            return String.Format (":{0}:Music:{1}", ControlDirectoryName, MakeUniquePodSongPath(path));
+            return String.Format (":{0}:Music:{1}", ControlDirectoryName, MakeUniquePodTrackPath(path));
 
         }
 
-        private int GetNextSongId () {
+        private int GetNextTrackId () {
             int max = 0;
 
             foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList) {
@@ -1817,59 +1817,59 @@ namespace IPod {
             return max + 1;
         }
 
-        private void AddSong (Song song, bool existing) {
-            dbrec[DataSetIndex.Library].TrackList.Add (song.Track);
+        private void AddTrack (Track track, bool existing) {
+            dbrec[DataSetIndex.Library].TrackList.Add (track.TrackRecord);
 
             PlaylistItemRecord item = new PlaylistItemRecord (dbrec.IsBE);
-            item.TrackId = song.Track.Id;
+            item.TrackId = track.TrackRecord.Id;
  
             dbrec[DataSetIndex.Playlist].Library.AddItem (item);
 
             if (!existing)
-                songsToAdd.Add (song);
-            else if (songsToRemove.Contains (song))
-                songsToRemove.Remove (song);
+                tracksToAdd.Add (track);
+            else if (tracksToRemove.Contains (track))
+                tracksToRemove.Remove (track);
                 
-            songs.Add (song);
+            tracks.Add (track);
         }
 
-        public void RemoveSong (Song song) {
-            if (songs.Contains (song)) {
-                songs.Remove (song);
+        public void RemoveTrack (Track track) {
+            if (tracks.Contains (track)) {
+                tracks.Remove (track);
 
-                if (songsToAdd.Contains (song))
-                    songsToAdd.Remove (song);
+                if (tracksToAdd.Contains (track))
+                    tracksToAdd.Remove (track);
                 else
-                    songsToRemove.Add (song);
+                    tracksToRemove.Add (track);
 
-                // remove from the song db
-                dbrec[DataSetIndex.Library].TrackList.Remove (song.Id);
-                dbrec[DataSetIndex.Playlist].Library.RemoveTrack (song.Track.Id);
+                // remove from the track db
+                dbrec[DataSetIndex.Library].TrackList.Remove (track.Id);
+                dbrec[DataSetIndex.Playlist].Library.RemoveTrack (track.TrackRecord.Id);
                     
                 // remove from the "normal" playlists
                 foreach (Playlist list in playlists) {
-                    list.RemoveSong (song);
+                    list.RemoveTrack (track);
                 }
 
                 // remove from On-The-Go playlists
                 foreach (Playlist list in otgPlaylists) {
-                    list.RemoveOTGSong (song);
+                    list.RemoveOTGTrack (track);
                 }
             }
         }
 
-        public Song CreateSong () {
+        public Track CreateTrack () {
             TrackRecord track = new TrackRecord (dbrec.IsBE);
-            track.Id = GetNextSongId ();
+            track.Id = GetNextTrackId ();
             track.Date = Utility.DateToMacTime (DateTime.Now);
             track.LastModifiedTime = track.Date;
             track.DatabaseId = (long) new Random ().Next ();
             
-            Song song = new Song (this, track);
+            Track t = new Track (this, track);
             
-            AddSong (song, false);
+            AddTrack (t, false);
             
-            return song;
+            return t;
         }
 
         public Playlist CreatePlaylist (string name) {
@@ -1913,10 +1913,10 @@ namespace IPod {
             return null;
         }
 
-        internal Song GetSongById (int id) {
-            foreach (Song song in songs) {
-                if (song.Id == id)
-                    return song;
+        internal Track GetTrackById (int id) {
+            foreach (Track track in tracks) {
+                if (track.Id == id)
+                    return track;
             }
 
             return null;

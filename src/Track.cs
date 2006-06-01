@@ -5,7 +5,7 @@ using System.IO;
 
 namespace IPod {
 
-    public enum SongRating {
+    public enum TrackRating {
         Zero = 0,
         One = 20,
         Two = 40,
@@ -14,7 +14,7 @@ namespace IPod {
         Five = 100
     }
     
-    public class Song {
+    public class Track {
 
         private static char[] CharsToQuote = { ';', '?', ':', '@', '&', '=', '$', ',', '#', '%' };
 
@@ -63,7 +63,7 @@ namespace IPod {
 
                 DetailRecord detail = record.GetDetail (DetailType.Location);
                 
-                if (db.IsSongOnDevice (value.LocalPath))
+                if (db.IsTrackOnDevice (value.LocalPath))
                     detail.Value = db.GetPodPath (value.LocalPath);
                 else
                     detail.Value = db.GetUniquePodPath (value.LocalPath);
@@ -197,8 +197,8 @@ namespace IPod {
             get { return Utility.MacTimeToDate (record.Date); }
         }
 
-        public SongRating Rating {
-            get { return (SongRating) record.Rating; }
+        public TrackRating Rating {
+            get { return (TrackRating) record.Rating; }
             set { record.Rating = (byte) value; }
         }
 
@@ -225,11 +225,11 @@ namespace IPod {
             get { return db; }
         }
 
-        internal TrackRecord Track {
+        internal TrackRecord TrackRecord {
             get { return record; }
         }
 
-        internal Song (TrackDatabase db, TrackRecord record) {
+        internal Track (TrackDatabase db, TrackRecord record) {
             this.db = db;
             this.record = record;
         }
@@ -239,7 +239,7 @@ namespace IPod {
         }
 
         public override bool Equals (object a) {
-            Song song = a as Song;
+            Track song = a as Track;
 
             if (song == null)
                 return false;

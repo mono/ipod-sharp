@@ -1,5 +1,9 @@
 2006-06-01  James Willcox  <snorp@snorp.net>
 
+	* Song.cs -> Track.cs
+
+2006-06-01  James Willcox  <snorp@snorp.net>
+
 	* SongDatabase.cs -> TrackDatabase.cs
 	* ShuffleSongDatabase.cs -> ShuffleTrackDatabase.cs
 

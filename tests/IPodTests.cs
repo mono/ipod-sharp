@@ -10,7 +10,7 @@ namespace IPod.Tests {
     public class IPodTests {
 
         private string tarballPath;
-        private static int nextSong;
+        private static int nextTrack;
 
         private const string testdir = "/tmp/ipod-sharp-tests";
         private const string playlistName = "Foo Playlist";
@@ -67,8 +67,8 @@ namespace IPod.Tests {
             return GetDevice ();
         }
 
-        private string GetTempSongFile () {
-            string path = String.Format ("{0}/ipod-sharp-test-song-{1}.mp3", testdir, nextSong++);
+        private string GetTempTrackFile () {
+            string path = String.Format ("{0}/ipod-sharp-test-track-{1}.mp3", testdir, nextTrack++);
             using (StreamWriter writer = new StreamWriter (File.Open (path, FileMode.Create))) {
                 writer.Write ("This is not a mp3.");
             }
@@ -86,45 +86,45 @@ namespace IPod.Tests {
         }
 
         [Test]
-        public void AddSongTest () {
+        public void AddTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            int len = db.Songs.Length;
+            int len = db.Tracks.Length;
 
             for (int i = 0; i < 100; i++)
-                AddSong (db);
+                AddTrack (db);
 
             db.Save ();
             db.Reload ();
 
-            Assert.AreEqual (len + 100, db.Songs.Length);
+            Assert.AreEqual (len + 100, db.Tracks.Length);
         }
 
         [Test]
-        public void RemoveSongTest () {
+        public void RemoveTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            int origlen = db.Songs.Length;
+            int origlen = db.Tracks.Length;
             
-            Song song = AddSong (db);
+            Track track = AddTrack (db);
             int index = origlen;
             
             foreach (Playlist pl in db.Playlists) {
-                pl.AddSong (song);
+                pl.AddTrack (track);
             }
 
             db.Save ();
             db.Reload ();
 
-            Song foundSong = db.Songs[index];
+            Track foundTrack = db.Tracks[index];
 
-            Assert.IsNotNull (foundSong);
+            Assert.IsNotNull (foundTrack);
 
-            db.RemoveSong (foundSong);
+            db.RemoveTrack (foundTrack);
 
             foreach (Playlist pl in db.Playlists) {
-                foreach (Song ps in pl.Songs) {
-                    Assert.IsFalse (foundSong.Id == ps.Id);
+                foreach (Track ps in pl.Tracks) {
+                    Assert.IsFalse (foundTrack.Id == ps.Id);
                 }
             }
 
@@ -132,79 +132,79 @@ namespace IPod.Tests {
             db.Reload ();
 
             foreach (Playlist pl in db.Playlists) {
-                foreach (Song ps in pl.Songs) {
-                    Assert.IsFalse (foundSong.Id == ps.Id);
+                foreach (Track ps in pl.Tracks) {
+                    Assert.IsFalse (foundTrack.Id == ps.Id);
                 }
             }
 
-            Assert.AreEqual (db.Songs.Length, origlen);
+            Assert.AreEqual (db.Tracks.Length, origlen);
         }
 
         [Test]
-        public void UpdateSongTest () {
+        public void UpdateTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            AddSong (db);
-            int index = db.Songs.Length - 1;
+            AddTrack (db);
+            int index = db.Tracks.Length - 1;
             
             db.Save ();
             db.Reload ();
 
-            Song song = db.Songs[index];
+            Track track = db.Tracks[index];
 
-            Assert.IsNotNull (song);
+            Assert.IsNotNull (track);
 
             DateTime now = DateTime.Now;
             
-            song.Artist = "عَلَيْكُم";
-            song.Album = "ሠላም";
-            song.Year = 1000;
-            song.Duration = TimeSpan.FromMilliseconds (9999);
-            song.TrackNumber = 8;
-            song.TotalTracks = 9;
-            song.BitRate = 444;
-            song.SampleRate = 555;
-            song.Title = "ආයුබෝවන්";
-            song.Genre = "こんにちは";
-            song.Comment = "வணக்கம்";
-            song.PlayCount = 34;
-            song.LastPlayed = now;
-            song.Rating = SongRating.Four;
-            song.PodcastUrl = "blah blah";
-            song.Category = "my category";
+            track.Artist = "عَلَيْكُم";
+            track.Album = "ሠላም";
+            track.Year = 1000;
+            track.Duration = TimeSpan.FromMilliseconds (9999);
+            track.TrackNumber = 8;
+            track.TotalTracks = 9;
+            track.BitRate = 444;
+            track.SampleRate = 555;
+            track.Title = "ආයුබෝවන්";
+            track.Genre = "こんにちは";
+            track.Comment = "வணக்கம்";
+            track.PlayCount = 34;
+            track.LastPlayed = now;
+            track.Rating = TrackRating.Four;
+            track.PodcastUrl = "blah blah";
+            track.Category = "my category";
 
             db.Save ();
             db.Reload ();
 
-            song = db.Songs[index];
+            track = db.Tracks[index];
 
-            Assert.IsNotNull (song);
-            Assert.AreEqual ("عَلَيْكُم", song.Artist);
-            Assert.AreEqual ("ሠላም", song.Album);
-            Assert.AreEqual (1000, song.Year);
-            Assert.AreEqual (TimeSpan.FromMilliseconds (9999), song.Duration);
-            Assert.AreEqual (8, song.TrackNumber);
-            Assert.AreEqual (9, song.TotalTracks);
-            Assert.AreEqual (444, song.BitRate);
-            Assert.AreEqual (555, song.SampleRate);
-            Assert.AreEqual ("ආයුබෝවන්", song.Title);
-            Assert.AreEqual ("こんにちは", song.Genre);
-            Assert.AreEqual ("வணக்கம்", song.Comment);
-            Assert.AreEqual (34, song.PlayCount);
-            Assert.AreEqual (SongRating.Four, song.Rating);
-            Assert.AreEqual ("blah blah", song.PodcastUrl);
-            Assert.AreEqual ("my category", song.Category);
+            Assert.IsNotNull (track);
+            Assert.AreEqual ("عَلَيْكُم", track.Artist);
+            Assert.AreEqual ("ሠላም", track.Album);
+            Assert.AreEqual (1000, track.Year);
+            Assert.AreEqual (TimeSpan.FromMilliseconds (9999), track.Duration);
+            Assert.AreEqual (8, track.TrackNumber);
+            Assert.AreEqual (9, track.TotalTracks);
+            Assert.AreEqual (444, track.BitRate);
+            Assert.AreEqual (555, track.SampleRate);
+            Assert.AreEqual ("ආයුබෝවන්", track.Title);
+            Assert.AreEqual ("こんにちは", track.Genre);
+            Assert.AreEqual ("வணக்கம்", track.Comment);
+            Assert.AreEqual (34, track.PlayCount);
+            Assert.AreEqual (TrackRating.Four, track.Rating);
+            Assert.AreEqual ("blah blah", track.PodcastUrl);
+            Assert.AreEqual ("my category", track.Category);
 
             // the conversion to/from mac time skews this a little
             // so we can't do a straight comparison
-            Assert.IsTrue (Math.Abs ((song.LastPlayed - now).TotalSeconds) < 1);
+            Assert.IsTrue (Math.Abs ((track.LastPlayed - now).TotalSeconds) < 1);
         }
 
-        private Playlist CreatePlaylist (TrackDatabase db, int numSongs) {
+        private Playlist CreatePlaylist (TrackDatabase db, int numTracks) {
             Playlist list = db.CreatePlaylist (playlistName);
 
-            for (int i = 0; i < numSongs; i++) {
-                list.AddSong (AddSong (db));
+            for (int i = 0; i < numTracks; i++) {
+                list.AddTrack (AddTrack (db));
             }
 
             return list;
@@ -222,7 +222,7 @@ namespace IPod.Tests {
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (10, list.Songs.Length);
+            Assert.AreEqual (10, list.Tracks.Length);
         }
 
         [Test]
@@ -257,19 +257,19 @@ namespace IPod.Tests {
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (10, list.Songs.Length);
+            Assert.AreEqual (10, list.Tracks.Length);
 
             for (int i = 0; i < 10; i++)
-                list.AddSong (AddSong (db));
+                list.AddTrack (AddTrack (db));
 
-            Assert.AreEqual (20, list.Songs.Length);
+            Assert.AreEqual (20, list.Tracks.Length);
             db.Save ();
             db.Reload ();
 
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (20, list.Songs.Length);
+            Assert.AreEqual (20, list.Tracks.Length);
         }
 
         [Test]
@@ -284,30 +284,30 @@ namespace IPod.Tests {
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (10, list.Songs.Length);
+            Assert.AreEqual (10, list.Tracks.Length);
 
-            Song mysong = list.Songs[4];
-            mysong.Artist = "reordered";
+            Track mytrack = list.Tracks[4];
+            mytrack.Artist = "reordered";
 
-            list.RemoveSong (4);
-            list.InsertSong (0, mysong);
+            list.RemoveTrack (4);
+            list.InsertTrack (0, mytrack);
             db.Save ();
             db.Reload ();
 
             list = db.LookupPlaylist (playlistName);
-            Assert.AreEqual ("reordered", list.Songs[0].Artist);
+            Assert.AreEqual ("reordered", list.Tracks[0].Artist);
         }
 
-        private Song AddSong (TrackDatabase db) {
-            Song song = db.CreateSong ();
+        private Track AddTrack (TrackDatabase db) {
+            Track track = db.CreateTrack ();
 
-            song.Artist = "FOO FOO FOO " + nextSong;
-            song.Album = "BAR BAR BAR " + nextSong;
-            song.Title = "BAZ BAZ BAZ " + nextSong;
-            song.Duration = TimeSpan.FromMilliseconds (99999);
-            song.FileName = GetTempSongFile ();
+            track.Artist = "FOO FOO FOO " + nextTrack;
+            track.Album = "BAR BAR BAR " + nextTrack;
+            track.Title = "BAZ BAZ BAZ " + nextTrack;
+            track.Duration = TimeSpan.FromMilliseconds (99999);
+            track.FileName = GetTempTrackFile ();
 
-            return song;
+            return track;
         }
 
         [Test]
@@ -409,22 +409,22 @@ namespace IPod.Tests {
 
         [Test]
         [ExpectedException (typeof (ArgumentNullException))]
-        public void NullSongFileNameTest () {
+        public void NullTrackFileNameTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            Song song = AddSong (db);
-            song.FileName = null;
+            Track track = AddTrack (db);
+            track.FileName = null;
 
             db.Save ();
         }
 
         [Test]
         [ExpectedException (typeof (System.IO.FileNotFoundException))]
-        public void MissingSongFileNameTest () {
+        public void MissingTrackFileNameTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            Song song = AddSong (db);
-            song.FileName = "/tmp/ipod-sharp-test-missing.mp3";
+            Track track = AddTrack (db);
+            track.FileName = "/tmp/ipod-sharp-test-missing.mp3";
 
             db.Save ();
         }
@@ -450,34 +450,34 @@ namespace IPod.Tests {
 
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
-        public void AddOTGSongTest () {
+        public void AddOTGTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            Song song = AddSong (db);
+            Track track = AddTrack (db);
 
             Playlist[] lists = db.OnTheGoPlaylists;
             
             if (lists.Length == 0)
                 throw new InvalidOperationException ("no lists");
 
-            lists[0].AddSong (song);
+            lists[0].AddTrack (track);
         }
 
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
-        public void RemoveOTGSongTest () {
+        public void RemoveOTGTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist[] lists = db.OnTheGoPlaylists;
 
-            // make nunit happy if there were no songs or playlists
-            if (lists.Length == 0 || lists[0].Songs.Length == 0)
-                throw new InvalidOperationException ("no songs");
+            // make nunit happy if there were no tracks or playlists
+            if (lists.Length == 0 || lists[0].Tracks.Length == 0)
+                throw new InvalidOperationException ("no tracks");
 
             Playlist otg = lists[0];
             
-            foreach (Song song in otg.Songs) {
-                otg.RemoveSong (song);
+            foreach (Track track in otg.Tracks) {
+                otg.RemoveTrack (track);
             }
         }
 

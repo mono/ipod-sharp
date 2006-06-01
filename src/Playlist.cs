@@ -4,25 +4,25 @@ using System.Collections;
 
 namespace IPod {
 
-    public delegate void PlaylistSongHandler (object o, int index, Song song);
+    public delegate void PlaylistTrackHandler (object o, int index, Track track);
     
     public class Playlist {
 
         private TrackDatabase db;
         private PlaylistRecord record;
-        private ArrayList otgsongs;
+        private ArrayList otgtracks;
         private string otgtitle;
 
-        public event PlaylistSongHandler SongAdded;
-        public event PlaylistSongHandler SongRemoved;
+        public event PlaylistTrackHandler TrackAdded;
+        public event PlaylistTrackHandler TrackRemoved;
 
         internal PlaylistRecord PlaylistRecord {
             get { return record; }
         }
 
-        internal Playlist (TrackDatabase db, string title, Song[] otgsongs) {
+        internal Playlist (TrackDatabase db, string title, Track[] otgtracks) {
             this.otgtitle = title;
-            this.otgsongs = new ArrayList (otgsongs);
+            this.otgtracks = new ArrayList (otgtracks);
         }
         
         internal Playlist (TrackDatabase db, PlaylistRecord record) {
@@ -30,32 +30,32 @@ namespace IPod {
             this.record = record;
         }
 
-        public Song[] Songs {
+        public Track[] Tracks {
             get {
                 if (IsOnTheGo)
-                    return (Song[]) otgsongs.ToArray (typeof (Song));
+                    return (Track[]) otgtracks.ToArray (typeof (Track));
                     
-                ArrayList songs = new ArrayList ();
+                ArrayList tracks = new ArrayList ();
 
                 foreach (PlaylistItemRecord item in record.Items) {
-                    Song song = db.GetSongById (item.TrackId);
+                    Track track = db.GetTrackById (item.TrackId);
 
-                    if (song == null) {
-                        Console.Error.WriteLine ("Playlist '{0}' contains invalid song id '{0}'",
+                    if (track == null) {
+                        Console.Error.WriteLine ("Playlist '{0}' contains invalid track id '{0}'",
                                                  Name, item.TrackId);
                         continue;
                     }
 
-                    songs.Add (song);
+                    tracks.Add (track);
                 }
                 
-                return (Song[]) songs.ToArray (typeof (Song));
+                return (Track[]) tracks.ToArray (typeof (Track));
             }
         }
 
-        public Song this[int index] {
+        public Track this[int index] {
             get {
-                return db.GetSongById (record.Items[index].TrackId);
+                return db.GetTrackById (record.Items[index].TrackId);
             } set {
                 record.Items[index].TrackId = value.Id;
             }
@@ -76,63 +76,63 @@ namespace IPod {
         }
 
         public bool IsOnTheGo {
-            get { return otgsongs != null; }
+            get { return otgtracks != null; }
         }
 
-        public void InsertSong (int index, Song song) {
+        public void InsertTrack (int index, Track track) {
             if (IsOnTheGo)
                 throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
             
             PlaylistItemRecord item = record.CreateItem ();
-            item.TrackId = song.Id;
+            item.TrackId = track.Id;
 
             record.InsertItem (index, item);
 
-            if (SongAdded != null)
-                SongAdded (this, index, song);
+            if (TrackAdded != null)
+                TrackAdded (this, index, track);
         }
 
         public void Clear () {
             record.Clear ();
         }
         
-        public void AddSong (Song song) {
-            InsertSong (-1, song);
+        public void AddTrack (Track track) {
+            InsertTrack (-1, track);
         }
 
-        public void RemoveSong (int index) {
+        public void RemoveTrack (int index) {
             if (IsOnTheGo)
                 throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
 
-            Song song = this[index];
+            Track track = this[index];
             record.RemoveItem (index);
 
-            if (SongRemoved != null)
-                SongRemoved (this, index, song);
+            if (TrackRemoved != null)
+                TrackRemoved (this, index, track);
         }
 
-        public bool RemoveSong (Song song) {
+        public bool RemoveTrack (Track track) {
             int index;
             bool ret = false;
             
-            while ((index = IndexOf (song)) >= 0) {
+            while ((index = IndexOf (track)) >= 0) {
                 ret = true;
-                RemoveSong (index);
+                RemoveTrack (index);
             }
 
             return ret;
         }
 
-        internal bool RemoveOTGSong (Song song) {
-            if (!otgsongs.Contains (song))
+        internal bool RemoveOTGTrack (Track track) {
+            if (!otgtracks.Contains (track))
                 return false;
 
-            otgsongs.Remove (song);
+            otgtracks.Remove (track);
             return true;
         }
 
-        public int IndexOf (Song song) {
-            return record.IndexOf (song.Id);
+        public int IndexOf (Track track) {
+            return record.IndexOf (track.Id);
         }
     }
 

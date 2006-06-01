@@ -7,25 +7,25 @@ namespace IPod.Tools {
     public class PodTool {
 
         private static void Usage () {
-            Console.WriteLine ("ipod-tool [--dump-songs, --dump-playlists, --clear] <mount_point> ");
+            Console.WriteLine ("ipod-tool [--dump-tracks, --dump-playlists, --clear] <mount_point> ");
         }
 
-        private static string GetSongPath (string dest, Song song) {
-            string artist = song.Artist;
+        private static string GetTrackPath (string dest, Track track) {
+            string artist = track.Artist;
 
             if (artist == null || artist == String.Empty)
                 artist = "Unknown";
 
-            string album = song.Album;
+            string album = track.Album;
             
             if (album == null || album == String.Empty)
                 album = "Unknown";
 
-            string title = song.Title;
+            string title = track.Title;
             if (title == null || title == String.Empty)
                 title = "Unknown";
 
-            string ext = Path.GetExtension (song.FileName);
+            string ext = Path.GetExtension (track.FileName);
             
             int index = 0;
             string path = null;
@@ -64,58 +64,58 @@ namespace IPod.Tools {
                 
                 string dest = args[2];
                 int count = 1;
-                int total = db.Songs.Length;
+                int total = db.Tracks.Length;
                 
-                foreach (Song song in db.Songs) {
-                    string path = GetSongPath (dest, song);
-                    Console.WriteLine ("Copying ({0} of {1}): {2}", count++, total, song);
+                foreach (Track track in db.Tracks) {
+                    string path = GetTrackPath (dest, track);
+                    Console.WriteLine ("Copying ({0} of {1}): {2}", count++, total, track);
 
                     string dir = Path.GetDirectoryName (path);
                     if (!Directory.Exists (dir))
                         Directory.CreateDirectory (dir);
                     
-                    File.Copy (song.FileName, path);
+                    File.Copy (track.FileName, path);
                 }
                 break;
-            case "--dump-songs":
-                foreach (Song song in db.Songs) {
-                    Console.WriteLine (song);
+            case "--dump-tracks":
+                foreach (Track track in db.Tracks) {
+                    Console.WriteLine (track);
                 }
                 break;
             case "--dump-playlists":
                 foreach (Playlist playlist in db.Playlists) {
                     Console.WriteLine ("Playlist: " + playlist.Name);
-                    foreach (Song song in playlist.Songs) {
-                        Console.WriteLine ("\t" + song);
+                    foreach (Track track in playlist.Tracks) {
+                        Console.WriteLine ("\t" + track);
                     }
                 }
                 break;
-            case "--add-song":
+            case "--add-track":
                 {
-                    Song song = db.CreateSong ();
-                    song.Artist = "WOO WOO";
-                    song.Album = "WOO WOO";
-                    song.Title = "WOO WOO";
-                    song.Duration = new TimeSpan(333 * TimeSpan.TicksPerMillisecond);
-                    song.FileName = "/tmp/foobar.mp3";
+                    Track track = db.CreateTrack ();
+                    track.Artist = "WOO WOO";
+                    track.Album = "WOO WOO";
+                    track.Title = "WOO WOO";
+                    track.Duration = new TimeSpan(333 * TimeSpan.TicksPerMillisecond);
+                    track.FileName = "/tmp/foobar.mp3";
                 }
                 break;
-            case "--remove-song":
+            case "--remove-track":
                 int id = Int32.Parse (args[2]);
-                foreach (Song song in db.Songs) {
-                    if (song.Id == id)
-                        db.RemoveSong (song);
+                foreach (Track track in db.Tracks) {
+                    if (track.Id == id)
+                        db.RemoveTrack (track);
                 }
                 break;
             case "--clear":
-                foreach (Song song in db.Songs) {
-                    db.RemoveSong (song);
+                foreach (Track track in db.Tracks) {
+                    db.RemoveTrack (track);
                 }
                 break;
             case "--playcounts":
-                foreach (Song song in db.Songs) {
-                    Console.WriteLine ("{0}: total {1}, latest {2}", song.Title,
-                                       song.PlayCount, song.LatestPlayCount);
+                foreach (Track track in db.Tracks) {
+                    Console.WriteLine ("{0}: total {1}, latest {2}", track.Title,
+                                       track.PlayCount, track.LatestPlayCount);
                 }
                 break;
             default:

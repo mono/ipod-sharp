@@ -24,8 +24,8 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
 	$(srcdir)/Initializer.cs	\
-	$(srcdir)/Song.cs		\
 	$(srcdir)/Playlist.cs		\
+	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs \
 	$(srcdir)/Utility.cs \
 	$(srcdir)/ShuffleTrackDatabase.cs
