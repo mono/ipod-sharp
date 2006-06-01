@@ -26,9 +26,9 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Initializer.cs	\
 	$(srcdir)/Song.cs		\
 	$(srcdir)/Playlist.cs		\
-	$(srcdir)/SongDatabase.cs \
+	$(srcdir)/TrackDatabase.cs \
 	$(srcdir)/Utility.cs \
-	$(srcdir)/ShuffleSongDatabase.cs
+	$(srcdir)/ShuffleTrackDatabase.cs
 
 ASSEMBLY_RESOURCES =
 

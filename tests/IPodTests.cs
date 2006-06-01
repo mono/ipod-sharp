@@ -82,12 +82,12 @@ namespace IPod.Tests {
         public void SimpleTest () {
             Device device = OpenDevice ();
             device.Save ();
-            device.SongDatabase.Save ();
+            device.TrackDatabase.Save ();
         }
 
         [Test]
         public void AddSongTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             int len = db.Songs.Length;
 
@@ -102,7 +102,7 @@ namespace IPod.Tests {
 
         [Test]
         public void RemoveSongTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             int origlen = db.Songs.Length;
             
@@ -142,7 +142,7 @@ namespace IPod.Tests {
 
         [Test]
         public void UpdateSongTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             AddSong (db);
             int index = db.Songs.Length - 1;
@@ -200,7 +200,7 @@ namespace IPod.Tests {
             Assert.IsTrue (Math.Abs ((song.LastPlayed - now).TotalSeconds) < 1);
         }
 
-        private Playlist CreatePlaylist (SongDatabase db, int numSongs) {
+        private Playlist CreatePlaylist (TrackDatabase db, int numSongs) {
             Playlist list = db.CreatePlaylist (playlistName);
 
             for (int i = 0; i < numSongs; i++) {
@@ -212,7 +212,7 @@ namespace IPod.Tests {
 
         [Test]
         public void CreatePlaylistTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist list = CreatePlaylist (db, 10);
 
@@ -227,7 +227,7 @@ namespace IPod.Tests {
 
         [Test]
         public void RemovePlaylistTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
             Playlist list = CreatePlaylist (db, 10);
 
             db.Save ();
@@ -248,7 +248,7 @@ namespace IPod.Tests {
 
         [Test]
         public void UpdatePlaylistTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist list = CreatePlaylist (db, 10);
             db.Save ();
@@ -274,7 +274,7 @@ namespace IPod.Tests {
 
         [Test]
         public void ReorderPlaylistTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist list = CreatePlaylist (db, 10);
             db.Save ();
@@ -298,7 +298,7 @@ namespace IPod.Tests {
             Assert.AreEqual ("reordered", list.Songs[0].Artist);
         }
 
-        private Song AddSong (SongDatabase db) {
+        private Song AddSong (TrackDatabase db) {
             Song song = db.CreateSong ();
 
             song.Artist = "FOO FOO FOO " + nextSong;
@@ -410,7 +410,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (ArgumentNullException))]
         public void NullSongFileNameTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Song song = AddSong (db);
             song.FileName = null;
@@ -421,7 +421,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (System.IO.FileNotFoundException))]
         public void MissingSongFileNameTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Song song = AddSong (db);
             song.FileName = "/tmp/ipod-sharp-test-missing.mp3";
@@ -438,7 +438,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
         public void ModifyOTGNameTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist[] lists = db.OnTheGoPlaylists;
             
@@ -451,7 +451,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
         public void AddOTGSongTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Song song = AddSong (db);
 
@@ -466,7 +466,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
         public void RemoveOTGSongTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist[] lists = db.OnTheGoPlaylists;
 
@@ -484,7 +484,7 @@ namespace IPod.Tests {
         [Test]
         [ExpectedException (typeof (InvalidOperationException))]
         public void RemoveOTGPlaylistTest () {
-            SongDatabase db = OpenDevice ().SongDatabase;
+            TrackDatabase db = OpenDevice ().TrackDatabase;
 
             Playlist[] lists = db.OnTheGoPlaylists;
 

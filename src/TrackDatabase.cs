@@ -1359,7 +1359,7 @@ namespace IPod {
     public delegate void PlaylistHandler (object o, Playlist playlist);
     public delegate void SaveProgressHandler (object o, SaveProgressArgs args);
 
-    public class SongDatabase {
+    public class TrackDatabase {
 
         private const int CopyBufferSize = 8192;
         private const double PercentThreshold = 0.10;
@@ -1437,10 +1437,10 @@ namespace IPod {
             get { return dbrec.Version; }
         }
 
-        internal SongDatabase (Device device) : this (device, false) {
+        internal TrackDatabase (Device device) : this (device, false) {
         }
         
-        internal SongDatabase (Device device, bool createFresh) {
+        internal TrackDatabase (Device device, bool createFresh) {
             this.device = device;
             
             if(createFresh && File.Exists(SongDbPath)) {
@@ -1468,19 +1468,8 @@ namespace IPod {
                    BinaryReader (File.Open (PlayCountsPath, FileMode.Open, FileAccess.Read))) {
 
                 byte[] header = reader.ReadBytes (96);
-                int entryLength = 0;
-                int numEntries = 0;
-
-                if(header.Length < 16) {
-                    return;
-                }
-
-                try {
-                    entryLength = dbrec.ToInt32 (header, 8);
-                    numEntries = dbrec.ToInt32 (header, 12);
-                } catch { 
-                    return;
-                }
+                int entryLength = dbrec.ToInt32 (header, 8);
+                int numEntries = dbrec.ToInt32 (header, 12);
 
                 for (int i = 0; i < numEntries; i++) {
                     
@@ -1745,7 +1734,7 @@ namespace IPod {
 
                 // Save the shuffle songs db (will only create if device is shuffle);
                 try {
-                    ShuffleSongDatabase.Save (device);
+                    ShuffleTrackDatabase.Save (device);
                 } catch (Exception) {}
                 
                 // The play count file is invalid now, so we'll remove it (even though the iPod would anyway)

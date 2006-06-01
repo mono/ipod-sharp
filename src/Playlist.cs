@@ -8,7 +8,7 @@ namespace IPod {
     
     public class Playlist {
 
-        private SongDatabase db;
+        private TrackDatabase db;
         private PlaylistRecord record;
         private ArrayList otgsongs;
         private string otgtitle;
@@ -20,12 +20,12 @@ namespace IPod {
             get { return record; }
         }
 
-        internal Playlist (SongDatabase db, string title, Song[] otgsongs) {
+        internal Playlist (TrackDatabase db, string title, Song[] otgsongs) {
             this.otgtitle = title;
             this.otgsongs = new ArrayList (otgsongs);
         }
         
-        internal Playlist (SongDatabase db, PlaylistRecord record) {
+        internal Playlist (TrackDatabase db, PlaylistRecord record) {
             this.db = db;
             this.record = record;
         }

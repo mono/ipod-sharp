@@ -7,7 +7,7 @@ namespace IPod {
 
     public class ProgressDialog : Dialog {
 
-        private SongDatabase db;
+        private TrackDatabase db;
         private Label label;
         private ProgressBar bar;
         private ThreadNotify notify;
@@ -16,7 +16,7 @@ namespace IPod {
         private double fraction;
         private string message;
         
-        public SongDatabase SongDatabase {
+        public TrackDatabase TrackDatabase {
             get { return db; }
             set {
                 if (db != null) {

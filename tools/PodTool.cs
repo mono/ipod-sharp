@@ -53,7 +53,7 @@ namespace IPod.Tools {
             }
 
             Device device = new Device (args[1]);
-            SongDatabase db = device.SongDatabase;
+            TrackDatabase db = device.TrackDatabase;
 
             switch (args[0]) {
             case "--dump-files":

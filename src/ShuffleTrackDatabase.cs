@@ -4,7 +4,7 @@ using System.Text;
 
 namespace IPod {
     
-    internal class ShuffleSongDatabase  {
+    internal class ShuffleTrackDatabase  {
         
         public static bool Save(Device device) {
             
@@ -16,9 +16,9 @@ namespace IPod {
             using(BinaryWriter writer = new BinaryWriter(new FileStream(
                 sdbFile, FileMode.Create))) {
                 
-                WriteHeader(writer, device.SongDatabase.Songs.Length);
+                WriteHeader(writer, device.TrackDatabase.Songs.Length);
                 
-                foreach(Song song in device.SongDatabase.Songs) {
+                foreach(Song song in device.TrackDatabase.Songs) {
                     WriteSongEntry(writer, device, song);
                 }
             }

@@ -1,3 +1,8 @@
+2006-06-01  James Willcox  <snorp@snorp.net>
+
+	* SongDatabase.cs -> TrackDatabase.cs
+	* ShuffleSongDatabase.cs -> ShuffleTrackDatabase.cs
+
 2006-05-03  Aaron Bockover  <aaron@abock.org>
 
 	* src/SongDatabase.cs (LoadPlayCounts): handle an invalid header (less

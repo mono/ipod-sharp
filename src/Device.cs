@@ -80,7 +80,7 @@ namespace IPod {
         
         private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
-        private SongDatabase songs;
+        private TrackDatabase songs;
         private string controlPath;
 
         public event EventHandler Changed;
@@ -277,10 +277,10 @@ namespace IPod {
             }
         }
 
-        public SongDatabase SongDatabase {
+        public TrackDatabase TrackDatabase {
             get {
                 if(songs == null) {
-                    LoadSongDatabase ();
+                    LoadTrackDatabase ();
                 }
 
                 return songs;
@@ -308,22 +308,22 @@ namespace IPod {
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
         }
         
-        public void LoadSongDatabase () {
-            LoadSongDatabase (false);
+        public void LoadTrackDatabase () {
+            LoadTrackDatabase (false);
         }
         
-        public void LoadSongDatabase (bool createFresh) {
+        public void LoadTrackDatabase (bool createFresh) {
             if (!IsIPod) {
                 throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
             }
 
             if (songs == null)
-                songs = new SongDatabase (this, createFresh);
+                songs = new TrackDatabase (this, createFresh);
         }
         
-        public void CreateEmptySongDatabase () {
+        public void CreateEmptyTrackDatabase () {
             songs = null;
-            LoadSongDatabase(true);
+            LoadTrackDatabase(true);
         }
 
         private void EmitChanged () {
