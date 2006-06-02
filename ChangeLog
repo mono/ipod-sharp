@@ -1,3 +1,11 @@
+2006-06-02  James Willcox  <snorp@snorp.net>
+
+	* Track.cs: add Type property
+	* TrackDatabase.cs: handle more stuff in TrackRecord, such as
+	media type.
+
+	Add stuff for video support
+
 2006-06-01  James Willcox  <snorp@snorp.net>
 
 	* Song.cs -> Track.cs

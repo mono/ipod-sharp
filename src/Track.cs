@@ -13,6 +13,18 @@ namespace IPod {
         Four = 80,
         Five = 100
     }
+
+    public enum MediaType {
+        AudioVideo = 0,
+        Audio,
+        Video,
+        Podcast,
+        VideoPodcast,
+        Audiobook,
+        MusicVideo,
+        TVShow,
+        Movie
+    }
     
     public class Track {
 
@@ -29,6 +41,11 @@ namespace IPod {
         
         public int Id {
             get { return record.Id; }
+        }
+
+        public MediaType Type {
+            get { return record.MediaType; }
+            set { record.MediaType = value; }
         }
 
         public string FileName {

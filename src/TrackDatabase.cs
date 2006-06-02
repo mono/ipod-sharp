@@ -801,10 +801,19 @@ namespace IPod {
         private short unknownFour;
         private int unknownFive;
         private int unknownSix = 0x472c4400;
-        private int unknownSeven;
-        private int unknownEight = 0x0000000c;
-        //private int unknownNine;
+        private short unknownSeven;
+        private short unknownEight = 0x0000000c;
+        private int unknownNine;
         private int unknownTen;
+        private int unknownEleven;
+        private int unknownTwelve;
+        private byte unknownThirteen;
+        private int unknownFourteen;
+        private int unknownFifteen;
+        private int unknownSixteen;
+        private int unknownSeventeen;
+        private int unknownEighteen;
+        private int unknownNineteen;
         private int playCountDup;
 
         private ArrayList details = new ArrayList ();
@@ -839,7 +848,17 @@ namespace IPod {
         public short BPM;
         public short ArtworkCount;
         public int ArtworkSize;
-        public int WeirdDRMValue;
+        public DateTime DateReleased;
+        public bool HasArtwork;
+        public bool SkipWhenShuffle;
+        public bool RememberPosition;
+        public bool UnknownPodcastFlag;
+        public bool HasLyrics;
+        public MediaType MediaType = MediaType.Audio;
+        public bool NotPlayedMark;
+        public int SampleCount;
+        public int SeasonNumber;
+        public int EpisodeNumber;
 
         public DetailRecord[] Details {
             get { return (DetailRecord[]) details.ToArray (typeof (DetailRecord)); }
@@ -912,10 +931,41 @@ namespace IPod {
             ArtworkSize = ToInt32 (body, 116);
             unknownFive = ToInt32 (body, 120);
             unknownSix = ToInt32 (body, 124);
-            unknownSeven = ToInt32 (body, 128);
-            unknownEight = ToInt32 (body, 132);
-            WeirdDRMValue = ToInt32 (body, 136);
+            DateReleased = Utility.MacTimeToDate (ToUInt32 (body, 128));
+            unknownSeven = ToInt16 (body, 132);
+            unknownEight = ToInt16 (body, 134);
+            unknownNine = ToInt32 (body, 136);
             unknownTen = ToInt32 (body, 140);
+            unknownEleven = ToInt32 (body, 144);
+            unknownTwelve = ToInt32 (body, 148);
+
+            if (db.Version >= 12) {
+                HasArtwork = (int) body[152] == 1 ? true : false;
+                SkipWhenShuffle = (int) body[153] == 1 ? true : false;
+                RememberPosition = (int) body[154] == 1 ? true : false;
+                UnknownPodcastFlag = (int) body[155] == 0 ? false : true;
+                HasLyrics = (int) body[164] == 1 ? true : false;
+                if ((int) body[165] == 1) {
+                    this.MediaType = MediaType.Movie;
+                }
+
+                NotPlayedMark = (int) body[166] == 2 ? true : false;
+                unknownThirteen = body[167];
+                unknownFourteen = ToInt32 (body, 168);
+                unknownFifteen = ToInt32 (body, 172);
+                SampleCount = ToInt32 (body, 176);
+                unknownSixteen = ToInt32 (body, 180);
+                unknownSeventeen = ToInt32 (body, 184);
+                unknownEighteen = ToInt32 (body, 188);
+                unknownNineteen = ToInt32 (body, 192);
+
+                if (this.MediaType != MediaType.Movie) {
+                    MediaType = ToMediaType (ToInt32 (body, 196));
+                }
+
+                SeasonNumber = ToInt32 (body, 200);
+                EpisodeNumber = ToInt32 (body, 204);
+            }
 
             details.Clear ();
 
@@ -946,6 +996,9 @@ namespace IPod {
             } else {
                 len = 156;
             }
+
+            writer.Flush ();
+            long startLen = writer.BaseStream.Length;
             
             WriteName (writer);
             writer.Write (len);
@@ -1000,16 +1053,92 @@ namespace IPod {
             writer.Write (ArtworkSize);
             writer.Write (unknownFive);
             writer.Write (unknownSix);
+            writer.Write (Utility.DateToMacTime (DateReleased));
             writer.Write (unknownSeven);
             writer.Write (unknownEight);
-            writer.Write (WeirdDRMValue);
+            writer.Write (unknownNine);
             writer.Write (unknownTen);
+            writer.Write (unknownEleven);
+            writer.Write (unknownTwelve);
 
             if (db.Version >= 12) {
-                writer.Write (new byte[88]);
+                writer.Write (HasArtwork ? (byte) 1 : (byte) 0);
+                writer.Write (SkipWhenShuffle ? (byte) 1 : (byte) 0);
+                writer.Write (RememberPosition ? (byte) 1 : (byte) 0);
+                writer.Write (UnknownPodcastFlag ? (byte) 1 : (byte) 0);
+                writer.Write (DatabaseId);
+                writer.Write (HasLyrics ? (byte) 1 : (byte) 0);
+                writer.Write (this.MediaType == MediaType.Movie ? (byte) 1 : (byte) 0);
+                writer.Write (NotPlayedMark ? (byte) 2 : (byte) 1);
+                writer.Write (unknownThirteen);
+                writer.Write (unknownFourteen);
+                writer.Write (unknownFifteen);
+                writer.Write (SampleCount);
+                writer.Write (unknownSixteen);
+                writer.Write (unknownSeventeen);
+                writer.Write (unknownEighteen);
+                writer.Write (unknownNineteen);
+                writer.Write (FromMediaType (this.MediaType));
+                writer.Write (SeasonNumber);
+                writer.Write (EpisodeNumber);
+                writer.Write (new byte[24]);
+            }
+
+            writer.Flush ();
+            long endLen = writer.BaseStream.Length;
+
+            if (endLen - startLen != 244) {
+                throw new ApplicationException (String.Format ("Wrote {0} bytes instead of 244", endLen - startLen));
             }
             
             writer.Write (childData, 0, childDataLength);
+        }
+
+        private int FromMediaType (MediaType type) {
+            switch (type) {
+            case MediaType.AudioVideo:
+                return 0;
+            case MediaType.Audio:
+                return 1;
+            case MediaType.Movie:
+            case MediaType.Video:
+                return 2;
+            case MediaType.Podcast:
+                return 4;
+            case MediaType.VideoPodcast:
+                return 6;
+            case MediaType.Audiobook:
+                return 8;
+            case MediaType.MusicVideo:
+                return 32;
+            case MediaType.TVShow:
+                return 64;
+            default:
+                return 0;
+            }
+        }
+
+        private MediaType ToMediaType (int type) {
+            switch (type) {
+            case 0:
+                return MediaType.AudioVideo;
+            case 1:
+                return MediaType.Audio;
+            case 2:
+                return MediaType.Video;
+            case 4:
+                return MediaType.Podcast;
+            case 6:
+                return MediaType.VideoPodcast;
+            case 8:
+                return MediaType.Audiobook;
+            case 32:
+                return MediaType.MusicVideo;
+            case 64:
+                return MediaType.TVShow;
+            default:
+                return MediaType.AudioVideo;
+            }
         }
     }
 
@@ -1461,7 +1590,9 @@ namespace IPod {
         }
 
         private void LoadPlayCounts () {
-            if (!File.Exists (PlayCountsPath))
+            FileInfo info = new FileInfo (PlayCountsPath);
+
+            if (!info.Exists || info.Length == 0)
                 return;
             
             using (BinaryReader reader = new
