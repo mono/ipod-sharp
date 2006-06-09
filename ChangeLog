@@ -1,5 +1,13 @@
 2006-06-09  Aaron Bockover  <aaron@abock.org>
 
+	* {Makefile.am,*/Makefile.am}: Added MAINTAINERCLEANFILES to keep 
+	clean up so fresh, Mr. Clean himself would wink at you (but Oxyclean's
+	Billy Mays would just yell at you)
+
+	* autogen.sh: Fixed it
+
+2006-06-09  Aaron Bockover  <aaron@abock.org>
+
 	* src/DmgImage.cs: Parse DMG partitions from a DMG image file; writes
 	HFS+ ISO from DMG image
 	

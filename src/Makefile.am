@@ -65,3 +65,5 @@ EXTRA_DIST =			\
 	ipod-sharp-docs.source
 
 CLEANFILES = $(ASSEMBLY)
+MAINTAINERCLEANFILES = Makefile.in
+

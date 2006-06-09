@@ -16,7 +16,7 @@ ORIGDIR=`pwd`
 cd $srcdir
 PROJECT=ipod-sharp
 TEST_TYPE=-f
-FILE=src/Song.cs
+FILE=src/Track.cs
 CONFIGURE=configure.ac
 aclocalinclude="-I . $ACLOCAL_FLAGS"
 

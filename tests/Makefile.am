@@ -23,6 +23,7 @@ check: $(TEST_ASSEMBLY) ipod-sharp.dll
 	for asm in $(TEST_TARBALLS); do NUNIT_DIR=$(srcdir) $(srcdir)/runtests.sh $$asm; done;
 
 CLEANFILES = $(TEST_ASSEMBLY)
+MAINTAINERCLEANFILES = Makefile.in
 
 EXTRA_DIST = 			\
 	$(TEST_SOURCES)		\
