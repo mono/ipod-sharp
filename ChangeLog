@@ -1,3 +1,21 @@
+2006-06-09  Aaron Bockover  <aaron@abock.org>
+
+	* src/DmgImage.cs: Parse DMG partitions from a DMG image file; writes
+	HFS+ ISO from DMG image
+	
+	* src/DmgPartition.cs: Read DMG partition information from plist XML
+	node and extract HFS+ ISO image partition 
+	
+	* tools/DmgIsoExtract.cs: Command line tool to convert DMG images to
+	HFS+ ISO images
+
+	* src/Makefile.am: Added DmgImage.cs and DmgPartition.cs to build
+
+	* tools/Makefile.am: Build dmg-iso-extract.exe tool
+
+	* ipod-sharp.mds:
+	* ipod-sharp.mdp: Added MonoDevelop project
+
 2006-06-02  James Willcox  <snorp@snorp.net>
 
 	* Track.cs: add Type property

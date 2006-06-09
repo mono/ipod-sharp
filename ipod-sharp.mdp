@@ -1,0 +1,47 @@
+<Project name="ipod-sharp" fileversion="2.0" language="C#" clr-version="Net_1_1" ctype="DotNetProject">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="DotNetProjectConfiguration">
+      <Output directory="./src" assembly="ipod-sharp" />
+      <Build debugmode="True" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+    <Configuration name="Release" ctype="DotNetProjectConfiguration">
+      <Output directory="./src" assembly="ipod-sharp" />
+      <Build debugmode="False" target="Library" />
+      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_1_1" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="True" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+    </Configuration>
+  </Configurations>
+  <DeploymentInformation strategy="File">
+    <excludeFiles />
+  </DeploymentInformation>
+  <Contents>
+    <File name="./src/DatabaseReadException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DatabaseWriteException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Device.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceAddedHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceBusyException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceEventListener.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceException.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceGeneration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceModel.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceRemovedHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/EndianBinaryWriter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Equalizer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Initializer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Playlist.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ShuffleTrackDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Track.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/TrackDatabase.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Utility.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DmgImage.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DmgPartition.cs" subtype="Code" buildaction="Compile" />
+    <File name="./tools/DmgIsoExtract.cs" subtype="Code" buildaction="Compile" />
+    <File name="./tools/PodTool.cs" subtype="Code" buildaction="Compile" />
+  </Contents>
+  <References>
+    <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <ProjectReference type="Gac" localcopy="True" refto="Mono.Posix, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+  </References>
+</Project>

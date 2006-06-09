@@ -28,7 +28,9 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs \
 	$(srcdir)/Utility.cs \
-	$(srcdir)/ShuffleTrackDatabase.cs
+	$(srcdir)/ShuffleTrackDatabase.cs \
+	$(srcdir)/DmgImage.cs \
+	$(srcdir)/DmgPartition.cs
 
 ASSEMBLY_RESOURCES =
 
@@ -43,7 +45,7 @@ endif
 all: $(ASSEMBLY) 
 
 $(ASSEMBLY): $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES)
-	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0
+	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0 -r:ICSharpCode.SharpZipLib
 
 update-docs: $(ASSEMBLY)
 	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en
