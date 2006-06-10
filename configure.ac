@@ -71,6 +71,7 @@ Makefile
 ipod-sharp.pc
 ipod-sharp-ui.pc
 src/Makefile
+src/Firmware/Makefile
 ui/Makefile
 tools/Makefile
 tests/Makefile

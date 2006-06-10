@@ -1,3 +1,20 @@
+2006-06-10  Aaron Bockover  <aaron@abock.org>
+
+	* src/Dmg*.cs: Moved to src/Firmware
+
+	* src/Firmware/Makefile.am: Added new ipod-sharp-firmware.dll assembly
+
+	* src/Firmware/CpioArchive.cs: New class to read and extract files from
+	CPIO archives in the ASCII header format
+
+	* configure.ac: Generate src/Firmware/Makefile
+
+	* src/Makefile.am: Added Firmware to SUBDIRS
+
+	* tools/Makefile.am: Updated build to reflect renamed files
+
+	* ipod-sharp.mdp: Updated MonoDevelop project
+
 2006-06-09  Aaron Bockover  <aaron@abock.org>
 
 	* {Makefile.am,*/Makefile.am}: Added MAINTAINERCLEANFILES to keep 

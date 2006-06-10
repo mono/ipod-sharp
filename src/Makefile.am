@@ -1,3 +1,4 @@
+SUBDIRS = Firmware
 
 DOC_UPDATER = @MONODOCER@ -delete
 DOC_ASSEMBLER = @MDASSEMBLER@ --out ipod-sharp-docs --ecma
@@ -28,9 +29,7 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs \
 	$(srcdir)/Utility.cs \
-	$(srcdir)/ShuffleTrackDatabase.cs \
-	$(srcdir)/DmgImage.cs \
-	$(srcdir)/DmgPartition.cs
+	$(srcdir)/ShuffleTrackDatabase.cs
 
 ASSEMBLY_RESOURCES =
 
@@ -64,6 +63,6 @@ EXTRA_DIST =			\
 	$(srcdir)/en/*/*.xml	\
 	ipod-sharp-docs.source
 
-CLEANFILES = $(ASSEMBLY)
+CLEANFILES = $(ASSEMBLY) *.mdb
 MAINTAINERCLEANFILES = Makefile.in
 

@@ -5,7 +5,7 @@ TOOLS = ipod-tool.exe dmg-iso-extract.exe
 IPOD_TOOL_SOURCES = $(srcdir)/PodTool.cs
 DMG_ISO_EXTRACT_SRC = \
 	$(srcdir)/DmgIsoExtract.cs \
-	$(top_builddir)/src/Dmg*.cs
+	$(top_builddir)/src/Firmware/Dmg*.cs
 
 all: $(TOOLS)
 
