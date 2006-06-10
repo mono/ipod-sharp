@@ -7,7 +7,8 @@ ipod_DATA = $(ASSEMBLY)
 ASSEMBLY_SOURCES = \
 	$(srcdir)/DmgImage.cs \
 	$(srcdir)/DmgPartition.cs \
-	$(srcdir)/CpioArchive.cs
+	$(srcdir)/CpioArchive.cs \
+	$(srcdir)/DmgFirmwareExtract.cs
 
 all: $(ASSEMBLY) 
 

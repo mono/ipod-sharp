@@ -28,6 +28,10 @@ namespace Dmg
 
         private ArrayList partitions = new ArrayList();
 
+        public Image(string fileName) : this(new FileStream(fileName, FileMode.Open))
+        {
+        }
+
         public Image(Stream dmgStream)
         {
             dmg_stream = dmgStream;
@@ -39,6 +43,11 @@ namespace Dmg
         public void SavePartitionsXml(Stream stream)
         {
             plist_doc.Save(stream);
+        }
+        
+        public void Extract(string fileName)
+        {
+            Extract(new FileStream(fileName, FileMode.Create));
         }
 
         public void Extract(Stream isoStream)

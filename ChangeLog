@@ -1,5 +1,21 @@
 2006-06-10  Aaron Bockover  <aaron@abock.org>
 
+	* ipod-sharp.mdp: Updated MonoDevelop project
+
+	* src/Firmware/DmgImage.cs: 
+	* src/Firmware/CpioArchive.cs: Added path-based API wrappers
+
+	* src/Firmware/DmgFirmwareExtract.cs: Extracts all firmware images 
+	based on the iPodUpdater DMG image (currently uses mount -t hfsplus)
+
+	* src/Firmware/Makefile.am: Added DmgFirmwareExtract.cs
+
+	* tools/Makefile.am: Added build rules for ipod-firmware-extract
+
+	* tools/ExtractFirmware.cs: New command line tool to extract ipod images
+
+2006-06-10  Aaron Bockover  <aaron@abock.org>
+
 	* src/Dmg*.cs: Moved to src/Firmware
 
 	* src/Firmware/Makefile.am: Added new ipod-sharp-firmware.dll assembly

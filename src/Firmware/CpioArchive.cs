@@ -34,21 +34,6 @@ using System.Collections;
 
 namespace IPod.Firmware
 {
-    public static class CpioTest 
-    {
-        /*public static void Main(string [] args)
-        {
-            // extract all iPod firmware from iPodUpdater Archive.pax
-            CpioArchive archive = new CpioArchive(args[0]);
-            foreach(CpioFileEntry entry in archive) {
-                string filename = Path.GetFileName(entry.FileName);
-                if(filename.StartsWith("Firmware-")) {
-                    archive.ExtractEntry(entry, filename);
-                }
-            }
-        }*/
-    }
-
     public struct CpioFileEntry
     {
         internal short dev;

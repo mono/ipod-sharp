@@ -1,11 +1,16 @@
 MCS_FLAGS = -debug
 
-TOOLS = ipod-tool.exe dmg-iso-extract.exe
+TOOLS = ipod-tool.exe dmg-iso-extract.exe ipod-firmware-extract.exe
 
 IPOD_TOOL_SOURCES = $(srcdir)/PodTool.cs
 DMG_ISO_EXTRACT_SRC = \
 	$(srcdir)/DmgIsoExtract.cs \
-	$(top_builddir)/src/Firmware/Dmg*.cs
+	$(top_builddir)/src/Firmware/DmgImage.cs \
+	$(top_builddir)/src/Firmware/DmgPartition.cs
+
+DMG_FIRMWARE_EXTRACT_SRC = \
+	$(srcdir)/ExtractFirmware.cs \
+	$(top_builddir)/src/Firmware/*.cs
 
 all: $(TOOLS)
 
@@ -15,7 +20,10 @@ ipod-tool.exe: $(IPOD_TOOL_SOURCES)
 dmg-iso-extract.exe: $(DMG_ISO_EXTRACT_SRC)
 	$(MCS) $(MCS_FLAGS) -r:ICSharpCode.SharpZipLib -target:exe -out:$@ $(DMG_ISO_EXTRACT_SRC)
 
-EXTRA_DIST = $(IPOD_TOOL_SOURCES) $(DMG_ISO_EXTRACT_SRC)
-CLEANFILES = $(TOOLS)
+ipod-firmware-extract.exe: $(DMG_FIRMWARE_EXTRACT_SRC)
+	$(MCS) $(MCS_FLAGS) -r:ICSharpCode.SharpZipLib -target:exe -out:$@ $(DMG_FIRMWARE_EXTRACT_SRC)
+
+EXTRA_DIST = $(IPOD_TOOL_SOURCES) $(DMG_ISO_EXTRACT_SRC) $(DMG_FIRMWARE_EXTRACT_SRC)
+CLEANFILES = $(TOOLS) *.mdb
 MAINTAINERCLEANFILES = Makefile.in
 
