@@ -2,8 +2,8 @@ AC_INIT(README)
 AC_CANONICAL_SYSTEM
 
 MAJOR_VERSION=0
-MINOR_VERSION=5
-MICRO_VERSION=16
+MINOR_VERSION=6
+MICRO_VERSION=0
 VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
                                                                                 
 AM_INIT_AUTOMAKE(ipod-sharp, $VERSION)
@@ -26,10 +26,10 @@ if test "x$MONO" = "x" ; then
    AC_MSG_ERROR([Can not find "mono" in your PATH])
 fi
 
-dnl mcs	   
-AC_PATH_PROG(MCS, mcs)
+dnl gmcs	   
+AC_PATH_PROG(MCS, gmcs)
 if test "x$MCS" = "x" ; then
-   AC_MSG_ERROR([Can not find "mcs" in your PATH])
+   AC_MSG_ERROR([Can not find "gmcs" in your PATH])
 fi
 
 AC_ARG_ENABLE(docs, [  --disable-docs    Do not build documentation],

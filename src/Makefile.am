@@ -11,6 +11,7 @@ ipoddir = $(prefix)/lib/ipod-sharp
 ipod_DATA = $(ASSEMBLY)
 
 ASSEMBLY_SOURCES =			\
+	$(srcdir)/Album.cs	\
 	$(srcdir)/AssemblyInfo.cs	\
 	$(srcdir)/DatabaseReadException.cs	\
 	$(srcdir)/DatabaseWriteException.cs	\
@@ -24,8 +25,11 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/DeviceBusyException.cs	\
 	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
+	$(srcdir)/Image.cs	\
 	$(srcdir)/Initializer.cs	\
+	$(srcdir)/PhotoDatabase.cs		\
 	$(srcdir)/Playlist.cs		\
+	$(srcdir)/Thumbnail.cs		\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs \
 	$(srcdir)/Utility.cs \

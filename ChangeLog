@@ -1,3 +1,9 @@
+2006-06-14  James Willcox  <snorp@snorp.net>
+
+	* Add initial photo support.  Currently read-only, and still a bit raw.
+	* switch to gmcs (C# 2.0), and start using generic collections
+	* configure.ac: bump to 0.6.0
+
 2006-06-10  Aaron Bockover  <aaron@abock.org>
 
 	* ipod-sharp.mdp: Updated MonoDevelop project

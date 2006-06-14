@@ -19,27 +19,6 @@ namespace IPod {
             this.IsBE = isbe;
         }
 
-        public virtual void Read (DatabaseRecord db, BinaryReader reader) {
-            byte[] nameBytes = reader.ReadBytes (4);
-            if (IsBE)
-                nameBytes = Utility.Swap (nameBytes);
-            
-            string n = Encoding.ASCII.GetString (nameBytes);
-
-            if (this.Name != null && this.Name != n) {
-                throw new DatabaseReadException ("Expected record name of '{0}', got '{1}'", this.Name, n);
-            }
-
-            this.Name = n;
-            this.HeaderOne = reader.ReadInt32 ();
-            this.HeaderTwo = reader.ReadInt32 ();
-
-            if (IsBE) {
-                this.HeaderOne = Utility.Swap (this.HeaderOne);
-                this.HeaderTwo = Utility.Swap (this.HeaderTwo);
-            }
-        }
-
         protected void WriteName (BinaryWriter writer) {
             byte[] nameBytes = Encoding.ASCII.GetBytes (this.Name);
             if (IsBE)
@@ -84,9 +63,40 @@ namespace IPod {
             return Utility.MaybeSwap (val, IsBE);
         }
 
+        protected void ReadHeader (BinaryReader reader) {
+            byte[] nameBytes = reader.ReadBytes (4);
+            if (IsBE)
+                nameBytes = Utility.Swap (nameBytes);
+            
+            string n = Encoding.ASCII.GetString (nameBytes);
+
+            if (this.Name != null && this.Name != n) {
+                throw new DatabaseReadException ("Expected record name of '{0}', got '{1}'", this.Name, n);
+            }
+
+            this.Name = n;
+            this.HeaderOne = reader.ReadInt32 ();
+            this.HeaderTwo = reader.ReadInt32 ();
+
+            if (IsBE) {
+                this.HeaderOne = Utility.Swap (this.HeaderOne);
+                this.HeaderTwo = Utility.Swap (this.HeaderTwo);
+            }
+        }
+    }
+
+    internal abstract class TrackDbRecord : Record {
+
+        public TrackDbRecord (bool isbe) : base (isbe) {
+        }
+
+        public virtual void Read (DatabaseRecord db, BinaryReader reader) {
+            ReadHeader (reader);
+        }
+        
         public abstract void Save (DatabaseRecord db, BinaryWriter writer);
 
-        protected void SaveChild (DatabaseRecord db, Record record, out byte[] data, out int length) {
+        protected void SaveChild (DatabaseRecord db, TrackDbRecord record, out byte[] data, out int length) {
             MemoryStream stream = new MemoryStream ();
             BinaryWriter writer = new EndianBinaryWriter (stream, IsBE);
             record.Save (db, writer);
@@ -95,9 +105,10 @@ namespace IPod {
             data = stream.GetBuffer ();
             writer.Close ();
         }
+        
     }
 
-    internal class GenericRecord : Record {
+    internal class GenericRecord : TrackDbRecord {
 
         private byte[] data;
 
@@ -118,7 +129,7 @@ namespace IPod {
         }
     }
 
-    internal class PlaylistItemRecord : Record {
+    internal class PlaylistItemRecord : TrackDbRecord {
 
         private int unknownOne = 0;
         private int unknownTwo = 0;
@@ -235,7 +246,7 @@ namespace IPod {
         Description
     }
 
-    internal class PlaylistRecord : Record {
+    internal class PlaylistRecord : TrackDbRecord {
 
         private int unknownOne;
         //private int unknownTwo;
@@ -431,11 +442,11 @@ namespace IPod {
             MemoryStream stream = new MemoryStream ();
             BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
-            foreach (Record rec in stringDetails) {
+            foreach (TrackDbRecord rec in stringDetails) {
                 rec.Save (db, childWriter);
             }
 
-            foreach (Record rec in otherDetails) {
+            foreach (TrackDbRecord rec in otherDetails) {
                 rec.Save (db, childWriter);
             }
 
@@ -521,7 +532,7 @@ namespace IPod {
     }
         
 
-    internal class PlaylistListRecord : Record, IEnumerable {
+    internal class PlaylistListRecord : TrackDbRecord, IEnumerable {
 
         private ArrayList playlists = new ArrayList ();
 
@@ -631,7 +642,7 @@ namespace IPod {
         Composer = 18
     }
     
-    internal class DetailRecord : Record {
+    internal class DetailRecord : TrackDbRecord {
 
         private static UnicodeEncoding encoding = new UnicodeEncoding (false, false);
 
@@ -795,7 +806,7 @@ namespace IPod {
         AAC = 0x0
     }
 
-    internal class TrackRecord : Record {
+    internal class TrackRecord : TrackDbRecord {
 
         private short unknownThree = 0;
         private short unknownFour;
@@ -1142,7 +1153,7 @@ namespace IPod {
         }
     }
 
-    internal class TrackListRecord : Record, IEnumerable {
+    internal class TrackListRecord : TrackDbRecord, IEnumerable {
 
         private ArrayList tracks = new ArrayList ();
 
@@ -1234,7 +1245,7 @@ namespace IPod {
         PlaylistDuplicate = 3
     }
 
-    internal class DataSetRecord : Record {
+    internal class DataSetRecord : TrackDbRecord {
 
         public DataSetIndex Index;
 
@@ -1321,7 +1332,7 @@ namespace IPod {
         }
     }
 
-    internal class DatabaseRecord : Record {
+    internal class DatabaseRecord : TrackDbRecord {
 
         private const int MaxSupportedVersion = 17;
         private const int TrackIdStart = 1000;

@@ -40,7 +40,7 @@ namespace IPod {
             get { return height; }
         }
 
-        public short CorrelationId {
+        internal short CorrelationId {
             get { return correlationId; }
         }
         
@@ -80,8 +80,8 @@ namespace IPod {
         
         private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
-        private TrackDatabase songs;
-        private string controlPath;
+        private TrackDatabase tracks;
+        private PhotoDatabase photos;
 
         public event EventHandler Changed;
 
@@ -279,11 +279,21 @@ namespace IPod {
 
         public TrackDatabase TrackDatabase {
             get {
-                if(songs == null) {
+                if (tracks == null) {
                     LoadTrackDatabase ();
                 }
 
-                return songs;
+                return tracks;
+            }
+        }
+
+        public PhotoDatabase PhotoDatabase {
+            get {
+                if (photos == null) {
+                    LoadPhotoDatabase ();
+                }
+
+                return photos;
             }
         }
 
@@ -307,6 +317,17 @@ namespace IPod {
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
         }
+
+        public void LoadPhotoDatabase () {
+            LoadPhotoDatabase (false);
+        }
+
+        public void LoadPhotoDatabase (bool createFresh) {
+            //FIXME: refuse if the device lacks photo capability
+
+            if (photos == null)
+                photos = new PhotoDatabase (this, createFresh);
+        }
         
         public void LoadTrackDatabase () {
             LoadTrackDatabase (false);
@@ -317,13 +338,13 @@ namespace IPod {
                 throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
             }
 
-            if (songs == null)
-                songs = new TrackDatabase (this, createFresh);
+            if (tracks == null)
+                tracks = new TrackDatabase (this, createFresh);
         }
         
         public void CreateEmptyTrackDatabase () {
-            songs = null;
-            LoadTrackDatabase(true);
+            tracks = null;
+            LoadTrackDatabase (true);
         }
 
         private void EmitChanged () {

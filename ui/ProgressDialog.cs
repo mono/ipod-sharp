@@ -50,7 +50,7 @@ namespace IPod {
 
             Gdk.PixbufAnimation animation = new Gdk.PixbufAnimation (Assembly.GetExecutingAssembly (),
                                                                      "ipod.gif");
-            hbox.PackStart (new Image (animation), false, false, 0);
+            hbox.PackStart (new Gtk.Image (animation), false, false, 0);
 
             label = new Label ("");
             label.Xalign = 0.0f;
