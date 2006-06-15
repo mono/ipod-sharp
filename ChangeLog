@@ -1,3 +1,8 @@
+2006-06-15  James Willcox  <snorp@snorp.net>
+
+	* Add beginnings of write support for the photo database.  Can read
+	back its own database, but the iPod doesn't like it yet.
+
 2006-06-14  James Willcox  <snorp@snorp.net>
 
 	* Add initial photo support.  Currently read-only, and still a bit raw.

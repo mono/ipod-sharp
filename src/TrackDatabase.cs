@@ -27,6 +27,10 @@ namespace IPod {
             writer.Write (nameBytes);
         }
 
+        protected void WritePadding (BinaryWriter writer) {
+            writer.Write (new byte[PadLength]);
+        }
+
         public long ToInt64 (byte[] buf, int offset) {
             return MaybeSwap (BitConverter.ToInt64 (buf, offset));
         }

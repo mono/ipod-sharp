@@ -64,9 +64,6 @@ namespace IPod {
         private static unsafe extern uint ipod_device_eject (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]
-        private static unsafe extern uint ipod_device_reboot (IntPtr raw, out IntPtr error);
-
-        [DllImport ("ipoddevice")]
         private static unsafe extern bool ipod_device_save (IntPtr raw, out IntPtr error);
 
         [DllImport ("ipoddevice")]

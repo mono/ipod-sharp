@@ -19,15 +19,25 @@ namespace IPod {
         public abstract void Save (BinaryWriter writer);
 
         protected void SaveChild (PhotoDbRecord record, out byte[] data, out int length) {
+            List<PhotoDbRecord> list = new List<PhotoDbRecord> ();
+            list.Add (record);
+            
+            SaveChildren (list, out data, out length);
+        }
+
+        protected void SaveChildren (ICollection records, out byte[] data, out int length) {
             MemoryStream stream = new MemoryStream ();
             BinaryWriter writer = new EndianBinaryWriter (stream, IsBE);
-            record.Save (writer);
+
+            foreach (PhotoDbRecord record in records) {
+                record.Save (writer);
+            }
+            
             writer.Flush ();
             length = (int) stream.Length;
             data = stream.GetBuffer ();
             writer.Close ();
         }
-                    
     }
 
     internal class DataFileRecord : PhotoDbRecord {
@@ -90,15 +100,28 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
-            /*
+            byte[] childBytes;
+            int childLen;
+
+            SaveChildren (children,  out childBytes, out childLen);
+
             WriteName (writer);
-            writer.Write (this.HeaderOne);
-            writer.Write (this.HeaderTwo);
+            writer.Write (68 + PadLength);
+            writer.Write (68 + PadLength + childLen);
             writer.Write (unknownOne);
             writer.Write (unknownTwo);
-            writer.Write (numChildren);
-            writer.Write (
-            */
+            writer.Write (children.Count);
+            writer.Write (unknownThree);
+            writer.Write (NextId);
+            writer.Write (unknownFive);
+            writer.Write (unknownSix);
+            writer.Write (unknownSeven);
+            writer.Write (unknownEight);
+            writer.Write (unknownNine);
+            writer.Write (unknownTen);
+            writer.Write (unknownEleven);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
@@ -143,7 +166,16 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
+            byte[] childBytes;
+            int childLen;
 
+            SaveChild (Data, out childBytes, out childLen);
+            WriteName (writer);
+            writer.Write (16 + PadLength);
+            writer.Write (16 + PadLength + childLen);
+            writer.Write ((int) Index);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
@@ -187,7 +219,15 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
+            byte[] childBytes;
+            int childLen;
 
+            SaveChildren (albums, out childBytes, out childLen);
+            WriteName (writer);
+            writer.Write (12 + PadLength);
+            writer.Write (albums.Count);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
@@ -278,6 +318,39 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
+            byte[] detailBytes;
+            int detailLen;
+
+            SaveChild (nameRecord, out detailBytes, out detailLen);
+
+            byte[] childBytes;
+            int childLen;
+
+            SaveChildren (items, out childBytes, out childLen);
+
+            WriteName (writer);
+            writer.Write (64 + PadLength);
+            writer.Write (64 + PadLength + detailLen + childLen);
+            writer.Write (1);
+            writer.Write (items.Count);
+            writer.Write (PlaylistId);
+            writer.Write (unknownOne);
+            writer.Write (unknownTwo);
+            writer.Write (IsMaster ? (byte) 1 : (byte) 0);
+            writer.Write (PlayMusic ? (byte) 1 : (byte) 0);
+            writer.Write (Repeat ? (byte) 1 : (byte) 0);
+            writer.Write (Random ? (byte) 1 : (byte) 0);
+            writer.Write (ShowTitles ? (byte) 1 : (byte) 0);
+            writer.Write (TransitionDirection);
+            writer.Write (SlideDuration);
+            writer.Write (TransitionDuration);
+            writer.Write (unknownThree);
+            writer.Write (unknownFour);
+            writer.Write (TrackId);
+            writer.Write (PreviousPlaylistId);
+            WritePadding (writer);
+            writer.Write (detailBytes, 0, detailLen);
+            writer.Write (childBytes, 0, childLen);
 
         }
     }
@@ -302,7 +375,12 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
-            
+            WriteName (writer);
+            writer.Write (20 + PadLength);
+            writer.Write (20 + PadLength);
+            writer.Write (unknownOne);
+            writer.Write (ImageId);
+            WritePadding (writer);
         }
     }
 
@@ -332,7 +410,7 @@ namespace IPod {
         public override void Read (BinaryReader reader) {
             base.Read (reader);
 
-            byte[] body = reader.ReadBytes (this.HeaderOne - 12);
+            reader.ReadBytes (this.HeaderOne - 12);
 
             for (int i = 0; i < this.HeaderTwo; i++) {
                 ImageItemRecord item = new ImageItemRecord (IsBE);
@@ -343,7 +421,16 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
+            byte[] childBytes;
+            int childLen;
 
+            SaveChildren (items, out childBytes, out childLen);
+
+            WriteName (writer);
+            writer.Write (12 + PadLength);
+            writer.Write (items.Count);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
@@ -365,6 +452,11 @@ namespace IPod {
             this.Name = "mhod";
         }
 
+        public PhotoDetailRecord (bool isbe, ImageNameRecord name) : this (isbe) {
+            Type = PhotoDetailType.ThumbnailContainer;
+            ImageName = name;
+        }
+
         public override void Read (BinaryReader reader) {
             base.Read (reader);
 
@@ -376,9 +468,16 @@ namespace IPod {
                 ImageName = new ImageNameRecord (IsBE);
                 ImageName.Read (reader);
                 break;
-            default:
-                ReadString (reader, Type == PhotoDetailType.FileName);
+            case PhotoDetailType.ImageContainer:
+                throw new ApplicationException ("Not implemented yet");
+            case PhotoDetailType.FileName:
+                ReadString (reader, true);
                 break;
+            case PhotoDetailType.String:
+                ReadString (reader, false);
+                break;
+            default:
+                throw new DatabaseReadException ("Unknown detail type: " + Type);
             }
         }
 
@@ -399,8 +498,69 @@ namespace IPod {
             }
         }
 
-        public override void Save (BinaryWriter writer) {
+        private void WriteString (BinaryWriter writer, byte[] bytes, int padding, bool utf16) {
+            writer.Write (bytes.Length);
+            writer.Write (utf16 ? 2 : 0);
+            writer.Write (0);
+            writer.Write (bytes);
+            writer.Write (new byte[padding]);
+        }
 
+        public override void Save (BinaryWriter writer) {
+            byte[] childBytes;
+            int childLen;
+            int childPadding;
+
+            switch (Type) {
+            case PhotoDetailType.ThumbnailContainer:
+                SaveChild (ImageName, out childBytes, out childLen);
+                break;
+            case PhotoDetailType.ImageContainer:
+                throw new ApplicationException ("not implemented yet");
+            case PhotoDetailType.FileName:
+                childBytes = Encoding.Unicode.GetBytes (Value);
+                childLen = 12 + childBytes.Length;
+                break;
+            case PhotoDetailType.String:
+                childBytes = Encoding.UTF8.GetBytes (Value);
+                childLen = 12 + childBytes.Length;
+                break;
+            default:
+                throw new DatabaseWriteException ("Unknown detail type: " + Type);
+            }
+
+            childPadding = 0;
+
+            if (Type == PhotoDetailType.FileName || Type == PhotoDetailType.String) {
+                int totalLength = 16 + PadLength + childLen;
+                while (totalLength%4 != 0) {
+                    totalLength++;
+                    childPadding++;
+                }
+            }
+
+            WriteName (writer);
+            writer.Write (16 + PadLength);
+            writer.Write (16 + PadLength + childLen + childPadding);
+            writer.Write ((short) Type);
+            writer.Write ((short) 2);
+            WritePadding (writer);
+
+            switch (Type) {
+            case PhotoDetailType.ThumbnailContainer:
+                writer.Write (childBytes, 0, childLen);
+                break;
+            case PhotoDetailType.ImageContainer:
+                throw new ApplicationException ("not implemented yet");
+            case PhotoDetailType.FileName:
+                WriteString (writer, childBytes, childPadding, true);
+                break;
+            case PhotoDetailType.String:
+                WriteString (writer, childBytes, childPadding, false);
+                break;
+            default:
+                throw new DatabaseWriteException ("Unknown detail type: " + Type);
+            }
         }
     }
 
@@ -415,8 +575,6 @@ namespace IPod {
         public short HorizontalPadding;
         public short ImageHeight;
         public short ImageWidth;
-
-        public ThumbnailFormat Format;
 
         public string FileName {
             get { return fileDetail.Value; }
@@ -451,34 +609,27 @@ namespace IPod {
                     fileDetail = detail;
                 }
             }
-
-            SetFormat ();
-        }
-
-        private void SetFormat () {
-            switch (CorrelationID) {
-            case 1009:
-            case 1015:
-            case 1013:
-            case 1036:
-                Format = ThumbnailFormat.Rgb565;
-                break;
-            case 1019:
-                Format = ThumbnailFormat.IYUV;
-                break;
-            case 1020:
-                Format = ThumbnailFormat.Rgb565BE;
-                break;
-            case 1024:
-                Format = ThumbnailFormat.Rgb565BE90;
-                break;
-            default:
-                throw new ApplicationException ("Unknown correltion id: " + CorrelationID);
-            }
         }
 
         public override void Save (BinaryWriter writer) {
+            byte[] childBytes;
+            int childLen;
 
+            SaveChild (fileDetail, out childBytes, out childLen);
+
+            WriteName (writer);
+            writer.Write (36 + PadLength);
+            writer.Write (36 + PadLength + childLen);
+            writer.Write (1);
+            writer.Write (CorrelationID);
+            writer.Write (ThumbnailOffset);
+            writer.Write (ImageSize);
+            writer.Write (VerticalPadding);
+            writer.Write (HorizontalPadding);
+            writer.Write (ImageHeight);
+            writer.Write (ImageWidth);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
@@ -538,11 +689,41 @@ namespace IPod {
 
         public override void Save (BinaryWriter writer) {
 
+            byte[] childBytes;
+            int childLen;
+
+            List<PhotoDetailRecord> details = new List<PhotoDetailRecord> ();
+            foreach (ImageNameRecord name in names) {
+                details.Add (new PhotoDetailRecord (IsBE, name));
+            }
+            
+            SaveChildren (details, out childBytes, out childLen);
+
+            WriteName (writer);
+            writer.Write (52 + PadLength);
+            writer.Write (52 + PadLength + childLen);
+            writer.Write (names.Count);
+            writer.Write (Id);
+            writer.Write (TrackId);
+            writer.Write (unknownOne);
+            writer.Write (Rating);
+            writer.Write (unknownTwo);
+            writer.Write (Utility.DateToMacTime (OriginalDate));
+            writer.Write (Utility.DateToMacTime (DigitizedDate));
+            writer.Write (sourceImageSize);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
     internal class FileListRecord : PhotoDbRecord {
 
+        private List<FileRecord> files = new List<FileRecord> ();
+
+        public ReadOnlyCollection<FileRecord> Files {
+            get { return new ReadOnlyCollection<FileRecord> (files); }
+        }
+        
         public FileListRecord (bool isbe) : base (isbe) {
             this.Name = "mhlf";
         }
@@ -558,11 +739,21 @@ namespace IPod {
             for (int i = 0; i < numChildren; i++) {
                 FileRecord record = new FileRecord (IsBE);
                 record.Read (reader);
+                files.Add (record);
             }
         }
 
         public override void Save (BinaryWriter writer) {
+            byte[] childBytes;
+            int childLen;
 
+            SaveChildren (files, out childBytes, out childLen);
+
+            WriteName (writer);
+            writer.Write (12 + PadLength);
+            writer.Write (files.Count);
+            WritePadding (writer);
+            writer.Write (childBytes, 0, childLen);
         }
     }
 
@@ -588,7 +779,13 @@ namespace IPod {
         }
 
         public override void Save (BinaryWriter writer) {
-
+            WriteName (writer);
+            writer.Write (24 + PadLength);
+            writer.Write (24 + PadLength);
+            writer.Write (unknownOne);
+            writer.Write (CorrelationId);
+            writer.Write (ImageSize);
+            WritePadding (writer);
         }
     }
 
@@ -659,6 +856,12 @@ namespace IPod {
                         albums.Add (album);
                     }
                 }
+            }
+        }
+
+        public void Save () {
+            using (BinaryWriter writer = new BinaryWriter (File.Open (PhotoDbPath, FileMode.Create))) {
+                dfr.Save (writer);
             }
         }
 
