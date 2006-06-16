@@ -183,7 +183,7 @@ namespace IPod {
 
         private List<AlbumRecord> albums = new List<AlbumRecord> ();
 
-        public ReadOnlyCollection<AlbumRecord> Albums {
+        public IList<AlbumRecord> Albums {
             get {
                 return new ReadOnlyCollection<AlbumRecord> (albums);
             }
@@ -254,7 +254,7 @@ namespace IPod {
         public long TrackId;
         public int PreviousPlaylistId;
 
-        public ReadOnlyCollection<AlbumItemRecord> Items {
+        public IList<AlbumItemRecord> Items {
             get {
                 return new ReadOnlyCollection<AlbumItemRecord> (items);
             }
@@ -389,7 +389,7 @@ namespace IPod {
 
         private List<ImageItemRecord> items = new List<ImageItemRecord> ();
 
-        public ReadOnlyCollection<ImageItemRecord> Items {
+        public IList<ImageItemRecord> Items {
             get {
                 return new ReadOnlyCollection<ImageItemRecord> (items);
             }
@@ -649,7 +649,7 @@ namespace IPod {
         public DateTime OriginalDate;
         public DateTime DigitizedDate;
 
-        public ReadOnlyCollection<ImageNameRecord> Names {
+        public IList<ImageNameRecord> Names {
             get {
                 return new ReadOnlyCollection<ImageNameRecord> (names);
             }
@@ -731,7 +731,7 @@ namespace IPod {
 
         private List<FileRecord> files = new List<FileRecord> ();
 
-        public ReadOnlyCollection<FileRecord> Files {
+        public IList<FileRecord> Files {
             get { return new ReadOnlyCollection<FileRecord> (files); }
         }
         
@@ -821,11 +821,11 @@ namespace IPod {
             }
         }
 
-        public ReadOnlyCollection<Album> Albums {
+        public IList<Album> Albums {
             get { return new ReadOnlyCollection<Album> (albums); }
         }
 
-        public ReadOnlyCollection<Image> Images {
+        public IList<Image> Images {
             get {
                 return new ReadOnlyCollection<Image> (new List<Image> (images.Values));
             }
