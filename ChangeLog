@@ -1,5 +1,9 @@
 2006-06-16  James Willcox  <snorp@snorp.net>
 
+	* src/PhotoDatabase.cs: read/write the full size image records
+
+2006-06-16  James Willcox  <snorp@snorp.net>
+
 	* Convert more stuff to use generic collections
 
 2006-06-15  James Willcox  <snorp@snorp.net>

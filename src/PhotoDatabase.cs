@@ -452,9 +452,13 @@ namespace IPod {
             this.Name = "mhod";
         }
 
-        public PhotoDetailRecord (bool isbe, ImageNameRecord name) : this (isbe) {
+        public PhotoDetailRecord (bool isbe, ImageNameRecord name, PhotoDetailType type) : this (isbe) {
             Type = PhotoDetailType.ThumbnailContainer;
             ImageName = name;
+            Type = type;
+        }
+
+        public PhotoDetailRecord (bool isbe, PhotoDetailType type) : this (isbe, null, type) {
         }
 
         public override void Read (BinaryReader reader) {
@@ -465,11 +469,10 @@ namespace IPod {
 
             switch (Type) {
             case PhotoDetailType.ThumbnailContainer:
+            case PhotoDetailType.ImageContainer:
                 ImageName = new ImageNameRecord (IsBE);
                 ImageName.Read (reader);
                 break;
-            case PhotoDetailType.ImageContainer:
-                throw new ApplicationException ("Not implemented yet");
             case PhotoDetailType.FileName:
                 ReadString (reader, true);
                 break;
@@ -513,10 +516,9 @@ namespace IPod {
 
             switch (Type) {
             case PhotoDetailType.ThumbnailContainer:
+            case PhotoDetailType.ImageContainer:
                 SaveChild (ImageName, out childBytes, out childLen);
                 break;
-            case PhotoDetailType.ImageContainer:
-                throw new ApplicationException ("not implemented yet");
             case PhotoDetailType.FileName:
                 childBytes = Encoding.Unicode.GetBytes (Value);
                 childLen = 12 + childBytes.Length;
@@ -548,10 +550,9 @@ namespace IPod {
 
             switch (Type) {
             case PhotoDetailType.ThumbnailContainer:
+            case PhotoDetailType.ImageContainer:
                 writer.Write (childBytes, 0, childLen);
                 break;
-            case PhotoDetailType.ImageContainer:
-                throw new ApplicationException ("not implemented yet");
             case PhotoDetailType.FileName:
                 WriteString (writer, childBytes, childPadding, true);
                 break;
@@ -638,6 +639,7 @@ namespace IPod {
         private int unknownOne;
         private int unknownTwo;
         private int sourceImageSize;
+        private ImageNameRecord fullName;
 
         private List<ImageNameRecord> names = new List<ImageNameRecord> ();
         
@@ -683,7 +685,12 @@ namespace IPod {
             for (int i = 0; i < numChildren; i++) {
                 PhotoDetailRecord detail = new PhotoDetailRecord (IsBE);
                 detail.Read (reader);
-                names.Add (detail.ImageName);
+
+                if (detail.Type == PhotoDetailType.ThumbnailContainer) {
+                    names.Add (detail.ImageName);
+                } else {
+                    fullName = detail.ImageName;
+                }
             }
         }
 
@@ -694,7 +701,11 @@ namespace IPod {
 
             List<PhotoDetailRecord> details = new List<PhotoDetailRecord> ();
             foreach (ImageNameRecord name in names) {
-                details.Add (new PhotoDetailRecord (IsBE, name));
+                details.Add (new PhotoDetailRecord (IsBE, name, PhotoDetailType.ThumbnailContainer));
+            }
+
+            if (fullName != null) {
+                details.Add (new PhotoDetailRecord (IsBE, fullName, PhotoDetailType.ImageContainer));
             }
             
             SaveChildren (details, out childBytes, out childLen);
@@ -702,7 +713,7 @@ namespace IPod {
             WriteName (writer);
             writer.Write (52 + PadLength);
             writer.Write (52 + PadLength + childLen);
-            writer.Write (names.Count);
+            writer.Write (details.Count);
             writer.Write (Id);
             writer.Write (TrackId);
             writer.Write (unknownOne);
