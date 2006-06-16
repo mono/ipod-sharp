@@ -64,7 +64,7 @@ namespace IPod.Tools {
                 
                 string dest = args[2];
                 int count = 1;
-                int total = db.Tracks.Length;
+                int total = db.Tracks.Count;
                 
                 foreach (Track track in db.Tracks) {
                     string path = GetTrackPath (dest, track);

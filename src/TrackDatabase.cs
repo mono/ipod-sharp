@@ -284,7 +284,7 @@ namespace IPod {
             }
         }
 
-        public ReadOnlyCollection<PlaylistItemRecord> Items {
+        public IList<PlaylistItemRecord> Items {
             get {
                 return new ReadOnlyCollection<PlaylistItemRecord> (playlistItems);
             }
@@ -548,7 +548,7 @@ namespace IPod {
             }
         }
 
-        public ReadOnlyCollection<PlaylistRecord> Playlists {
+        public IList<PlaylistRecord> Playlists {
             get {
                 return new ReadOnlyCollection<PlaylistRecord> (playlists);
             }
@@ -877,7 +877,7 @@ namespace IPod {
         public int SeasonNumber;
         public int EpisodeNumber;
 
-        public ReadOnlyCollection<DetailRecord> Details {
+        public IList<DetailRecord> Details {
             get { return new ReadOnlyCollection<DetailRecord> (details); }
         }
 
@@ -1163,7 +1163,7 @@ namespace IPod {
 
         private List<TrackRecord> tracks = new List<TrackRecord> ();
 
-        public ReadOnlyCollection<TrackRecord> Tracks {
+        public IList<TrackRecord> Tracks {
             get { return new ReadOnlyCollection<TrackRecord> (tracks); }
         }
 
@@ -1562,19 +1562,19 @@ namespace IPod {
             get { return ControlPath + "iTunes/Play Counts"; }
         }
 
-        public ReadOnlyCollection<Track> Tracks {
+        public IList<Track> Tracks {
             get {
                 return new ReadOnlyCollection<Track> (tracks);
             }
         }
 
-        public ReadOnlyCollection<Playlist> Playlists {
+        public IList<Playlist> Playlists {
             get {
                 return new ReadOnlyCollection<Playlist> (playlists);
             }
         }
 
-        public ReadOnlyCollection<Playlist> OnTheGoPlaylists {
+        public IList<Playlist> OnTheGoPlaylists {
             get {
                 return new ReadOnlyCollection<Playlist> (otgPlaylists);
             }

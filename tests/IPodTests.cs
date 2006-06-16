@@ -1,7 +1,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
@@ -64,7 +63,7 @@ namespace IPod.Tests {
             if (proc.ExitCode != 0)
                 throw new ApplicationException ("Unable to untar test: " + errors);
 
-            Directory.Move ("ipod-test-db", testdir + "/" + "ipod-test-db");
+            Directory.Move ("ipod-test-db", testdir + "/ipod-test-db");
 
             return GetDevice ();
         }
@@ -442,7 +441,7 @@ namespace IPod.Tests {
         public void ModifyOTGNameTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
+            IList<Playlist> lists = db.OnTheGoPlaylists;
             
             if (lists.Count == 0)
                 throw new InvalidOperationException ("no lists");
@@ -457,7 +456,7 @@ namespace IPod.Tests {
 
             Track track = AddTrack (db);
 
-            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
+            IList<Playlist> lists = db.OnTheGoPlaylists;
             
             if (lists.Count == 0)
                 throw new InvalidOperationException ("no lists");
@@ -470,7 +469,7 @@ namespace IPod.Tests {
         public void RemoveOTGTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
+            IList<Playlist> lists = db.OnTheGoPlaylists;
 
             // make nunit happy if there were no tracks or playlists
             if (lists.Count == 0 || lists[0].Tracks.Count == 0)
@@ -488,7 +487,7 @@ namespace IPod.Tests {
         public void RemoveOTGPlaylistTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
+            IList<Playlist> lists = db.OnTheGoPlaylists;
 
             // make nunit stfu
             if (lists.Count == 0)

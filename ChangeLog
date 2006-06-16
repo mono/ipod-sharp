@@ -1,5 +1,9 @@
 2006-06-16  James Willcox  <snorp@snorp.net>
 
+	* Use IList<T> instead of ReadOnlyCollection<T> in the public API
+
+2006-06-16  James Willcox  <snorp@snorp.net>
+
 	* src/PhotoDatabase.cs: read/write the full size image records
 
 2006-06-16  James Willcox  <snorp@snorp.net>

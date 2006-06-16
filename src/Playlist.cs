@@ -32,7 +32,7 @@ namespace IPod {
             this.record = record;
         }
 
-        public ReadOnlyCollection<Track> Tracks {
+        public IList<Track> Tracks {
             get {
                 if (IsOnTheGo)
                     return new ReadOnlyCollection<Track> (otgtracks);
