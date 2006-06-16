@@ -16,7 +16,7 @@ namespace IPod {
             using(BinaryWriter writer = new BinaryWriter(new FileStream(
                 sdbFile, FileMode.Create))) {
                 
-                WriteHeader(writer, device.TrackDatabase.Tracks.Length);
+                WriteHeader(writer, device.TrackDatabase.Tracks.Count);
                 
                 foreach(Track track in device.TrackDatabase.Tracks) {
                     WriteTrackEntry(writer, device, track);

@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace IPod {
 
@@ -10,7 +12,7 @@ namespace IPod {
 
         private TrackDatabase db;
         private PlaylistRecord record;
-        private ArrayList otgtracks;
+        private List<Track> otgtracks;
         private string otgtitle;
 
         public event PlaylistTrackHandler TrackAdded;
@@ -20,9 +22,9 @@ namespace IPod {
             get { return record; }
         }
 
-        internal Playlist (TrackDatabase db, string title, Track[] otgtracks) {
+        internal Playlist (TrackDatabase db, string title, List<Track> otgtracks) {
             this.otgtitle = title;
-            this.otgtracks = new ArrayList (otgtracks);
+            this.otgtracks = otgtracks;
         }
         
         internal Playlist (TrackDatabase db, PlaylistRecord record) {
@@ -30,12 +32,12 @@ namespace IPod {
             this.record = record;
         }
 
-        public Track[] Tracks {
+        public ReadOnlyCollection<Track> Tracks {
             get {
                 if (IsOnTheGo)
-                    return (Track[]) otgtracks.ToArray (typeof (Track));
-                    
-                ArrayList tracks = new ArrayList ();
+                    return new ReadOnlyCollection<Track> (otgtracks);
+
+                List<Track> tracks = new List<Track> ();
 
                 foreach (PlaylistItemRecord item in record.Items) {
                     Track track = db.GetTrackById (item.TrackId);
@@ -48,8 +50,8 @@ namespace IPod {
 
                     tracks.Add (track);
                 }
-                
-                return (Track[]) tracks.ToArray (typeof (Track));
+
+                return new ReadOnlyCollection<Track> (tracks);
             }
         }
 

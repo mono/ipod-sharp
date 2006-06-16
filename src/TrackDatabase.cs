@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Mono.Unix;
 
 namespace IPod {
@@ -137,7 +139,7 @@ namespace IPod {
 
         private int unknownOne = 0;
         private int unknownTwo = 0;
-        private ArrayList details = new ArrayList ();
+        private List<DetailRecord> details = new List<DetailRecord> ();
         private DetailRecord posrec;
 
         public int TrackId;
@@ -257,9 +259,9 @@ namespace IPod {
         //private int unknownThree;
         private bool isLibrary;
 
-        private ArrayList stringDetails = new ArrayList ();
-        private ArrayList otherDetails = new ArrayList ();
-        private ArrayList playlistItems = new ArrayList ();
+        private List<DetailRecord> stringDetails = new List<DetailRecord> ();
+        private List<Record> otherDetails = new List<Record> ();
+        private List<PlaylistItemRecord> playlistItems = new List<PlaylistItemRecord> ();
 
         private DetailRecord nameRecord;
         
@@ -282,9 +284,9 @@ namespace IPod {
             }
         }
 
-        public PlaylistItemRecord[] Items {
+        public ReadOnlyCollection<PlaylistItemRecord> Items {
             get {
-                return (PlaylistItemRecord[]) playlistItems.ToArray (typeof (PlaylistItemRecord));
+                return new ReadOnlyCollection<PlaylistItemRecord> (playlistItems);
             }
         }
 
@@ -400,26 +402,26 @@ namespace IPod {
 
             // blah, this is soooo sleaux
             
-            ArrayList items = (ArrayList) playlistItems.Clone ();
+            List<PlaylistItemRecord> items = new List<PlaylistItemRecord> (playlistItems);
             TrackSorter sorter = new TrackSorter (tracks, type);
             items.Sort (sorter);
 
-            ArrayList indices = new ArrayList ();
+            List<int> indices = new List<int> ();
             foreach (PlaylistItemRecord item in items) {
                 indices.Add (tracks.IndexOf (item.TrackId));
             }
 
-            record.LibraryIndices = (int[]) indices.ToArray (typeof (int));
+            record.LibraryIndices = indices.ToArray ();
             return record;
         }
 #pragma warning restore 0169
 
         private void CreateLibraryIndices (TrackListRecord tracks) {
 
-            ArrayList details = new ArrayList ();
+            List<Record> details = new List<Record> ();
             
             // remove any existing library index records
-            foreach (Record rec in (ArrayList) otherDetails) {
+            foreach (Record rec in otherDetails) {
                 DetailRecord detail = rec as DetailRecord;
                 if (detail != null && detail.Type != DetailType.LibraryIndex) {
                     details.Add (rec);
@@ -495,7 +497,7 @@ namespace IPod {
             writer.Write (childData, 0, childDataLength);
         }
 
-        private class TrackSorter : IComparer {
+        private class TrackSorter : IComparer<PlaylistItemRecord> {
 
             private TrackListRecord tracks;
             private IndexType type;
@@ -505,9 +507,9 @@ namespace IPod {
                 this.type = type;
             }
             
-            public int Compare (object a, object b) {
-                TrackRecord trackA = tracks.LookupTrack ((a as PlaylistItemRecord).TrackId);
-                TrackRecord trackB = tracks.LookupTrack ((b as PlaylistItemRecord).TrackId);
+            public int Compare (PlaylistItemRecord a, PlaylistItemRecord b) {
+                TrackRecord trackA = tracks.LookupTrack (a.TrackId);
+                TrackRecord trackB = tracks.LookupTrack (b.TrackId);
 
                 if (trackA == null || trackB == null)
                     return 0;
@@ -538,7 +540,7 @@ namespace IPod {
 
     internal class PlaylistListRecord : TrackDbRecord, IEnumerable {
 
-        private ArrayList playlists = new ArrayList ();
+        private List<PlaylistRecord> playlists = new List<PlaylistRecord> ();
 
         public PlaylistRecord this[int index] {
             get {
@@ -546,9 +548,9 @@ namespace IPod {
             }
         }
 
-        public PlaylistRecord[] Playlists {
+        public ReadOnlyCollection<PlaylistRecord> Playlists {
             get {
-                return (PlaylistRecord[]) playlists.ToArray (typeof (PlaylistRecord));
+                return new ReadOnlyCollection<PlaylistRecord> (playlists);
             }
         }
 
@@ -831,7 +833,7 @@ namespace IPod {
         private int unknownNineteen;
         private int playCountDup;
 
-        private ArrayList details = new ArrayList ();
+        private List<DetailRecord> details = new List<DetailRecord> ();
 
         public int Id;
         public bool Hidden = false;
@@ -875,8 +877,8 @@ namespace IPod {
         public int SeasonNumber;
         public int EpisodeNumber;
 
-        public DetailRecord[] Details {
-            get { return (DetailRecord[]) details.ToArray (typeof (DetailRecord)); }
+        public ReadOnlyCollection<DetailRecord> Details {
+            get { return new ReadOnlyCollection<DetailRecord> (details); }
         }
 
         public TrackRecord (bool isbe) : base (isbe) {
@@ -1159,10 +1161,10 @@ namespace IPod {
 
     internal class TrackListRecord : TrackDbRecord, IEnumerable {
 
-        private ArrayList tracks = new ArrayList ();
+        private List<TrackRecord> tracks = new List<TrackRecord> ();
 
-        public TrackRecord[] Tracks {
-            get { return (TrackRecord[]) tracks.ToArray (typeof (TrackRecord)); }
+        public ReadOnlyCollection<TrackRecord> Tracks {
+            get { return new ReadOnlyCollection<TrackRecord> (tracks); }
         }
 
         public TrackListRecord (bool isbe) : base (isbe) {
@@ -1343,8 +1345,8 @@ namespace IPod {
 
         private int unknownOne = 1;
         private int unknownTwo = 2;
-        
-        private ArrayList datasets = new ArrayList ();
+
+        private List<DataSetRecord> datasets = new List<DataSetRecord> ();
 
         public int Version = MaxSupportedVersion;
         public long Id;
@@ -1361,7 +1363,6 @@ namespace IPod {
         }
 
         public DatabaseRecord (bool isbe) : base (isbe) {
-            datasets = new ArrayList ();
             datasets.Add (new DataSetRecord (DataSetIndex.Library, isbe));
 
             DataSetRecord plrec = new DataSetRecord (DataSetIndex.Playlist, isbe);
@@ -1510,12 +1511,12 @@ namespace IPod {
         
         private DatabaseRecord dbrec;
 
-        private ArrayList tracks = new ArrayList ();
-        private ArrayList tracksToAdd = new ArrayList ();
-        private ArrayList tracksToRemove = new ArrayList ();
+        private List<Track> tracks = new List<Track> ();
+        private List<Track> tracksToAdd = new List<Track> ();
+        private List<Track> tracksToRemove = new List<Track> ();
 
-        private ArrayList playlists = new ArrayList ();
-        private ArrayList otgPlaylists = new ArrayList ();
+        private List<Playlist> playlists = new List<Playlist> ();
+        private List<Playlist> otgPlaylists = new List<Playlist> ();
         
         private Random random = new Random();
         private Device device;
@@ -1561,20 +1562,22 @@ namespace IPod {
             get { return ControlPath + "iTunes/Play Counts"; }
         }
 
-        public Track[] Tracks {
+        public ReadOnlyCollection<Track> Tracks {
             get {
-                return (Track[]) tracks.ToArray (typeof (Track));
+                return new ReadOnlyCollection<Track> (tracks);
             }
         }
 
-        public Playlist[] Playlists {
+        public ReadOnlyCollection<Playlist> Playlists {
             get {
-                return (Playlist[]) playlists.ToArray (typeof (Playlist));
+                return new ReadOnlyCollection<Playlist> (playlists);
             }
         }
 
-        public Playlist[] OnTheGoPlaylists {
-            get { return (Playlist[]) otgPlaylists.ToArray (typeof (Playlist)); }
+        public ReadOnlyCollection<Playlist> OnTheGoPlaylists {
+            get {
+                return new ReadOnlyCollection<Playlist> (otgPlaylists);
+            }
         }
 
         public int Version {
@@ -1652,8 +1655,8 @@ namespace IPod {
             if (!finfo.Exists || finfo.Length == 0) {
                 return false;
             }
-            
-            ArrayList otgtracks = new ArrayList ();
+
+            List<Track> otgtracks = new List<Track> ();
             
             using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open, FileAccess.Read))) {
 
@@ -1677,7 +1680,7 @@ namespace IPod {
                 title += " " + num;
             }
             
-            otgPlaylists.Add (new Playlist (this, title, (Track[]) otgtracks.ToArray (typeof (Track))));
+            otgPlaylists.Add (new Playlist (this, title, otgtracks));
             return true;
         }
 

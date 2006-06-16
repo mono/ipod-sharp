@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
@@ -89,7 +91,7 @@ namespace IPod.Tests {
         public void AddTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            int len = db.Tracks.Length;
+            int len = db.Tracks.Count;
 
             for (int i = 0; i < 100; i++)
                 AddTrack (db);
@@ -97,14 +99,14 @@ namespace IPod.Tests {
             db.Save ();
             db.Reload ();
 
-            Assert.AreEqual (len + 100, db.Tracks.Length);
+            Assert.AreEqual (len + 100, db.Tracks.Count);
         }
 
         [Test]
         public void RemoveTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            int origlen = db.Tracks.Length;
+            int origlen = db.Tracks.Count;
             
             Track track = AddTrack (db);
             int index = origlen;
@@ -137,7 +139,7 @@ namespace IPod.Tests {
                 }
             }
 
-            Assert.AreEqual (db.Tracks.Length, origlen);
+            Assert.AreEqual (db.Tracks.Count, origlen);
         }
 
         [Test]
@@ -145,7 +147,7 @@ namespace IPod.Tests {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
             AddTrack (db);
-            int index = db.Tracks.Length - 1;
+            int index = db.Tracks.Count - 1;
             
             db.Save ();
             db.Reload ();
@@ -222,7 +224,7 @@ namespace IPod.Tests {
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (10, list.Tracks.Length);
+            Assert.AreEqual (10, list.Tracks.Count);
         }
 
         [Test]
@@ -257,19 +259,19 @@ namespace IPod.Tests {
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (10, list.Tracks.Length);
+            Assert.AreEqual (10, list.Tracks.Count);
 
             for (int i = 0; i < 10; i++)
                 list.AddTrack (AddTrack (db));
 
-            Assert.AreEqual (20, list.Tracks.Length);
+            Assert.AreEqual (20, list.Tracks.Count);
             db.Save ();
             db.Reload ();
 
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (20, list.Tracks.Length);
+            Assert.AreEqual (20, list.Tracks.Count);
         }
 
         [Test]
@@ -284,7 +286,7 @@ namespace IPod.Tests {
             list = db.LookupPlaylist (playlistName);
 
             Assert.IsNotNull (list);
-            Assert.AreEqual (10, list.Tracks.Length);
+            Assert.AreEqual (10, list.Tracks.Count);
 
             Track mytrack = list.Tracks[4];
             mytrack.Artist = "reordered";
@@ -440,9 +442,9 @@ namespace IPod.Tests {
         public void ModifyOTGNameTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            Playlist[] lists = db.OnTheGoPlaylists;
+            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
             
-            if (lists.Length == 0)
+            if (lists.Count == 0)
                 throw new InvalidOperationException ("no lists");
             
             lists[0].Name = "foobar";
@@ -455,9 +457,9 @@ namespace IPod.Tests {
 
             Track track = AddTrack (db);
 
-            Playlist[] lists = db.OnTheGoPlaylists;
+            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
             
-            if (lists.Length == 0)
+            if (lists.Count == 0)
                 throw new InvalidOperationException ("no lists");
 
             lists[0].AddTrack (track);
@@ -468,10 +470,10 @@ namespace IPod.Tests {
         public void RemoveOTGTrackTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            Playlist[] lists = db.OnTheGoPlaylists;
+            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
 
             // make nunit happy if there were no tracks or playlists
-            if (lists.Length == 0 || lists[0].Tracks.Length == 0)
+            if (lists.Count == 0 || lists[0].Tracks.Count == 0)
                 throw new InvalidOperationException ("no tracks");
 
             Playlist otg = lists[0];
@@ -486,10 +488,10 @@ namespace IPod.Tests {
         public void RemoveOTGPlaylistTest () {
             TrackDatabase db = OpenDevice ().TrackDatabase;
 
-            Playlist[] lists = db.OnTheGoPlaylists;
+            ReadOnlyCollection<Playlist> lists = db.OnTheGoPlaylists;
 
             // make nunit stfu
-            if (lists.Length == 0)
+            if (lists.Count == 0)
                 throw new InvalidOperationException ("no playlists");
 
             foreach (Playlist pl in lists) {
