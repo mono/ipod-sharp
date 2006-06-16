@@ -353,9 +353,13 @@ namespace IPod {
 
         private void LoadEqualizers () {
             equalizers = new ArrayList ();
+
+            eqsrec = new EqualizerContainerRecord ();
+
+            if (!File.Exists (EqDbPath))
+                return;
             
             using (BinaryReader reader = new BinaryReader (File.Open (EqDbPath, FileMode.Open))) {
-                eqsrec = new EqualizerContainerRecord ();
                 eqsrec.Read (reader);
 
                 foreach (EqualizerRecord eqrec in eqsrec.EqualizerRecords) {
@@ -410,7 +414,8 @@ namespace IPod {
 
             try {
                 // Back up the eq db
-                File.Copy (EqDbPath, EqDbPath + ".bak", true);
+                if (File.Exists (EqDbPath))
+                    File.Copy (EqDbPath, EqDbPath + ".bak", true);
                 
                 // Save the eq db
                 using (BinaryWriter writer = new BinaryWriter (new FileStream (EqDbPath, FileMode.Create))) {

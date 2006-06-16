@@ -63,7 +63,9 @@ namespace IPod.Tests {
             if (proc.ExitCode != 0)
                 throw new ApplicationException ("Unable to untar test: " + errors);
 
-            Directory.Move ("ipod-test-db", testdir + "/ipod-test-db");
+            // this is just sad
+            proc = Process.Start (String.Format ("mv ipod-test-db {0}/ipod-test-db", testdir));
+            proc.WaitForExit ();
 
             return GetDevice ();
         }

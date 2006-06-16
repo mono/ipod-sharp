@@ -1,5 +1,9 @@
 2006-06-16  James Willcox  <snorp@snorp.net>
 
+	* fix the test cases
+
+2006-06-16  James Willcox  <snorp@snorp.net>
+
 	* Use IList<T> instead of ReadOnlyCollection<T> in the public API
 
 2006-06-16  James Willcox  <snorp@snorp.net>
