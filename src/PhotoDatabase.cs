@@ -9,6 +9,8 @@ namespace IPod {
 
     internal abstract class PhotoDbRecord : Record {
 
+        protected int recordPadding = PadLength;
+
         public PhotoDbRecord (bool isbe) : base (isbe) {
         }
         
@@ -38,6 +40,10 @@ namespace IPod {
             data = stream.GetBuffer ();
             writer.Close ();
         }
+
+        protected override void WritePadding (BinaryWriter writer) {
+            writer.Write (new byte[recordPadding]);
+        }
     }
 
     internal class DataFileRecord : PhotoDbRecord {
@@ -45,7 +51,6 @@ namespace IPod {
         private int unknownOne;
         private int unknownTwo;
         private int unknownThree;
-        private int unknownFour;
         private long unknownFive;
         private long unknownSix;
         private int unknownSeven = 2;
@@ -92,6 +97,8 @@ namespace IPod {
             unknownTen = ToInt32 (body, 48);
             unknownEleven = ToInt32 (body, 52);
 
+            recordPadding = body.Length - 56;
+
             for (int i = 0; i < numChildren; i++) {
                 PhotoDataSetRecord ds = new PhotoDataSetRecord (IsBE);
                 ds.Read (reader);
@@ -106,8 +113,8 @@ namespace IPod {
             SaveChildren (children,  out childBytes, out childLen);
 
             WriteName (writer);
-            writer.Write (68 + PadLength);
-            writer.Write (68 + PadLength + childLen);
+            writer.Write (68 + recordPadding);
+            writer.Write (68 + recordPadding + childLen);
             writer.Write (unknownOne);
             writer.Write (unknownTwo);
             writer.Write (children.Count);
@@ -147,6 +154,8 @@ namespace IPod {
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
             Index = (PhotoDataSetIndex) ToInt32 (body, 0);
 
+            recordPadding = body.Length - 4;
+
             switch (Index) {
             case PhotoDataSetIndex.ImageList:
                 Data = new ImageListRecord (IsBE);
@@ -171,8 +180,8 @@ namespace IPod {
 
             SaveChild (Data, out childBytes, out childLen);
             WriteName (writer);
-            writer.Write (16 + PadLength);
-            writer.Write (16 + PadLength + childLen);
+            writer.Write (16 + recordPadding);
+            writer.Write (16 + recordPadding + childLen);
             writer.Write ((int) Index);
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
@@ -205,7 +214,8 @@ namespace IPod {
             base.Read (reader);
 
             if (HeaderOne - 12 > 0) {
-                reader.ReadBytes (HeaderOne - 12);
+                byte[] body = reader.ReadBytes (HeaderOne - 12);
+                recordPadding = body.Length;
             }
 
             albums.Clear ();
@@ -224,7 +234,7 @@ namespace IPod {
 
             SaveChildren (albums, out childBytes, out childLen);
             WriteName (writer);
-            writer.Write (12 + PadLength);
+            writer.Write (12 + recordPadding);
             writer.Write (albums.Count);
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
@@ -289,6 +299,7 @@ namespace IPod {
             unknownOne = ToInt32 (body, 12);
             unknownTwo = ToInt16 (body, 16);
             IsMaster = body[18] == (byte) 1;
+
             PlayMusic = body[19] == (byte) 1;
             Repeat = body[20] == (byte) 1;
             Random = body[21] == (byte) 1;
@@ -301,9 +312,12 @@ namespace IPod {
             TrackId = ToInt64 (body, 40);
             PreviousPlaylistId = ToInt32 (body, 48);
 
+            recordPadding = body.Length - 52;
+
             for (int i = 0; i < numDataObjects; i++) {
                 PhotoDetailRecord detail = new PhotoDetailRecord (IsBE);
                 detail.Read (reader);
+                detail.BrokenChildPadding = true;
 
                 if (i == 0) {
                     nameRecord = detail;
@@ -329,14 +343,14 @@ namespace IPod {
             SaveChildren (items, out childBytes, out childLen);
 
             WriteName (writer);
-            writer.Write (64 + PadLength);
-            writer.Write (64 + PadLength + detailLen + childLen);
+            writer.Write (64 + recordPadding);
+            writer.Write (64 + recordPadding + detailLen + childLen);
             writer.Write (1);
             writer.Write (items.Count);
             writer.Write (PlaylistId);
             writer.Write (unknownOne);
             writer.Write (unknownTwo);
-            writer.Write (IsMaster ? (byte) 1 : (byte) 0);
+            writer.Write (IsMaster ? (byte) 1 : (byte) 6);
             writer.Write (PlayMusic ? (byte) 1 : (byte) 0);
             writer.Write (Repeat ? (byte) 1 : (byte) 0);
             writer.Write (Random ? (byte) 1 : (byte) 0);
@@ -372,12 +386,14 @@ namespace IPod {
 
             unknownOne = ToInt32 (body, 0);
             ImageId = ToInt32 (body, 4);
+
+            recordPadding = body.Length - 8;
         }
 
         public override void Save (BinaryWriter writer) {
             WriteName (writer);
-            writer.Write (20 + PadLength);
-            writer.Write (20 + PadLength);
+            writer.Write (20 + recordPadding);
+            writer.Write (20 + recordPadding);
             writer.Write (unknownOne);
             writer.Write (ImageId);
             WritePadding (writer);
@@ -410,7 +426,9 @@ namespace IPod {
         public override void Read (BinaryReader reader) {
             base.Read (reader);
 
-            reader.ReadBytes (this.HeaderOne - 12);
+            byte[] body = reader.ReadBytes (this.HeaderOne - 12);
+
+            recordPadding = body.Length;
 
             for (int i = 0; i < this.HeaderTwo; i++) {
                 ImageItemRecord item = new ImageItemRecord (IsBE);
@@ -427,7 +445,7 @@ namespace IPod {
             SaveChildren (items, out childBytes, out childLen);
 
             WriteName (writer);
-            writer.Write (12 + PadLength);
+            writer.Write (12 + recordPadding);
             writer.Write (items.Count);
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
@@ -448,6 +466,8 @@ namespace IPod {
         public ImageNameRecord ImageName;
         public string Value;
 
+        public bool BrokenChildPadding = false;
+
         public PhotoDetailRecord (bool isbe) : base (isbe) {
             this.Name = "mhod";
         }
@@ -466,6 +486,7 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
             Type = (PhotoDetailType) ToInt16 (body, 0);
+            short childPadding = ToInt16 (body, 2);
 
             switch (Type) {
             case PhotoDetailType.ThumbnailContainer:
@@ -503,7 +524,7 @@ namespace IPod {
 
         private void WriteString (BinaryWriter writer, byte[] bytes, int padding, bool utf16) {
             writer.Write (bytes.Length);
-            writer.Write (utf16 ? 2 : 0);
+            writer.Write (utf16 ? 2 : 1);
             writer.Write (0);
             writer.Write (bytes);
             writer.Write (new byte[padding]);
@@ -534,7 +555,7 @@ namespace IPod {
             childPadding = 0;
 
             if (Type == PhotoDetailType.FileName || Type == PhotoDetailType.String) {
-                int totalLength = 16 + PadLength + childLen;
+                int totalLength = 16 + recordPadding + childLen;
                 while (totalLength%4 != 0) {
                     totalLength++;
                     childPadding++;
@@ -542,10 +563,16 @@ namespace IPod {
             }
 
             WriteName (writer);
-            writer.Write (16 + PadLength);
-            writer.Write (16 + PadLength + childLen + childPadding);
+            writer.Write (16 + recordPadding);
+            writer.Write (16 + recordPadding + childLen + childPadding);
             writer.Write ((short) Type);
-            writer.Write ((short) 2);
+
+            if (BrokenChildPadding) {
+                writer.Write (Utility.Swap ((short) childPadding));
+            } else {
+                writer.Write ((short) childPadding);
+            }
+            
             WritePadding (writer);
 
             switch (Type) {
@@ -602,6 +629,8 @@ namespace IPod {
             ImageHeight = ToInt16 (body, 20);
             ImageWidth = ToInt16 (body, 22);
 
+            recordPadding = body.Length - 24;
+
             for (int i = 0; i < numChildren; i++) {
                 PhotoDetailRecord detail = new PhotoDetailRecord (IsBE);
                 detail.Read (reader);
@@ -616,11 +645,12 @@ namespace IPod {
             byte[] childBytes;
             int childLen;
 
+            fileDetail.BrokenChildPadding = true;
             SaveChild (fileDetail, out childBytes, out childLen);
 
             WriteName (writer);
-            writer.Write (36 + PadLength);
-            writer.Write (36 + PadLength + childLen);
+            writer.Write (36 + recordPadding);
+            writer.Write (36 + recordPadding + childLen);
             writer.Write (1);
             writer.Write (CorrelationID);
             writer.Write (ThumbnailOffset);
@@ -682,6 +712,8 @@ namespace IPod {
             DigitizedDate = Utility.MacTimeToDate (ToUInt32 (body, 32));
             sourceImageSize = ToInt32 (body, 36);
 
+            recordPadding = body.Length - 40;
+
             for (int i = 0; i < numChildren; i++) {
                 PhotoDetailRecord detail = new PhotoDetailRecord (IsBE);
                 detail.Read (reader);
@@ -705,14 +737,14 @@ namespace IPod {
             }
 
             if (fullName != null) {
-                details.Add (new PhotoDetailRecord (IsBE, fullName, PhotoDetailType.ImageContainer));
+                details.Insert (0, new PhotoDetailRecord (IsBE, fullName, PhotoDetailType.ImageContainer));
             }
             
             SaveChildren (details, out childBytes, out childLen);
 
             WriteName (writer);
-            writer.Write (52 + PadLength);
-            writer.Write (52 + PadLength + childLen);
+            writer.Write (52 + recordPadding);
+            writer.Write (52 + recordPadding + childLen);
             writer.Write (details.Count);
             writer.Write (Id);
             writer.Write (TrackId);
@@ -743,7 +775,8 @@ namespace IPod {
             base.Read (reader);
 
             if (HeaderOne - 12 > 0) {
-                reader.ReadBytes (HeaderOne - 12);
+                byte[] body = reader.ReadBytes (HeaderOne - 12);
+                recordPadding = body.Length;
             }
             
             int numChildren = HeaderTwo;
@@ -761,7 +794,7 @@ namespace IPod {
             SaveChildren (files, out childBytes, out childLen);
 
             WriteName (writer);
-            writer.Write (12 + PadLength);
+            writer.Write (12 + recordPadding);
             writer.Write (files.Count);
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
@@ -787,12 +820,14 @@ namespace IPod {
             unknownOne = ToInt32 (body, 0);
             CorrelationId = ToInt32 (body, 4);
             ImageSize = ToInt32 (body, 8);
+
+            recordPadding = body.Length - 12;
         }
 
         public override void Save (BinaryWriter writer) {
             WriteName (writer);
-            writer.Write (24 + PadLength);
-            writer.Write (24 + PadLength);
+            writer.Write (24 + recordPadding);
+            writer.Write (24 + recordPadding);
             writer.Write (unknownOne);
             writer.Write (CorrelationId);
             writer.Write (ImageSize);
@@ -806,12 +841,17 @@ namespace IPod {
         private Dictionary<int, Image> images = new Dictionary<int, Image> ();
         private List<Album> albums = new List<Album> ();
         private DataFileRecord dfr;
+        private bool isPhoto;
 
         private Album masterAlbum;
 
         private string PhotoDbPath {
             get {
-                return device.MountPoint + "/Photos/Photo Database";
+                if (isPhoto) {
+                    return device.MountPoint + "/Photos/Photo Database";
+                } else {
+                    return device.ControlPath + "/Artwork/ArtworkDB";
+                }
             }
         }
 
@@ -831,22 +871,25 @@ namespace IPod {
             }
         }
         
-        internal PhotoDatabase (Device device) : this (device, false) {
-        }
-
-        internal PhotoDatabase (Device device, bool createFresh) {
+        internal PhotoDatabase (Device device, bool isPhoto, bool createFresh) {
             this.device = device;
+            this.isPhoto = isPhoto;
 
-            // FIXME: do something with createFresh
+            if(createFresh && File.Exists (PhotoDbPath)) {
+                File.Copy (PhotoDbPath, PhotoDbBackupPath, true);
+            }
 
-            Reload ();
+            Reload (createFresh);
         }
 
-        public void Reload () {
+        public void Reload (bool createFresh) {
             images.Clear ();
             albums.Clear ();
             
-            dfr = new DataFileRecord (false);
+            dfr = new DataFileRecord (device.IsBE);
+
+            if (createFresh)
+                return;
 
             using (BinaryReader reader = new BinaryReader (File.Open (PhotoDbPath, FileMode.Open))) {
                 dfr.Read (reader);

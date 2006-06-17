@@ -294,6 +294,11 @@ namespace IPod {
             }
         }
 
+        internal bool IsBE {
+            get { return ControlPath.EndsWith ("iTunes_Control"); }
+        }
+
+
         public static new GLib.GType GType { 
             get {
                 IntPtr raw_ret = ipod_device_get_type();
@@ -323,7 +328,7 @@ namespace IPod {
             //FIXME: refuse if the device lacks photo capability
 
             if (photos == null)
-                photos = new PhotoDatabase (this, createFresh);
+                photos = new PhotoDatabase (this, true, createFresh);
         }
         
         public void LoadTrackDatabase () {

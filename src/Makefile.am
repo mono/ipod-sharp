@@ -29,6 +29,7 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Initializer.cs	\
 	$(srcdir)/PhotoDatabase.cs		\
 	$(srcdir)/Playlist.cs		\
+	$(srcdir)/ObjectDumper.cs		\
 	$(srcdir)/Thumbnail.cs		\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs \

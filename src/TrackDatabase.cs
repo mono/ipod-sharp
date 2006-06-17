@@ -29,7 +29,7 @@ namespace IPod {
             writer.Write (nameBytes);
         }
 
-        protected void WritePadding (BinaryWriter writer) {
+        protected virtual void WritePadding (BinaryWriter writer) {
             writer.Write (new byte[PadLength]);
         }
 
@@ -1521,7 +1521,7 @@ namespace IPod {
         private Random random = new Random();
         private Device device;
 
-        private string controlPath;
+        private PhotoDatabase artdb;
 
         public event EventHandler SaveStarted;
         public event SaveProgressHandler SaveProgressChanged;
@@ -1593,8 +1593,10 @@ namespace IPod {
             if(createFresh && File.Exists(TrackDbPath)) {
                 File.Copy (TrackDbPath, TrackDbBackupPath, true);
             }
-            
+
             Reload (createFresh);
+
+            artdb = new PhotoDatabase (device, false, createFresh);
         }
         
         
@@ -1698,7 +1700,8 @@ namespace IPod {
             Clear ();
 
             // This blows, we need to use the device model number or something
-            bool useBE = ControlPath.EndsWith ("iTunes_Control");
+            bool useBE = device.IsBE;
+            //ControlPath.EndsWith ("iTunes_Control");
                 
             if (!File.Exists (TrackDbPath) || createFresh) {
                 dbrec = new DatabaseRecord (useBE);
@@ -1880,6 +1883,9 @@ namespace IPod {
                         track.FileName = dest;
                     }
                 }
+
+                // Save artwork database
+                artdb.Save ();
 
                 // Save the shuffle tracks db (will only create if device is shuffle);
                 try {

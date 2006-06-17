@@ -1,5 +1,10 @@
 2006-06-16  James Willcox  <snorp@snorp.net>
 
+	* src/PhotoDatabase.cs: more write fixes.  It can now read/write the
+	art and photo database without corruption.
+
+2006-06-16  James Willcox  <snorp@snorp.net>
+
 	* fix the test cases
 
 2006-06-16  James Willcox  <snorp@snorp.net>
