@@ -102,5 +102,52 @@ namespace IPod {
             
             record.Dirty = true;
         }
+
+        private static byte[] PackRgb565 (Gdk.Pixbuf src, bool IsBigEndian) {
+            int row, col;
+            byte r, g, b;
+            byte[] packed;
+            int i;
+            int width = src.Width;
+            int height = src.Height;
+            ushort s;
+
+            bool flip = IsBigEndian == System.BitConverter.IsLittleEndian;
+
+            unsafe {
+                byte * pixels;			 
+
+                packed = new byte[width * height * 2];
+            
+                for (row = 0; row < height; row ++) {
+                    pixels = ((byte *)src.Pixels) + row * src.Rowstride;
+                    i = row * width;
+				
+                    for (col = 0; col < width; col ++) {
+                        r = *(pixels ++);
+                        g = *(pixels ++);
+                        b = *(pixels ++);
+					
+                        s = (ushort) (((r & 0xf8) << 8) | ((g & 0xfc) << 3) | (b >> 3));
+
+                        if (flip)
+                            s = (ushort)((s >> 8) | (s << 8));
+
+                        byte[] sbytes = BitConverter.GetBytes (s);
+                    
+                        packed[i++] = sbytes[0];
+                        packed[i++] = sbytes[1];
+                    }
+                }
+            }
+
+            return packed;
+        }
+
+        public void SetDataFromPixbuf (Gdk.Pixbuf pixbuf) {
+            // FIXME: sometimes it needs to be big endian, or YUV
+            byte[] data = PackRgb565 (pixbuf, false);
+            SetData (data);
+        }
     }
 }

@@ -1,5 +1,10 @@
 2006-06-21  James Willcox  <snorp@snorp.net>
 
+	* src/Thumbnail.cs: add SetDataFromPixbuf, which will do all the
+	rgb565 packing, etc.
+
+2006-06-21  James Willcox  <snorp@snorp.net>
+
 	* Fix a ton of photo/artwork bugs, flesh out the public API some more
 
 2006-06-16  James Willcox  <snorp@snorp.net>
