@@ -107,6 +107,8 @@ namespace IPod {
 
             recordPadding = body.Length - 56;
 
+            children.Clear ();
+
             for (int i = 0; i < numChildren; i++) {
                 PhotoDataSetRecord ds = new PhotoDataSetRecord (IsBE);
                 ds.Read (reader);
