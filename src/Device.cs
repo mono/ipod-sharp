@@ -357,6 +357,15 @@ namespace IPod {
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
         }
 
+        public ArtworkFormat LookupFormat (ArtworkType type) {
+            foreach (ArtworkFormat format in formats.Values) {
+                if (format.Type == type)
+                    return format;
+            }
+
+            return null;
+        }
+
         internal ArtworkFormat LookupFormat (int correlationId) {
             return formats[correlationId];
         }

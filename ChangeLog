@@ -1,5 +1,11 @@
 2006-06-22  James Willcox  <snorp@snorp.net>
 
+	* src/Track.cs: add stuff for removing cover art
+	* src/Device.cs: add a LookupFormat method for getting the
+	ArtworkFormat for the given ArtworkType
+
+2006-06-22  James Willcox  <snorp@snorp.net>
+
 	* src/Track.cs: add pixbuf helper methods for cover art
 
 2006-06-22  James Willcox  <snorp@snorp.net>

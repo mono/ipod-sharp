@@ -329,6 +329,21 @@ namespace IPod {
             record.ArtworkCount = 1; // this is actually for artwork in mp3 tags, but it seems to be needed anyway
         }
 
+        public void RemoveCoverArt () {
+            FindCoverPhoto ();
+
+            if (coverPhoto != null) {
+                db.ArtworkDatabase.RemovePhoto (coverPhoto);
+            }
+        }
+        
+        public void RemoveCoverArt (ArtworkFormat format) {
+            Thumbnail thumbnail = GetThumbnail (format, false);
+            if (thumbnail != null) {
+                coverPhoto.RemoveThumbnail (thumbnail);
+            }
+        }
+
         private static Uri PathToFileUri (string path) {
             if (path == null)
                 return null;
