@@ -179,7 +179,7 @@ namespace IPod {
             return packed;
         }
 
-        public void SetDataFromPixbuf (Gdk.Pixbuf pixbuf) {
+        public void SetPixbuf (Gdk.Pixbuf pixbuf) {
             // FIXME: preserve aspect ratio
             if (pixbuf.Height > format.Height || pixbuf.Width > format.Width) {
                 pixbuf = pixbuf.ScaleSimple (Format.Width, Format.Height,
