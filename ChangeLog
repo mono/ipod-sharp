@@ -1,5 +1,9 @@
 2006-06-22  James Willcox  <snorp@snorp.net>
 
+	* src/Track.cs: add pixbuf helper methods for cover art
+
+2006-06-22  James Willcox  <snorp@snorp.net>
+
 	* src/Thumbnail.cs: add GetPixbuf()
 
 2006-06-22  James Willcox  <snorp@snorp.net>

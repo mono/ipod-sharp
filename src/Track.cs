@@ -278,22 +278,23 @@ namespace IPod {
             }
         }
 
-        public byte[] GetCoverArt (ArtworkFormat format) {
-            FindCoverPhoto ();
-
-            if (coverPhoto == null)
+        public Gdk.Pixbuf GetCoverArtPixbuf (ArtworkFormat format) {
+            Thumbnail thumbnail = GetThumbnail (format, false);
+            if (thumbnail == null)
                 return null;
-            
-            foreach (Thumbnail thumbnail in coverPhoto.Thumbnails) {
-                if (thumbnail.Format == format) {
-                    return thumbnail.GetData ();
-                }
-            }
-            
-            return null;
+            else
+                return thumbnail.GetPixbuf ();
         }
 
-        public void SetCoverArt (ArtworkFormat format, byte[] data) {
+        public byte[] GetCoverArt (ArtworkFormat format) {
+            Thumbnail thumbnail = GetThumbnail (format, false);
+            if (thumbnail == null)
+                return null;
+            else
+                return thumbnail.GetData ();
+        }
+
+        private Thumbnail GetThumbnail (ArtworkFormat format, bool createNew) {
             FindCoverPhoto ();
             
             if (coverPhoto == null) {
@@ -302,28 +303,30 @@ namespace IPod {
             }
 
             Thumbnail thumbnail = coverPhoto.LookupThumbnail (format);
-            if (thumbnail == null) {
+            if (thumbnail == null && createNew) {
                 thumbnail = coverPhoto.CreateThumbnail ();
                 thumbnail.Format = format;
                 thumbnail.Width = format.Width;
                 thumbnail.Height = format.Height;
             }
 
+            return thumbnail;
+        }
+
+        public void SetCoverArt (ArtworkFormat format, byte[] data) {
+            Thumbnail thumbnail = GetThumbnail (format, true);
             thumbnail.SetData (data);
+
             record.HasArtwork = true;
             record.ArtworkCount = 1; // this is actually for artwork in mp3 tags, but it seems to be needed anyway
+        }
 
-            //record.ArtworkSize = 21741;
-            //record.ArtworkSize = 0;
-            //coverPhoto.Record.SourceImageSize = record.ArtworkSize;
-            /*
-            record.ArtworkSize = 0;
-            foreach (Thumbnail t in coverPhoto.Thumbnails) {
-                record.ArtworkSize += (t.Size + 1);
-            }
+        public void SetCoverArtPixbuf (ArtworkFormat format, Gdk.Pixbuf pixbuf) {
+            Thumbnail thumbnail = GetThumbnail (format, true);
+            thumbnail.SetPixbuf (pixbuf);
 
-            coverPhoto.Record.SourceImageSize = record.ArtworkSize;
-            */
+            record.HasArtwork = true;
+            record.ArtworkCount = 1; // this is actually for artwork in mp3 tags, but it seems to be needed anyway
         }
 
         private static Uri PathToFileUri (string path) {
