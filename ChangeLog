@@ -1,3 +1,7 @@
+2006-06-21  James Willcox  <snorp@snorp.net>
+
+	* Fix a ton of photo/artwork bugs, flesh out the public API some more
+
 2006-06-16  James Willcox  <snorp@snorp.net>
 
 	* src/PhotoDatabase.cs: more write fixes.  It can now read/write the

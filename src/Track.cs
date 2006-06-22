@@ -33,12 +33,16 @@ namespace IPod {
         private TrackRecord record;
         private TrackDatabase db;
         private int latestPlayCount;
+        private Uri uri;
+        private Photo coverPhoto;
 
         internal int playCount;
         internal DateTime lastPlayed;
 
-        private Uri uri;
-        
+        internal TrackRecord Record {
+            get { return record; }
+        }
+
         public int Id {
             get { return record.Id; }
         }
@@ -268,6 +272,59 @@ namespace IPod {
             return Id.GetHashCode ();
         }
 
+        private void FindCoverPhoto () {
+            if (coverPhoto == null) {
+                coverPhoto = db.ArtworkDatabase.LookupPhotoByTrackId (record.DatabaseId);
+            }
+        }
+
+        public byte[] GetCoverArt (ArtworkFormat format) {
+            FindCoverPhoto ();
+
+            if (coverPhoto == null)
+                return null;
+            
+            foreach (Thumbnail thumbnail in coverPhoto.Thumbnails) {
+                if (thumbnail.Format == format) {
+                    return thumbnail.GetData ();
+                }
+            }
+            
+            return null;
+        }
+
+        public void SetCoverArt (ArtworkFormat format, byte[] data) {
+            FindCoverPhoto ();
+            
+            if (coverPhoto == null) {
+                coverPhoto = db.ArtworkDatabase.CreatePhoto ();
+                coverPhoto.Record.TrackId = record.DatabaseId;
+            }
+
+            Thumbnail thumbnail = coverPhoto.LookupThumbnail (format);
+            if (thumbnail == null) {
+                thumbnail = coverPhoto.CreateThumbnail ();
+                thumbnail.Format = format;
+                thumbnail.Width = format.Width;
+                thumbnail.Height = format.Height;
+            }
+
+            thumbnail.SetData (data);
+            record.HasArtwork = true;
+            record.ArtworkCount = 1; // this is actually for artwork in mp3 tags, but it seems to be needed anyway
+
+            //record.ArtworkSize = 21741;
+            //record.ArtworkSize = 0;
+            //coverPhoto.Record.SourceImageSize = record.ArtworkSize;
+            /*
+            record.ArtworkSize = 0;
+            foreach (Thumbnail t in coverPhoto.Thumbnails) {
+                record.ArtworkSize += (t.Size + 1);
+            }
+
+            coverPhoto.Record.SourceImageSize = record.ArtworkSize;
+            */
+        }
 
         private static Uri PathToFileUri (string path) {
             if (path == null)

@@ -25,8 +25,8 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/DeviceBusyException.cs	\
 	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
-	$(srcdir)/Image.cs	\
 	$(srcdir)/Initializer.cs	\
+	$(srcdir)/Photo.cs	\
 	$(srcdir)/PhotoDatabase.cs		\
 	$(srcdir)/Playlist.cs		\
 	$(srcdir)/ObjectDumper.cs		\

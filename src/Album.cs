@@ -7,13 +7,12 @@ namespace IPod {
     public class Album {
 
         private AlbumRecord record;
-        private PhotoDatabase db;
 
-        private List<Image> images;
+        private List<Photo> photos;
 
-        public ReadOnlyCollection<Image> Images {
+        public ReadOnlyCollection<Photo> Photos {
             get {
-                return new ReadOnlyCollection<Image> (images);
+                return new ReadOnlyCollection<Photo> (photos);
             }
         }
 
@@ -32,14 +31,23 @@ namespace IPod {
         
         internal Album (AlbumRecord record, PhotoDatabase db) {
             this.record = record;
-            this.db = db;
 
-            images = new List<Image> ();
+            photos = new List<Photo> ();
 
             foreach (AlbumItemRecord item in record.Items) {
-                Image img = db.LookupImageById (item.ImageId);
-                images.Add (img);
+                Photo photo = db.LookupPhotoById (item.Id);
+                photos.Add (photo);
             }
+        }
+
+        public void Add (Photo photo) {
+            record.AddItem (new AlbumItemRecord (record.IsBE, photo.Id));
+            photos.Add (photo);
+        }
+
+        public void Remove (Photo photo) {
+            record.RemoveItem (photo.Id);
+            photos.Remove (photo);
         }
     }
 }

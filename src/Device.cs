@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 
 namespace IPod {
@@ -79,6 +81,7 @@ namespace IPod {
         private EqualizerContainerRecord eqsrec;
         private TrackDatabase tracks;
         private PhotoDatabase photos;
+        private Dictionary<int, ArtworkFormat> formats = new Dictionary<int, ArtworkFormat> ();
 
         public event EventHandler Changed;
 
@@ -229,8 +232,13 @@ namespace IPod {
             }
         }
 
-        public ArtworkFormat[] ArtworkFormats {
+        public IList<ArtworkFormat> ArtworkFormats {
             get {
+                return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (formats.Values));
+            }
+        }
+
+                /*
                 IntPtr array = (IntPtr) GetProperty ("artwork-formats").Val;
 
                 if (array == IntPtr.Zero) {
@@ -262,8 +270,7 @@ namespace IPod {
                 }
 
                 return (ArtworkFormat[]) list.ToArray (typeof (ArtworkFormat));
-            }
-        }
+                */
 
         public Equalizer[] Equalizers {
             get {
@@ -315,9 +322,43 @@ namespace IPod {
             if (Raw == IntPtr.Zero) {
                 throw new DeviceException (this, "Failed to create device");
             }
+
+            // load the artwork formats
+            IntPtr array = (IntPtr) GetProperty ("artwork-formats").Val;
+
+            if (array == IntPtr.Zero) {
+                return;
+            }
+                
+            int offset = 0;
+            
+            while (true) {
+                int type = Marshal.ReadInt32 (array, offset);
+                offset += 4;
+                
+                if (type == -1)
+                    break;
+                
+                short width = Marshal.ReadInt16 (array, offset);
+                offset += 2;
+                
+                short height = Marshal.ReadInt16 (array, offset);
+                offset += 2;
+                
+                short correlationId = Marshal.ReadInt16 (array, offset);
+                offset += 2;
+                
+                offset += 2; // two bytes of padding after the struct; if you read it, it's always 0xffff
+                
+                formats[correlationId] = new ArtworkFormat ((ArtworkType) type, width, height, correlationId);
+            }
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
+        }
+
+        internal ArtworkFormat LookupFormat (int correlationId) {
+            return formats[correlationId];
         }
 
         public void LoadPhotoDatabase () {

@@ -3,22 +3,24 @@ using System.IO;
 
 namespace IPod {
 
+    /*
     public enum ThumbnailFormat {
         Rgb565,
         IYUV,
         Rgb565BE,
         Rgb565BE90
     }
+    */
 
     public class Thumbnail {
 
-        private Image image;
+        private Photo photo;
         private ImageNameRecord record;
 
         private ArtworkFormat format = null;
 
-        public Image Image {
-            get { return image; }
+        public Photo Photo {
+            get { return photo; }
         }
 
         public int Size {
@@ -48,39 +50,57 @@ namespace IPod {
 
         public ArtworkFormat Format {
             get {
-                if (format == null) {
-                    foreach (ArtworkFormat f in image.Device.ArtworkFormats) {
-                        if (f.CorrelationId == record.CorrelationID) {
-                            format = f;
-                            break;
-                        }
-                    }
-                }
-
                 return format;
+            } set {
+                if (value == null)
+                    throw new ArgumentNullException ("Format cannot be null");
+                
+                format = value;
+                record.CorrelationId = format.CorrelationId;
+                record.SetThumbFileName (photo.PhotoDatabase.IsPhotoDatabase);
             }
         }
-        
-        internal Thumbnail (Image image, ImageNameRecord record) {
-            this.image = image;
-            this.record = record;
-        }
 
-        private string GetThumbPath (string file) {
-            return String.Format ("{0}/Photos{1}", image.Device.MountPoint,
-                                  file.Replace (":", "/"));
+        internal ImageNameRecord Record {
+            get { return record; }
+        }
+        
+        internal Thumbnail (Photo photo, ImageNameRecord record) {
+            this.photo = photo;
+            this.record = record;
+
+            if (record.CorrelationId > 0) {
+                Format = photo.PhotoDatabase.Device.LookupFormat (record.CorrelationId);
+            }
         }
 
         public byte[] GetData () {
-            string file = GetThumbPath (record.FileName);
-
-            using (FileStream stream = File.Open (file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                stream.Seek ((long) record.ThumbnailOffset, SeekOrigin.Begin);
-
-                byte[] buf = new byte[record.ImageSize];
-                stream.Read (buf, 0, record.ImageSize);
-                return buf;
+            if (record.Dirty) {
+                return record.GetData (photo.PhotoDatabase.GetTempFile ());
+            } else {
+                string file = photo.PhotoDatabase.GetThumbPath (Format);
+                
+                using (FileStream stream = File.Open (file, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+                    return record.GetData (stream);
+                }
             }
+        }
+
+        public void SetData (byte[] data) {
+            int expectedLength = photo.PhotoDatabase.GetThumbSize (format.CorrelationId);
+            if (expectedLength > 0 && data.Length != expectedLength)
+                throw new ArgumentException (String.Format ("Expected data length of {0}, but got {1}",
+                                                            expectedLength, data.Length));
+            
+            Stream stream = photo.PhotoDatabase.GetTempFile ();
+            stream.Seek (0, SeekOrigin.End);
+            
+            record.ThumbnailOffset = (int) stream.Position;
+            record.ImageSize = data.Length;
+            
+            stream.Write (data, 0, data.Length);
+            
+            record.Dirty = true;
         }
     }
 }

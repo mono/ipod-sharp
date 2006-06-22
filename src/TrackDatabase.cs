@@ -815,7 +815,7 @@ namespace IPod {
     internal class TrackRecord : TrackDbRecord {
 
         private short unknownThree = 0;
-        private short unknownFour;
+        private short unknownFour = 1;
         private int unknownFive;
         private int unknownSix = 0x472c4400;
         private short unknownSeven;
@@ -1458,7 +1458,7 @@ namespace IPod {
         }
     }
 
-    public class SaveProgressArgs : EventArgs {
+    public class TrackSaveProgressArgs : EventArgs {
 
         private Track track;
         private double trackPercent;
@@ -1493,7 +1493,7 @@ namespace IPod {
             get { return total; }
         }
 
-        public SaveProgressArgs (Track track, double trackPercent, int completed, int total) {
+        public TrackSaveProgressArgs (Track track, double trackPercent, int completed, int total) {
             this.track = track;
             this.trackPercent = trackPercent;
             this.completed = completed;
@@ -1502,7 +1502,7 @@ namespace IPod {
     }
 
     public delegate void PlaylistHandler (object o, Playlist playlist);
-    public delegate void SaveProgressHandler (object o, SaveProgressArgs args);
+    public delegate void TrackSaveProgressHandler (object o, TrackSaveProgressArgs args);
 
     public class TrackDatabase {
 
@@ -1524,7 +1524,7 @@ namespace IPod {
         private PhotoDatabase artdb;
 
         public event EventHandler SaveStarted;
-        public event SaveProgressHandler SaveProgressChanged;
+        public event TrackSaveProgressHandler SaveProgressChanged;
         public event EventHandler SaveEnded;
 
         public event PlaylistHandler PlaylistAdded;
@@ -1582,6 +1582,10 @@ namespace IPod {
 
         public int Version {
             get { return dbrec.Version; }
+        }
+
+        internal PhotoDatabase ArtworkDatabase {
+            get { return artdb; }
         }
 
         internal TrackDatabase (Device device) : this (device, false) {
@@ -1711,7 +1715,6 @@ namespace IPod {
 
             using (BinaryReader reader = new BinaryReader (File.Open (TrackDbPath, FileMode.Open, FileAccess.Read))) {
 
-                // FIXME
                 dbrec = new DatabaseRecord (useBE);
                 dbrec.Read (null, reader);
 
@@ -1816,8 +1819,8 @@ namespace IPod {
 
                     double percent = (double) count / (double) length;
                     if (percent >= lastPercent + PercentThreshold && SaveProgressChanged != null) {
-                        SaveProgressArgs args = new SaveProgressArgs (track, (double) count / (double) length,
-                                                                      completed, total);
+                        TrackSaveProgressArgs args = new TrackSaveProgressArgs (track, (double) count / (double) length,
+                                                                                completed, total);
 
                         try {
                             SaveProgressChanged (this, args);
@@ -1899,7 +1902,7 @@ namespace IPod {
                 // Force progress to 100% so the app can now we're in the "sync()" phase
                 if (SaveProgressChanged != null) {
                     try {
-                        SaveProgressChanged (this, new SaveProgressArgs (null, 1.0, 1, 1));
+                        SaveProgressChanged (this, new TrackSaveProgressArgs (null, 1.0, 1, 1));
                     } catch (Exception e) {
                         Console.Error.WriteLine ("Exception in progress handler: " + e);
                     }
@@ -1956,9 +1959,8 @@ namespace IPod {
         internal string GetUniquePodPath (string path) {
             if (path == null)
                 return null;
-            
-            return String.Format (":{0}:Music:{1}", ControlDirectoryName, MakeUniquePodTrackPath(path));
 
+            return String.Format (":{0}:Music:{1}", ControlDirectoryName, MakeUniquePodTrackPath(path));
         }
 
         private int GetNextTrackId () {
@@ -2000,6 +2002,12 @@ namespace IPod {
                 // remove from the track db
                 dbrec[DataSetIndex.Library].TrackList.Remove (track.Id);
                 dbrec[DataSetIndex.Playlist].Library.RemoveTrack (track.TrackRecord.Id);
+
+                // remove from cover art db
+                Photo artPhoto = artdb.LookupPhotoByTrackId (track.Record.DatabaseId);
+                if (artPhoto != null) {
+                    artdb.RemovePhoto (artPhoto);
+                }
                     
                 // remove from the "normal" playlists
                 foreach (Playlist list in playlists) {

@@ -82,7 +82,7 @@ namespace IPod {
             notify.WakeupMain ();
         }
 
-        private void OnSaveProgressChanged (object o, SaveProgressArgs args) {
+        private void OnSaveProgressChanged (object o, TrackSaveProgressArgs args) {
             lock (this) {
                 if (args.CurrentTrack != null) {
                     string padstr = String.Format ("Adding {0} of {0}", args.TracksTotal);

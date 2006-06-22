@@ -3,7 +3,10 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.IO;
+using Mono.Unix;
+using Mono.Unix.Native;
 
 namespace IPod {
 
@@ -77,6 +80,11 @@ namespace IPod {
 
         public DataFileRecord (bool isbe) : base (isbe) {
             this.Name = "mhfd";
+            recordPadding = 64;
+
+            children.Add (new PhotoDataSetRecord (isbe, new ImageListRecord (isbe), PhotoDataSetIndex.ImageList));
+            children.Add (new PhotoDataSetRecord (isbe, new AlbumListRecord (isbe), PhotoDataSetIndex.AlbumList));
+            children.Add (new PhotoDataSetRecord (isbe, new FileListRecord (isbe), PhotoDataSetIndex.FileList));
         }
         
         public override void Read (BinaryReader reader) {
@@ -144,8 +152,15 @@ namespace IPod {
 
         public PhotoDbRecord Data;
 
-        public PhotoDataSetRecord (bool isbe) : base (isbe) {
+        public PhotoDataSetRecord (bool isbe) : this (isbe, null, 0) {
+        }
+        
+        public PhotoDataSetRecord (bool isbe, PhotoDbRecord data, PhotoDataSetIndex index) : base (isbe) {
             this.Name = "mhsd";
+            recordPadding = 80;
+
+            this.Data = data;
+            this.Index = index;
         }
         
         public override void Read (BinaryReader reader) {
@@ -208,6 +223,7 @@ namespace IPod {
         
         public AlbumListRecord (bool isbe) : base (isbe) {
             this.Name = "mhla";
+            recordPadding = 80;
         }
         
         public override void Read (BinaryReader reader) {
@@ -250,7 +266,7 @@ namespace IPod {
 
         private PhotoDetailRecord nameRecord;
 
-        private List<AlbumItemRecord> items = new List<AlbumItemRecord> ();
+        private Dictionary<int, AlbumItemRecord> items = new Dictionary<int, AlbumItemRecord> ();
         
         public int PlaylistId;
         public bool IsMaster;
@@ -266,7 +282,7 @@ namespace IPod {
 
         public IList<AlbumItemRecord> Items {
             get {
-                return new ReadOnlyCollection<AlbumItemRecord> (items);
+                return new ReadOnlyCollection<AlbumItemRecord> (new List<AlbumItemRecord> (items.Values));
             }
         }
 
@@ -278,14 +294,22 @@ namespace IPod {
         public AlbumRecord (bool isbe) : base (isbe) {
             this.Name = "mhba";
             nameRecord = new PhotoDetailRecord (IsBE);
+            nameRecord.Type = PhotoDetailType.String;
+            nameRecord.BrokenChildPadding = true;
+
+            recordPadding = 84;
         }
 
         public void AddItem (AlbumItemRecord item) {
-            items.Add (item);
+            items[item.Id] = item;
+        }
+
+        public void RemoveItem (int id) {
+            items.Remove (id);
         }
 
         public void RemoveItem (AlbumItemRecord item) {
-            items.Remove (item);
+            items.Remove (item.Id);
         }
         
         public override void Read (BinaryReader reader) {
@@ -324,10 +348,13 @@ namespace IPod {
                 }
             }
 
+            items.Clear ();
+
             for (int i = 0; i < numAlbums; i++) {
                 AlbumItemRecord item = new AlbumItemRecord (IsBE);
                 item.Read (reader);
-                items.Add (item);
+
+                AddItem (item);
             }
         }
 
@@ -340,7 +367,7 @@ namespace IPod {
             byte[] childBytes;
             int childLen;
 
-            SaveChildren (items, out childBytes, out childLen);
+            SaveChildren (items.Values, out childBytes, out childLen);
 
             WriteName (writer);
             writer.Write (64 + recordPadding);
@@ -373,10 +400,16 @@ namespace IPod {
 
         private int unknownOne;
 
-        public int ImageId;
+        public int Id;
 
-        public AlbumItemRecord (bool isbe) : base (isbe) {
+        public AlbumItemRecord (bool isbe) : this (isbe, 0) {
+        }
+
+        public AlbumItemRecord (bool isbe, int id) : base (isbe) {
             this.Name = "mhia";
+            this.Id = id;
+
+            recordPadding = 20;
         }
         
         public override void Read (BinaryReader reader) {
@@ -385,7 +418,7 @@ namespace IPod {
             byte[] body = reader.ReadBytes (HeaderOne - 12);
 
             unknownOne = ToInt32 (body, 0);
-            ImageId = ToInt32 (body, 4);
+            Id = ToInt32 (body, 4);
 
             recordPadding = body.Length - 8;
         }
@@ -395,7 +428,7 @@ namespace IPod {
             writer.Write (20 + recordPadding);
             writer.Write (20 + recordPadding);
             writer.Write (unknownOne);
-            writer.Write (ImageId);
+            writer.Write (Id);
             WritePadding (writer);
         }
     }
@@ -404,6 +437,7 @@ namespace IPod {
     internal class ImageListRecord : PhotoDbRecord {
 
         private List<ImageItemRecord> items = new List<ImageItemRecord> ();
+        private List<ImageItemRecord> removedItems = new List<ImageItemRecord> ();
 
         public IList<ImageItemRecord> Items {
             get {
@@ -411,16 +445,25 @@ namespace IPod {
             }
         }
 
+        public IList<ImageItemRecord> RemovedItems {
+            get {
+                return new ReadOnlyCollection<ImageItemRecord> (removedItems);
+            }
+        }
+
         public ImageListRecord (bool isbe) : base (isbe) {
             this.Name = "mhli";
+            recordPadding = 80;
         }
 
         public void AddItem (ImageItemRecord item) {
-            items[item.Id] = item;
+            items.Add (item);
+            removedItems.Remove (item);
         }
 
         public void RemoveItem (ImageItemRecord item) {
             items.Remove (item);
+            removedItems.Add (item);
         }
 
         public override void Read (BinaryReader reader) {
@@ -433,7 +476,7 @@ namespace IPod {
             for (int i = 0; i < this.HeaderTwo; i++) {
                 ImageItemRecord item = new ImageItemRecord (IsBE);
                 item.Read (reader);
-
+                
                 items.Add (item);
             }
         }
@@ -486,7 +529,6 @@ namespace IPod {
 
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
             Type = (PhotoDetailType) ToInt16 (body, 0);
-            short childPadding = ToInt16 (body, 2);
 
             switch (Type) {
             case PhotoDetailType.ThumbnailContainer:
@@ -592,18 +634,27 @@ namespace IPod {
         }
     }
 
+    internal class ImageNameRecordSorter : IComparer<ImageNameRecord> {
+
+        public int Compare (ImageNameRecord a, ImageNameRecord b) {
+            return a.ThumbnailOffset.CompareTo (b.ThumbnailOffset);
+        }
+    }
+
     internal class ImageNameRecord : PhotoDbRecord {
 
         private PhotoDetailRecord fileDetail;
         
-        public int CorrelationID;
-        public int ThumbnailOffset;
+        public int CorrelationId;
+        public int ThumbnailOffset = -1;
         public int ImageSize;
         public short VerticalPadding;
         public short HorizontalPadding;
         public short ImageHeight;
         public short ImageWidth;
 
+        public bool Dirty = false;
+        
         public string FileName {
             get { return fileDetail.Value; }
             set { fileDetail.Value = value; }
@@ -611,8 +662,10 @@ namespace IPod {
 
         public ImageNameRecord (bool isbe) : base (isbe) {
             this.Name = "mhni";
+            recordPadding = 40;
 
             fileDetail = new PhotoDetailRecord (IsBE);
+            fileDetail.Type = PhotoDetailType.FileName;
         }
 
         public override void Read (BinaryReader reader) {
@@ -621,7 +674,7 @@ namespace IPod {
             byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
             int numChildren = ToInt32 (body, 0);
-            CorrelationID = ToInt32 (body, 4);
+            CorrelationId = ToInt32 (body, 4);
             ThumbnailOffset = ToInt32 (body, 8);
             ImageSize = ToInt32 (body, 12);
             VerticalPadding = ToInt16 (body, 16);
@@ -641,6 +694,17 @@ namespace IPod {
             }
         }
 
+        public void SetThumbFileName (bool isPhoto) {
+            if (CorrelationId <= 0)
+                return;
+
+            if (isPhoto) {
+                fileDetail.Value = String.Format (":Thumbs:F{0}_1.ithmb", CorrelationId);
+            } else {
+                fileDetail.Value = String.Format (":F{0}_1.ithmb", CorrelationId);
+            }
+        }
+
         public override void Save (BinaryWriter writer) {
             byte[] childBytes;
             int childLen;
@@ -652,7 +716,7 @@ namespace IPod {
             writer.Write (36 + recordPadding);
             writer.Write (36 + recordPadding + childLen);
             writer.Write (1);
-            writer.Write (CorrelationID);
+            writer.Write (CorrelationId);
             writer.Write (ThumbnailOffset);
             writer.Write (ImageSize);
             writer.Write (VerticalPadding);
@@ -662,39 +726,81 @@ namespace IPod {
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
         }
+
+        public byte[] GetData (Stream stream) {
+            stream.Seek ((long) ThumbnailOffset, SeekOrigin.Begin);
+
+            byte[] buf = new byte[ImageSize];
+            stream.Read (buf, 0, ImageSize);
+            return buf;
+        }
+
+        public void SetData (Stream stream, byte[] data) {
+            SetData (stream, data, ThumbnailOffset);
+        }
+
+        public void SetData (Stream stream, byte[] data, int offset) {
+            if (offset < 0) {
+                stream.Seek (0, SeekOrigin.End);
+            } else {
+                stream.Seek (offset, SeekOrigin.Begin);
+            }
+
+            stream.Write (data, 0, data.Length);
+        }
     }
 
     internal class ImageItemRecord : PhotoDbRecord {
 
         private int unknownOne;
         private int unknownTwo;
-        private int sourceImageSize;
-        private ImageNameRecord fullName;
 
         private List<ImageNameRecord> names = new List<ImageNameRecord> ();
+        private List<ImageNameRecord> newNames = new List<ImageNameRecord> ();
+        private List<ImageNameRecord> removedNames = new List<ImageNameRecord> ();
         
         public int Id;
         public long TrackId;
         public int Rating;
-        public DateTime OriginalDate;
-        public DateTime DigitizedDate;
+        public DateTime OriginalDate = DateTime.Now;
+        public DateTime DigitizedDate = DateTime.Now;
+        public int SourceImageSize;
 
         public IList<ImageNameRecord> Names {
             get {
                 return new ReadOnlyCollection<ImageNameRecord> (names);
             }
         }
+
+        public IList<ImageNameRecord> NewNames {
+            get {
+                return new ReadOnlyCollection<ImageNameRecord> (newNames);
+            }
+        }
+
+        public IList<ImageNameRecord> RemovedNames {
+            get {
+                return new ReadOnlyCollection<ImageNameRecord> (removedNames);
+            }
+        }
+
+        public ImageNameRecord FullName;
         
         public ImageItemRecord (bool isbe) : base (isbe) {
             this.Name = "mhii";
+            recordPadding = 100;
+
+            FullName = new ImageNameRecord (isbe);
         }
 
         public void AddName (ImageNameRecord name) {
             names.Add (name);
+            newNames.Add (name);
         }
 
         public void RemoveName (ImageNameRecord name) {
             names.Remove (name);
+            removedNames.Add (name);
         }
 
         public override void Read (BinaryReader reader) {
@@ -710,7 +816,7 @@ namespace IPod {
             unknownTwo = ToInt32 (body, 24);
             OriginalDate = Utility.MacTimeToDate (ToUInt32 (body, 28));
             DigitizedDate = Utility.MacTimeToDate (ToUInt32 (body, 32));
-            sourceImageSize = ToInt32 (body, 36);
+            SourceImageSize = ToInt32 (body, 36);
 
             recordPadding = body.Length - 40;
 
@@ -721,7 +827,7 @@ namespace IPod {
                 if (detail.Type == PhotoDetailType.ThumbnailContainer) {
                     names.Add (detail.ImageName);
                 } else {
-                    fullName = detail.ImageName;
+                    FullName = detail.ImageName;
                 }
             }
         }
@@ -736,8 +842,8 @@ namespace IPod {
                 details.Add (new PhotoDetailRecord (IsBE, name, PhotoDetailType.ThumbnailContainer));
             }
 
-            if (fullName != null) {
-                details.Insert (0, new PhotoDetailRecord (IsBE, fullName, PhotoDetailType.ImageContainer));
+            if (FullName != null && FullName.FileName != null) {
+                details.Insert (0, new PhotoDetailRecord (IsBE, FullName, PhotoDetailType.ImageContainer));
             }
             
             SaveChildren (details, out childBytes, out childLen);
@@ -753,7 +859,7 @@ namespace IPod {
             writer.Write (unknownTwo);
             writer.Write (Utility.DateToMacTime (OriginalDate));
             writer.Write (Utility.DateToMacTime (DigitizedDate));
-            writer.Write (sourceImageSize);
+            writer.Write (SourceImageSize);
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
         }
@@ -761,14 +867,35 @@ namespace IPod {
 
     internal class FileListRecord : PhotoDbRecord {
 
-        private List<FileRecord> files = new List<FileRecord> ();
+        private Dictionary<int, FileRecord> files = new Dictionary<int, FileRecord> ();
 
         public IList<FileRecord> Files {
-            get { return new ReadOnlyCollection<FileRecord> (files); }
+            get { return new ReadOnlyCollection<FileRecord> (new List<FileRecord> (files.Values)); }
         }
         
         public FileListRecord (bool isbe) : base (isbe) {
             this.Name = "mhlf";
+            recordPadding = 80;
+        }
+
+        public void AddFile (FileRecord file) {
+            files[file.CorrelationId] = file;
+        }
+
+        public void RemoveFile (int correlationId) {
+            files.Remove (correlationId);
+        }
+
+        public void RemoveFile (FileRecord file) {
+            RemoveFile (file.CorrelationId);
+        }
+
+        public FileRecord LookupFile (int correlationId) {
+            try {
+                return files[correlationId];
+            } catch (KeyNotFoundException e) {
+                return null;
+            }
         }
         
         public override void Read (BinaryReader reader) {
@@ -783,7 +910,7 @@ namespace IPod {
             for (int i = 0; i < numChildren; i++) {
                 FileRecord record = new FileRecord (IsBE);
                 record.Read (reader);
-                files.Add (record);
+                files[record.CorrelationId] = record;
             }
         }
 
@@ -791,11 +918,11 @@ namespace IPod {
             byte[] childBytes;
             int childLen;
 
-            SaveChildren (files, out childBytes, out childLen);
+            SaveChildren (files.Values, out childBytes, out childLen);
 
             WriteName (writer);
             writer.Write (12 + recordPadding);
-            writer.Write (files.Count);
+            writer.Write (files.Values.Count);
             WritePadding (writer);
             writer.Write (childBytes, 0, childLen);
         }
@@ -810,6 +937,7 @@ namespace IPod {
 
         public FileRecord (bool isbe) : base (isbe) {
             this.Name = "mhif";
+            recordPadding = 100;
         }
         
         public override void Read (BinaryReader reader) {
@@ -835,15 +963,41 @@ namespace IPod {
         }
     }
 
+    public class PhotoSaveProgressArgs : EventArgs {
+
+        private double percent;
+
+        public double Percent {
+            get { return percent; }
+        }
+        
+        public PhotoSaveProgressArgs (double percent) {
+            this.percent = percent;
+        }
+    }
+
+    public delegate void PhotoSaveProgressHandler (object o, PhotoSaveProgressArgs args);
+
     public class PhotoDatabase {
 
+        private const ulong MapSize = 32 * 1024 * 1024;
+
         private Device device;
-        private Dictionary<int, Image> images = new Dictionary<int, Image> ();
+        private Dictionary<int, Photo> photos = new Dictionary<int, Photo> ();
+        private Dictionary<long, Photo> trackPhotos = new Dictionary<long, Photo> ();
         private List<Album> albums = new List<Album> ();
         private DataFileRecord dfr;
-        private bool isPhoto;
+        private bool isPhoto; // is this the photo database or the artwork database
 
+        private Stream tempStream; // place where we can put to-be-saved thumbnails
         private Album masterAlbum;
+
+        private List<Photo> addedPhotos = new List<Photo> ();
+        private List<Photo> removedPhotos = new List<Photo> ();
+
+        public event EventHandler SaveStarted;
+        public event PhotoSaveProgressHandler SaveProgressChanged;
+        public event EventHandler SaveEnded;
 
         private string PhotoDbPath {
             get {
@@ -861,13 +1015,21 @@ namespace IPod {
             }
         }
 
+        internal Device Device {
+            get { return device; }
+        }
+
+        internal bool IsPhotoDatabase {
+            get { return isPhoto; }
+        }
+
         public IList<Album> Albums {
             get { return new ReadOnlyCollection<Album> (albums); }
         }
 
-        public IList<Image> Images {
+        public IList<Photo> Photos {
             get {
-                return new ReadOnlyCollection<Image> (new List<Image> (images.Values));
+                return new ReadOnlyCollection<Photo> (new List<Photo> (photos.Values));
             }
         }
         
@@ -883,12 +1045,21 @@ namespace IPod {
         }
 
         public void Reload (bool createFresh) {
-            images.Clear ();
+            photos.Clear ();
             albums.Clear ();
+
+            CloseTempFile ();
             
             dfr = new DataFileRecord (device.IsBE);
 
-            if (createFresh)
+            if (isPhoto) {
+                // create a default master album if this is a photo database
+                masterAlbum = CreateAlbum ();
+                masterAlbum.Name = "My Pictures";
+                masterAlbum.Record.IsMaster = true;
+            }
+            
+            if (createFresh || !File.Exists (PhotoDbPath))
                 return;
 
             using (BinaryReader reader = new BinaryReader (File.Open (PhotoDbPath, FileMode.Open))) {
@@ -897,13 +1068,18 @@ namespace IPod {
                 PhotoDataSetRecord albumSet = dfr[PhotoDataSetIndex.AlbumList];
                 ImageListRecord imageList = dfr[PhotoDataSetIndex.ImageList].Data as ImageListRecord;
 
-                foreach (ImageItemRecord image in imageList.Items) {
-                    images[image.Id] = new Image (image, device);
+                foreach (ImageItemRecord item in imageList.Items) {
+                    Photo photo = new Photo (item, this);
+                    photos[item.Id] = photo;
+
+                    if (item.TrackId != 0) {
+                        trackPhotos[item.TrackId] = photo;
+                    }
                 }
 
                 foreach (AlbumRecord albumRecord in (albumSet.Data as AlbumListRecord).Albums) {
                     Album album = new Album (albumRecord, this);
-
+                    
                     if (album.IsMaster) {
                         masterAlbum = album;
                     } else {
@@ -914,14 +1090,311 @@ namespace IPod {
         }
 
         public void Save () {
-            using (BinaryWriter writer = new BinaryWriter (File.Open (PhotoDbPath, FileMode.Create))) {
-                dfr.Save (writer);
+            if (SaveStarted != null)
+                SaveStarted (this, new EventArgs ());
+
+            try {
+                SaveThumbnails ();
+                CloseTempFile ();
+                
+                List<Photo> dirtyPhotos = new List<Photo> ();
+                foreach (Photo photo in photos.Values) {
+                    if (photo.NeedsCopy) {
+                        photo.SetPodFileName ();
+                        dirtyPhotos.Add (photo);
+                    }
+                }
+                
+                using (BinaryWriter writer = new BinaryWriter (File.Open (PhotoDbPath, FileMode.Create))) {
+                    dfr.Save (writer);
+                }
+
+                for (int i = 0; i < dirtyPhotos.Count; i++) {
+                    if (SaveProgressChanged != null)
+                        SaveProgressChanged (this, new PhotoSaveProgressArgs ((double) i / (double) dirtyPhotos.Count));
+                    CopyPhoto (dirtyPhotos[i]);
+                }
+
+                if (SaveProgressChanged != null)
+                    SaveProgressChanged (this, new PhotoSaveProgressArgs ((double) 1.0));
+            } catch (Exception e) {
+                throw new DatabaseWriteException (e, "Failed to save database");
+            } finally {
+                if (SaveEnded != null)
+                    SaveEnded (this, new EventArgs ());
             }
         }
 
-        internal Image LookupImageById (int id) {
-            return images[id];
+        private void CopyPhoto (Photo photo) {
+            string src = photo.FullSizeFileName;
+            string dest = GetFilesystemPath (photo.Record.FullName.FileName);
+
+            string destdir = Path.GetDirectoryName (dest);
+            if (!Directory.Exists (destdir)) {
+                Directory.CreateDirectory (destdir);
+            }
+            
+            File.Copy (src, dest, true);
+        }
+
+        private Album CreateAlbum () {
+            AlbumRecord record = new AlbumRecord (device.IsBE);
+
+            AlbumListRecord albumList = dfr[PhotoDataSetIndex.AlbumList].Data as AlbumListRecord;
+            albumList.AddAlbum (record);
+
+            return new Album (record, this);
+        }
+
+        public Album CreateAlbum (string name) {
+            Album album = CreateAlbum ();
+            album.Name = name;
+            albums.Add (album);
+            return album;
+        }
+
+        public void RemoveAlbum (Album album) {
+            AlbumListRecord albumList = dfr[PhotoDataSetIndex.AlbumList].Data as AlbumListRecord;
+            albumList.RemoveAlbum (album.Record);
+
+            albums.Remove (album);
+        }
+
+        public Photo CreatePhoto () {
+            ImageListRecord imageList = dfr[PhotoDataSetIndex.ImageList].Data as ImageListRecord;
+            ImageItemRecord item = new ImageItemRecord (device.IsBE);
+            item.Id = dfr.NextId++;
+            
+            imageList.AddItem (item);
+            
+            Photo photo = new Photo (item, this);
+            photos[photo.Id] = photo;
+
+            if (masterAlbum != null) {
+                masterAlbum.Add (photo);
+            }
+            
+            addedPhotos.Add (photo);
+
+            return photo;
+        }
+
+        public void RemovePhoto (Photo photo) {
+            photos.Remove (photo.Id);
+            trackPhotos.Remove (photo.Record.TrackId);
+            addedPhotos.Remove (photo);
+            removedPhotos.Add (photo);
+
+            foreach (Album album in albums) {
+                album.Remove (photo);
+            }
+
+            if (masterAlbum != null) {
+                masterAlbum.Remove (photo);
+            }
+            
+            ImageListRecord imageList = dfr[PhotoDataSetIndex.ImageList].Data as ImageListRecord;
+            imageList.RemoveItem (photo.Record);
+        }
+
+        internal int GetThumbSize (int correlationId) {
+            FileListRecord fileList = dfr[PhotoDataSetIndex.FileList].Data as FileListRecord;
+            FileRecord file = fileList.LookupFile (correlationId);
+            if (file == null)
+                return -1;
+
+            return file.ImageSize;
+        }
+
+        internal Photo LookupPhotoById (int id) {
+            try {
+                return photos[id];
+            } catch (KeyNotFoundException e) {
+                return null;
+            }
+        }
+
+        internal Photo LookupPhotoByTrackId (long id) {
+            try {
+                return trackPhotos[id];
+            } catch (KeyNotFoundException e) {
+                return null;
+            }
+        }
+
+        internal string GetFilesystemPath (string podpath) {
+            return String.Format ("{0}/Photos{1}", device.MountPoint, podpath.Replace(':', '/'));
+        }
+
+        internal string GetThumbPath (ArtworkFormat format) {
+            if (isPhoto) {
+                return String.Format ("{0}/Photos/Thumbs/F{1}_1.ithmb", device.MountPoint, format.CorrelationId);
+            } else {
+                return String.Format ("{0}/Artwork/F{1}_1.ithmb", device.ControlPath, format.CorrelationId);
+            }
+
+        }
+
+        private void FindThumbnails (IList<ImageItemRecord> items, List<ImageNameRecord> existingNames,
+                                     List<ImageNameRecord> newNames, List<ImageNameRecord> removedNames,
+                                     ArtworkFormat format) {
+            foreach (ImageItemRecord item in items) {
+
+                if (existingNames != null) {
+                    foreach (ImageNameRecord name in item.Names) {
+                        if (name.CorrelationId == format.CorrelationId) {
+                            existingNames.Add (name);
+                        }
+                    }
+                }
+
+                if (newNames != null) {
+                    foreach (ImageNameRecord name in item.NewNames) {
+                        if (name.CorrelationId == format.CorrelationId) {
+                            newNames.Add (name);
+                        }
+                    }
+                }
+
+                if (removedNames != null) {
+                    foreach (ImageNameRecord name in item.RemovedNames) {
+                        if (name.CorrelationId == format.CorrelationId) {
+                            removedNames.Add (name);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SaveThumbnails () {
+            foreach (ArtworkFormat format in device.ArtworkFormats) {
+                List<ImageNameRecord> existingNames = new List<ImageNameRecord> ();
+                List<ImageNameRecord> removedNames = new List<ImageNameRecord> ();
+                List<ImageNameRecord> newNames = new List<ImageNameRecord> ();
+
+                ImageListRecord imageList = dfr[PhotoDataSetIndex.ImageList].Data as ImageListRecord;
+
+                FindThumbnails (imageList.Items, existingNames, newNames, removedNames, format);
+                existingNames.Sort (new ImageNameRecordSorter ());
+                
+                FindThumbnails (imageList.RemovedItems, removedNames, null, removedNames, format);
+
+                if (existingNames.Count == 0 && newNames.Count == 0 && removedNames.Count == 0) {
+                    continue;
+                }
+
+                SaveThumbnails (existingNames, newNames, removedNames, format);
+            }
+        }
+
+        private ImageNameRecord Pop (List<ImageNameRecord> list) {
+            ImageNameRecord record = Peek (list);
+            if (record != null)
+                list.Remove (record);
+
+            return record;
+        }
+
+        private ImageNameRecord Peek (List<ImageNameRecord> list) {
+            if (list == null || list.Count == 0)
+                return null;
+
+            return list[list.Count - 1];
+        }
+
+        private byte[] GetNameData (ImageNameRecord record, Stream stream) {
+            if (record.Dirty) {
+                return record.GetData (GetTempFile ());
+            } else {
+                return record.GetData (stream);
+            }
+        }
+
+        private void SaveThumbnails (List<ImageNameRecord> existingNames, List<ImageNameRecord> newNames,
+                                     List<ImageNameRecord> removedNames, ArtworkFormat format) {
+            string thumbPath = GetThumbPath (format);
+
+            int fileLength = 0;
+            if (existingNames.Count > 0) {
+                ImageNameRecord last = Peek (existingNames);
+                fileLength = last.ThumbnailOffset + last.ImageSize;
+            }
+
+            string thumbDir = Path.GetDirectoryName (thumbPath);
+            if (!Directory.Exists (thumbDir)) {
+                Directory.CreateDirectory (thumbDir);
+            }
+
+            using (FileStream stream = File.Open (thumbPath, FileMode.OpenOrCreate)) {
+                // process the removals, filling the gaps with new or existing records when possible
+                foreach (ImageNameRecord removal in removedNames) {
+
+                    // try to replace it with a new one
+                    ImageNameRecord replacement = Pop (newNames);
+                    
+                    if (replacement == null) {
+
+                        // no new ones, try to replace it with an existing one from the end of the file
+                        ImageNameRecord record = Peek (existingNames);
+                        if (record != null && record.ThumbnailOffset > removal.ThumbnailOffset) {
+                            replacement = record;
+
+                            // it was the last one in the file, so we can reduce the file length
+                            fileLength -= replacement.ImageSize;
+                        }
+                    }
+
+                    if (replacement != null) {
+                        // write the replacement chunk into the old one's spot
+                        byte[] data = GetNameData (replacement, stream);
+                        replacement.ThumbnailOffset = removal.ThumbnailOffset;
+                        replacement.SetData (stream, data);
+                        replacement.Dirty = false;
+
+                        existingNames.Sort (new ImageNameRecordSorter ());
+                    } else if (fileLength > removal.ThumbnailOffset) {
+                        // we can't fill the gap, but it's ok to reduce the file length
+                        fileLength = removal.ThumbnailOffset;
+                    }
+                }
+
+                // process the additions by appending them to the file
+                foreach (ImageNameRecord addition in newNames) {
+                    byte[] data = GetNameData (addition, stream);
+                    addition.ThumbnailOffset = fileLength;
+                    addition.SetData (stream, data);
+                    addition.Dirty = false;
+                    
+                    fileLength += addition.ImageSize;
+                }
+
+                // lastly, flush any dirty existing records
+                foreach (ImageNameRecord existing in existingNames) {
+                    if (existing.Dirty) {
+                        byte[] data = GetNameData (existing, stream);
+                        existing.SetData (stream, data);
+                    }
+                }
+            }
+
+            Syscall.truncate (thumbPath, (long) fileLength);
+        }
+
+        internal Stream GetTempFile () {
+            if (tempStream == null) {
+                string path = Path.GetTempFileName ();
+                tempStream = File.Open (path, FileMode.Create);
+                File.Delete (path);
+            }
+
+            return tempStream;
+        }
+
+        private void CloseTempFile () {
+            if (tempStream != null) {
+                tempStream.Close ();
+                tempStream = null;
+            }
         }
     }
-
 }
