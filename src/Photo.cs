@@ -21,7 +21,7 @@ namespace IPod {
             get { return item; }
         }
 
-        internal PhotoDatabase PhotoDatabase {
+        public PhotoDatabase PhotoDatabase {
             get { return db; }
         }
 

@@ -1,5 +1,18 @@
 2006-06-22  James Willcox  <snorp@snorp.net>
 
+	* ui/ArtworkHelpers.cs:
+	* tools/PhotoAdder.cs:
+
+	Moved the Pixbuf helpers to their own class (ArtworkHelpers) in the
+	UI library.  Also added a little tool for adding a directory of
+	images to a device.
+
+2006-06-22  James Willcox  <snorp@snorp.net>
+
+	* src/Thumbnail.cs: Dispose the pixbuf if a scaled version was created
+
+2006-06-22  James Willcox  <snorp@snorp.net>
+
 	* src/Track.cs: add stuff for removing cover art
 	* src/Device.cs: add a LookupFormat method for getting the
 	ArtworkFormat for the given ArtworkType

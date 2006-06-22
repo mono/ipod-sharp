@@ -242,7 +242,7 @@ namespace IPod {
             get { return record.UserId != 0; }
         }
 
-        internal TrackDatabase Database {
+        public TrackDatabase TrackDatabase {
             get { return db; }
         }
 
@@ -278,14 +278,6 @@ namespace IPod {
             }
         }
 
-        public Gdk.Pixbuf GetCoverArtPixbuf (ArtworkFormat format) {
-            Thumbnail thumbnail = GetThumbnail (format, false);
-            if (thumbnail == null)
-                return null;
-            else
-                return thumbnail.GetPixbuf ();
-        }
-
         public byte[] GetCoverArt (ArtworkFormat format) {
             Thumbnail thumbnail = GetThumbnail (format, false);
             if (thumbnail == null)
@@ -316,14 +308,6 @@ namespace IPod {
         public void SetCoverArt (ArtworkFormat format, byte[] data) {
             Thumbnail thumbnail = GetThumbnail (format, true);
             thumbnail.SetData (data);
-
-            record.HasArtwork = true;
-            record.ArtworkCount = 1; // this is actually for artwork in mp3 tags, but it seems to be needed anyway
-        }
-
-        public void SetCoverArtPixbuf (ArtworkFormat format, Gdk.Pixbuf pixbuf) {
-            Thumbnail thumbnail = GetThumbnail (format, true);
-            thumbnail.SetPixbuf (pixbuf);
 
             record.HasArtwork = true;
             record.ArtworkCount = 1; // this is actually for artwork in mp3 tags, but it seems to be needed anyway

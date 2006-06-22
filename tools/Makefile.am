@@ -1,6 +1,6 @@
 MCS_FLAGS = -debug
 
-TOOLS = ipod-tool.exe dmg-iso-extract.exe ipod-firmware-extract.exe
+TOOLS = ipod-tool.exe dmg-iso-extract.exe ipod-firmware-extract.exe photo-adder.exe
 
 IPOD_TOOL_SOURCES = $(srcdir)/PodTool.cs
 DMG_ISO_EXTRACT_SRC = \
@@ -11,6 +11,8 @@ DMG_ISO_EXTRACT_SRC = \
 DMG_FIRMWARE_EXTRACT_SRC = \
 	$(srcdir)/ExtractFirmware.cs \
 	$(top_builddir)/src/Firmware/*.cs
+
+PHOTO_ADDER_SRC = $(srcdir)/PhotoAdder.cs
 
 all: $(TOOLS)
 
@@ -23,7 +25,10 @@ dmg-iso-extract.exe: $(DMG_ISO_EXTRACT_SRC)
 ipod-firmware-extract.exe: $(DMG_FIRMWARE_EXTRACT_SRC)
 	$(MCS) $(MCS_FLAGS) -r:ICSharpCode.SharpZipLib -target:exe -out:$@ $(DMG_FIRMWARE_EXTRACT_SRC)
 
-EXTRA_DIST = $(IPOD_TOOL_SOURCES) $(DMG_ISO_EXTRACT_SRC) $(DMG_FIRMWARE_EXTRACT_SRC)
+photo-adder.exe: $(PHOTO_ADDER_SRC)
+	$(MCS) $(MCS_FLAGS) -target:exe -out:$@ $(PHOTO_ADDER_SRC) -r:$(top_builddir)/src/ipod-sharp.dll -r:$(top_builddir)/ui/ipod-sharp-ui.dll -pkg:gtk-sharp-2.0
+
+EXTRA_DIST = $(IPOD_TOOL_SOURCES) $(DMG_ISO_EXTRACT_SRC) $(DMG_FIRMWARE_EXTRACT_SRC) $(PHOTO_ADDER_SRC)
 CLEANFILES = $(TOOLS) *.mdb
 MAINTAINERCLEANFILES = Makefile.in
 

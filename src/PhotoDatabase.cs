@@ -1016,8 +1016,8 @@ namespace IPod {
                 return PhotoDbPath + ".bak";
             }
         }
-
-        internal Device Device {
+        
+        public Device Device {
             get { return device; }
         }
 
@@ -1107,7 +1107,8 @@ namespace IPod {
                     }
                 }
                 
-                using (BinaryWriter writer = new BinaryWriter (File.Open (PhotoDbPath, FileMode.Create))) {
+                using (BinaryWriter writer = new EndianBinaryWriter (File.Open (PhotoDbPath, FileMode.Create),
+                                                                     device.IsBE)) {
                     dfr.Save (writer);
                 }
 
