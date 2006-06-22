@@ -86,7 +86,7 @@ namespace IPod {
             }
         }
 
-        public static void PackRgb565 (byte[] data, Gdk.Pixbuf dest, bool isbe) {
+        public static void UnpackRgb565 (byte[] data, Gdk.Pixbuf dest, bool isbe) {
             unsafe {
                 byte * pixels;
                 int row, col;
@@ -116,7 +116,7 @@ namespace IPod {
             Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, Format.Width, Format.Height);
 
             // FIXME: sometimes needs to be big endian, or YUV
-            PackRgb565 (GetData (), pixbuf, false);
+            UnpackRgb565 (GetData (), pixbuf, false);
 
             return pixbuf;
         }
@@ -180,14 +180,20 @@ namespace IPod {
         }
 
         public void SetPixbuf (Gdk.Pixbuf pixbuf) {
+            bool disposePixbuf = false;
+            
             // FIXME: preserve aspect ratio
             if (pixbuf.Height > format.Height || pixbuf.Width > format.Width) {
                 pixbuf = pixbuf.ScaleSimple (Format.Width, Format.Height,
                                              Gdk.InterpType.Bilinear);
+                disposePixbuf = true;
             }
             
             // FIXME: sometimes it needs to be big endian, or YUV
             byte[] data = PackRgb565 (pixbuf, false);
+            if (disposePixbuf)
+                pixbuf.Dispose ();
+            
             SetData (data);
         }
     }
