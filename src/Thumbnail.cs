@@ -86,6 +86,41 @@ namespace IPod {
             }
         }
 
+        public static void PackRgb565 (byte[] data, Gdk.Pixbuf dest, bool isbe) {
+            unsafe {
+                byte * pixels;
+                int row, col;
+                ushort s;
+			
+                bool flip = isbe == System.BitConverter.IsLittleEndian;
+
+                int offset = 0;
+                for (row = 0; row < dest.Height; row++) {
+                    pixels = ((byte *)dest.Pixels) + row * dest.Rowstride;
+                    for (col = 0; col < dest.Width; col++) {
+                        s = BitConverter.ToUInt16 (data, offset);
+                        offset+=2;
+
+                        if (flip)
+                            s = (ushort) ((s >> 8) | (s << 8));
+					
+                        *(pixels++) = (byte)(((s >> 8) & 0xf8) | ((s >> 13) & 0x7)); // r
+                        *(pixels++) = (byte)(((s >> 3) & 0xfc) | ((s >> 9) & 0x3));  // g
+                        *(pixels++) = (byte)(((s << 3) & 0xf8) | ((s >> 2) & 0x7));  // b
+                    }
+                }
+            }
+        }
+    
+        public Gdk.Pixbuf GetPixbuf () {
+            Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, Format.Width, Format.Height);
+
+            // FIXME: sometimes needs to be big endian, or YUV
+            PackRgb565 (GetData (), pixbuf, false);
+
+            return pixbuf;
+        }
+
         public void SetData (byte[] data) {
             int expectedLength = photo.PhotoDatabase.GetThumbSize (format.CorrelationId);
             if (expectedLength > 0 && data.Length != expectedLength)
@@ -145,6 +180,12 @@ namespace IPod {
         }
 
         public void SetDataFromPixbuf (Gdk.Pixbuf pixbuf) {
+            // FIXME: preserve aspect ratio
+            if (pixbuf.Height > format.Height || pixbuf.Width > format.Width) {
+                pixbuf = pixbuf.ScaleSimple (Format.Width, Format.Height,
+                                             Gdk.InterpType.Bilinear);
+            }
+            
             // FIXME: sometimes it needs to be big endian, or YUV
             byte[] data = PackRgb565 (pixbuf, false);
             SetData (data);
