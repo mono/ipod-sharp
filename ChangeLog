@@ -1,5 +1,10 @@
 2006-06-23  James Willcox  <snorp@snorp.net>
 
+	* src/PhotoDatabase.cs: ensure that the database directory exists
+	before trying to write a file there.
+
+2006-06-23  James Willcox  <snorp@snorp.net>
+
 	* ui/ArtworkHelpers.cs: correctly pack/unpack IYUV data as contained
 	in the TV thumbnails.
 

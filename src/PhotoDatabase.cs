@@ -1103,6 +1103,10 @@ namespace IPod {
                 SaveStarted (this, new EventArgs ());
 
             try {
+                string dbdir = Path.GetDirectoryName (PhotoDbPath);
+                if (!Directory.Exists (dbdir))
+                    Directory.CreateDirectory (dbdir);
+                
                 SaveThumbnails ();
                 CloseTempFile ();
                 
