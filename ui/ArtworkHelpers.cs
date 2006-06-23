@@ -1,5 +1,5 @@
 using System;
-
+using System.IO;
 
 namespace IPod {
 
@@ -7,6 +7,125 @@ namespace IPod {
 
         private ArtworkHelpers () {
         }
+
+        private static int Clamp (int val, int bottom, int top)
+	{
+            if (val < bottom)
+                return bottom;
+            else if (val > top)
+                return top;
+
+            return val;
+	}
+
+	private static void UnpackYUV (ushort y, ushort u, ushort v, out int r, out int g, out int b)
+	{
+            r = Clamp ((int) (y + (1.370705 * (v - 128))), 0, 255); // r
+            g = Clamp ((int) (y - (0.698001 * (v - 128)) - (0.3337633 * (u - 128))), 0, 255); // g
+            b = Clamp ((int) (y + (1.732446 * (u -128))), 0, 255); // b
+	}
+
+	private static void UnpackIYUV (byte[] data, Gdk.Pixbuf dest)
+	{
+            BinaryReader reader = new BinaryReader (new MemoryStream (data));
+            
+            unsafe {
+                byte * pixels;
+                ushort y0, y1, u, v;
+                int r, g, b;
+                int row, col;
+
+                for (row = 0; row < dest.Height; row += 2) {
+                    pixels = ((byte *)dest.Pixels) + row * dest.Rowstride;
+                    for (col = 0; col < dest.Width; col += 2) {
+                        u = reader.ReadByte ();
+                        y0 = reader.ReadByte ();
+                        v = reader.ReadByte ();
+                        y1 = reader.ReadByte ();
+					 
+                        UnpackYUV (y0, u, v, out r, out g, out b);
+                        *(pixels ++) = (byte) r;
+                        *(pixels ++) = (byte) g;
+                        *(pixels ++) = (byte) b;
+					 
+                        UnpackYUV (y1, u, v, out r, out g, out b);
+                        *(pixels ++) = (byte) r;
+                        *(pixels ++) = (byte) g;
+                        *(pixels ++) = (byte) b;
+                    }
+                }
+                for (row = 1; row < dest.Height; row += 2) {
+                    pixels = ((byte *)dest.Pixels) + row * dest.Rowstride;
+                    for (col = 0; col < dest.Width; col += 2) {
+                        u = reader.ReadByte ();
+                        y0 = reader.ReadByte ();
+                        v = reader.ReadByte ();
+                        y1 = reader.ReadByte ();
+
+                        UnpackYUV (y0, u, v, out r, out g, out b);
+                        *(pixels ++) = (byte) r;
+                        *(pixels ++) = (byte) g;
+                        *(pixels ++) = (byte) b;
+					 
+                        UnpackYUV (y1, u, v, out r, out g, out b);
+                        *(pixels ++) = (byte) r;
+                        *(pixels ++) = (byte) g;
+                        *(pixels ++) = (byte) b;
+                    }
+                }
+            }
+
+            reader.Close ();
+        }
+	
+	private static byte[] PackIYUV (Gdk.Pixbuf src) {
+            int row, col;
+            int r, g, b;
+            int y, u, v;
+            byte[] packed;
+            int i;
+            int width = src.Width;
+            int height = src.Height;
+
+            unsafe {
+                byte * pixels;
+
+                packed = new byte [width * height * 2];
+                for (row = 0; row < height; row ++) {
+                    pixels = ((byte *)src.Pixels) + row * src.Rowstride;
+                    i = row * width;
+                    if (row % 2 > 0)
+                        i += (height - 1)  * width;
+				
+                    for (col = 0; col < width; col ++) {
+                        r = *(pixels ++);
+                        g = *(pixels ++);
+                        b = *(pixels ++);
+
+                        // These were taken directly from the jfif spec
+                        y  = (int) (0.299  * r + 0.587  * g + 0.114  * b);
+                        u  = (int) (-0.1687 * r - 0.3313 * g + 0.5    * b + 128);
+                        v  = (int) (0.5    * r - 0.4187 * g - 0.0813 * b + 128);
+
+                        y = Clamp (y, 0, 255);
+                        u = Clamp (u, 0, 255);
+                        v = Clamp (v, 0, 255);
+
+                        byte[] sbytes;
+                                        
+                        if (col % 2 > 0)
+                            sbytes = BitConverter.GetBytes ((ushort) ((y << 8) | v));
+                        else
+                            sbytes = BitConverter.GetBytes ((ushort) ((y << 8) | u));
+
+                        packed[i++] = sbytes[0];
+                        packed[i++] = sbytes[1];
+                    }
+                }
+            }
+
+            return packed;
+	}
 
         private static byte[] PackRgb565 (Gdk.Pixbuf src, bool IsBigEndian) {
             int row, col;
@@ -78,8 +197,12 @@ namespace IPod {
         private static Gdk.Pixbuf ToPixbuf (ArtworkFormat format, byte[] data) {
             Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, format.Width, format.Height);
 
-            // FIXME: sometimes needs to be big endian, or YUV
-            UnpackRgb565 (data, pixbuf, false);
+            if (format.Type == ArtworkType.PhotoTvScreen) {
+                UnpackIYUV (data, pixbuf);
+            } else {
+                // FIXME: sometimes needs to be big endian
+                UnpackRgb565 (data, pixbuf, false);
+            }
 
             return pixbuf;
         }
@@ -94,8 +217,14 @@ namespace IPod {
                 disposePixbuf = true;
             }
             
-            // FIXME: sometimes it needs to be big endian or YUV
-            byte[] data = PackRgb565 (pixbuf, false);
+            byte[] data;
+            if (format.Type == ArtworkType.PhotoTvScreen) {
+                data = PackIYUV (pixbuf);
+            } else {
+                // FIXME: sometimes needs to be big endian
+                data = PackRgb565 (pixbuf, false);
+            }
+            
             if (disposePixbuf) {
                 pixbuf.Dispose ();
             }

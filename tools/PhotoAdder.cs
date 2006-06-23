@@ -12,7 +12,7 @@ public class EntryPoint {
     private static void AddThumbnails (Device device, Photo photo, Gdk.Pixbuf pixbuf) {
         foreach (ArtworkFormat format in device.ArtworkFormats) {
             if (format.Type != ArtworkType.PhotoSmall && format.Type != ArtworkType.PhotoLarge &&
-                format.Type != ArtworkType.PhotoFullScreen)
+                format.Type != ArtworkType.PhotoFullScreen && format.Type != ArtworkType.PhotoTvScreen)
                 continue;
             
             Thumbnail thumbnail = photo.CreateThumbnail ();
