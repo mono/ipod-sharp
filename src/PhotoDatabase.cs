@@ -599,11 +599,7 @@ namespace IPod {
             childPadding = 0;
 
             if (Type == PhotoDetailType.FileName || Type == PhotoDetailType.String) {
-                int totalLength = 16 + recordPadding + childLen;
-                while (totalLength%4 != 0) {
-                    totalLength++;
-                    childPadding++;
-                }
+                childPadding = 4 - (16 + recordPadding + childLen)%4;
             }
 
             WriteName (writer);

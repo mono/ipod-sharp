@@ -1,5 +1,10 @@
 2006-06-23  James Willcox  <snorp@snorp.net>
 
+	* src/PhotoDatabase.cs: don't be so clumsy when calculating child
+	padding for detail records.
+
+2006-06-23  James Willcox  <snorp@snorp.net>
+
 	* src/PhotoDatabase.cs: ensure that the database directory exists
 	before trying to write a file there.
 
