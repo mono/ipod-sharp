@@ -1,5 +1,11 @@
 2006-06-22  James Willcox  <snorp@snorp.net>
 
+	* src/Track.cs: added HasCoverArt
+	* src/PhotoDatabase.cs: don't save thumbnails to the db if they
+	are empty.
+
+2006-06-22  James Willcox  <snorp@snorp.net>
+
 	* ui/ArtworkHelpers.cs:
 	* tools/PhotoAdder.cs:
 

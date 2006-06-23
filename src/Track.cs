@@ -278,6 +278,10 @@ namespace IPod {
             }
         }
 
+        public bool HasCoverArt (ArtworkFormat format) {
+            return GetThumbnail (format, false) != null;
+        }
+
         public byte[] GetCoverArt (ArtworkFormat format) {
             Thumbnail thumbnail = GetThumbnail (format, false);
             if (thumbnail == null)
@@ -290,6 +294,9 @@ namespace IPod {
             FindCoverPhoto ();
             
             if (coverPhoto == null) {
+                if (!createNew)
+                    return null;
+                
                 coverPhoto = db.ArtworkDatabase.CreatePhoto ();
                 coverPhoto.Record.TrackId = record.DatabaseId;
             }

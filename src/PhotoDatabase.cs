@@ -730,6 +730,9 @@ namespace IPod {
         }
 
         public byte[] GetData (Stream stream) {
+            if (ThumbnailOffset < 0)
+                return null;
+            
             stream.Seek ((long) ThumbnailOffset, SeekOrigin.Begin);
 
             byte[] buf = new byte[ImageSize];
@@ -841,6 +844,10 @@ namespace IPod {
 
             List<PhotoDetailRecord> details = new List<PhotoDetailRecord> ();
             foreach (ImageNameRecord name in names) {
+                // if the thumbnail doesn't have any data, don't write it
+                if (name.ThumbnailOffset < 0)
+                    continue;
+                
                 details.Add (new PhotoDetailRecord (IsBE, name, PhotoDetailType.ThumbnailContainer));
             }
 
