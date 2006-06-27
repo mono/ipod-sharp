@@ -367,11 +367,7 @@ namespace IPod {
         }
 
         internal ArtworkFormat LookupFormat (int correlationId) {
-            try {
-                return formats[correlationId];
-            } catch (KeyNotFoundException e) {
-                return null;
-            }
+            return formats[correlationId];
         }
 
         public void LoadPhotoDatabase () {

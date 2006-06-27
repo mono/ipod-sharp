@@ -1819,7 +1819,7 @@ namespace IPod {
 
                     double percent = (double) count / (double) length;
                     if (percent >= lastPercent + PercentThreshold && SaveProgressChanged != null) {
-                        TrackSaveProgressArgs args = new TrackSaveProgressArgs (track, (double) count / (double) length,
+                        TrackSaveProgressArgs args = new TrackSaveProgressArgs (track, percent,
                                                                                 completed, total);
 
                         try {

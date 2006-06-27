@@ -1,3 +1,8 @@
+2006-06-27  James Willcox  <snorp@snorp.net>
+
+	* ui/ArtworkHelpers.cs: make a lame attempt at figuring out whether or
+	not a thumbnail should be big endian
+
 2006-06-23  James Willcox  <snorp@snorp.net>
 
 	* src/PhotoDatabase.cs: don't be so clumsy when calculating child

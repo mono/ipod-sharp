@@ -200,8 +200,8 @@ namespace IPod {
             if (format.Type == ArtworkType.PhotoTvScreen) {
                 UnpackIYUV (data, pixbuf);
             } else {
-                // FIXME: sometimes needs to be big endian
-                UnpackRgb565 (data, pixbuf, false);
+                // FIXME: this is totally lame
+                UnpackRgb565 (data, pixbuf, format.Width == 176);
             }
 
             return pixbuf;
@@ -221,8 +221,8 @@ namespace IPod {
             if (format.Type == ArtworkType.PhotoTvScreen) {
                 data = PackIYUV (pixbuf);
             } else {
-                // FIXME: sometimes needs to be big endian
-                data = PackRgb565 (pixbuf, false);
+                // FIXME: this is totally lame
+                data = PackRgb565 (pixbuf, format.Width == 176);
             }
             
             if (disposePixbuf) {
