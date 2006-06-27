@@ -1,5 +1,10 @@
 2006-06-27  James Willcox  <snorp@snorp.net>
 
+	* src/TrackDatabase.cs: remove the length check in TrackRecord when
+	saving, as it was really just for debugging.
+
+2006-06-27  James Willcox  <snorp@snorp.net>
+
 	* src/Track.cs: make the Id property useful (it is persisted across
 	database saves) and remove the duplicate TrackRecord property
 

@@ -1014,9 +1014,6 @@ namespace IPod {
                 len = 156;
             }
 
-            writer.Flush ();
-            long startLen = writer.BaseStream.Length;
-            
             WriteName (writer);
             writer.Write (len);
             writer.Write (len + childDataLength);
@@ -1102,11 +1099,6 @@ namespace IPod {
             }
 
             writer.Flush ();
-            long endLen = writer.BaseStream.Length;
-
-            if (endLen - startLen != 244) {
-                throw new ApplicationException (String.Format ("Wrote {0} bytes instead of 244", endLen - startLen));
-            }
             
             writer.Write (childData, 0, childDataLength);
         }
