@@ -78,7 +78,7 @@ namespace IPod {
             
             // file type (0x01 = MP3, 0x02 = AAC, 0x04 = WAV)
             writer.Write(new byte [2]);
-            switch(track.TrackRecord.Type) {
+            switch(track.Record.Type) {
                 case TrackRecordType.MP3:
                     writer.Write((byte)0x01);
                     break;

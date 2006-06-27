@@ -43,8 +43,8 @@ namespace IPod {
             get { return record; }
         }
 
-        public int Id {
-            get { return record.Id; }
+        public long Id {
+            get { return record.DatabaseId; }
         }
 
         public MediaType Type {
@@ -244,10 +244,6 @@ namespace IPod {
 
         public TrackDatabase TrackDatabase {
             get { return db; }
-        }
-
-        internal TrackRecord TrackRecord {
-            get { return record; }
         }
 
         internal Track (TrackDatabase db, TrackRecord record) {

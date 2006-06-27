@@ -1161,6 +1161,8 @@ namespace IPod {
 
     internal class TrackListRecord : TrackDbRecord, IEnumerable {
 
+        public long NextDatabaseId = 1;
+
         private List<TrackRecord> tracks = new List<TrackRecord> ();
 
         public IList<TrackRecord> Tracks {
@@ -1219,6 +1221,11 @@ namespace IPod {
             for (int i = 0; i < trackCount; i++) {
                 TrackRecord rec = new TrackRecord (IsBE);
                 rec.Read (db, reader);
+
+                if (rec.DatabaseId > NextDatabaseId) {
+                    NextDatabaseId = rec.DatabaseId + 1;
+                }
+                
                 tracks.Add (rec);
             }
         }
@@ -1635,7 +1642,7 @@ namespace IPod {
 
                     uint lastPlayed = dbrec.ToUInt32 (entry, 4);
                     if (lastPlayed > 0) {
-                        (tracks[i] as Track).TrackRecord.LastPlayedTime = lastPlayed;
+                        (tracks[i] as Track).Record.LastPlayedTime = lastPlayed;
                     }
 
                     // if it has rating info, get it
@@ -1643,7 +1650,7 @@ namespace IPod {
                         // Why is this one byte in iTunesDB and 4 here?
                         
                         int rating = dbrec.ToInt32 (entry, 12);
-                        (tracks[i] as Track).TrackRecord.Rating  = (byte) rating;
+                        (tracks[i] as Track).Record.Rating  = (byte) rating;
                     }
                 }
             }
@@ -1881,7 +1888,7 @@ namespace IPod {
                 // Copy tracks to iPod; if track is already in the Music directory structure, do not copy
                 foreach (Track track in tracksToAdd) {
                     if (!IsTrackOnDevice (track.FileName)) {
-                        string dest = GetFilesystemPath (track.TrackRecord.GetDetail (DetailType.Location).Value);
+                        string dest = GetFilesystemPath (track.Record.GetDetail (DetailType.Location).Value);
                         CopyTrack (track, dest, completed++, tracksToAdd.Count);
                         track.FileName = dest;
                     }
@@ -1975,10 +1982,10 @@ namespace IPod {
         }
 
         private void AddTrack (Track track, bool existing) {
-            dbrec[DataSetIndex.Library].TrackList.Add (track.TrackRecord);
+            dbrec[DataSetIndex.Library].TrackList.Add (track.Record);
 
             PlaylistItemRecord item = new PlaylistItemRecord (dbrec.IsBE);
-            item.TrackId = track.TrackRecord.Id;
+            item.TrackId = track.Record.Id;
  
             dbrec[DataSetIndex.Playlist].Library.AddItem (item);
 
@@ -2000,8 +2007,8 @@ namespace IPod {
                     tracksToRemove.Add (track);
 
                 // remove from the track db
-                dbrec[DataSetIndex.Library].TrackList.Remove (track.Id);
-                dbrec[DataSetIndex.Playlist].Library.RemoveTrack (track.TrackRecord.Id);
+                dbrec[DataSetIndex.Library].TrackList.Remove (track.Record.Id);
+                dbrec[DataSetIndex.Playlist].Library.RemoveTrack (track.Record.Id);
 
                 // remove from cover art db
                 Photo artPhoto = artdb.LookupPhotoByTrackId (track.Record.DatabaseId);
@@ -2026,7 +2033,7 @@ namespace IPod {
             track.Id = GetNextTrackId ();
             track.Date = Utility.DateToMacTime (DateTime.Now);
             track.LastModifiedTime = track.Date;
-            track.DatabaseId = (long) new Random ().Next ();
+            track.DatabaseId = dbrec[DataSetIndex.Library].TrackList.NextDatabaseId++;
             
             Track t = new Track (this, track);
             

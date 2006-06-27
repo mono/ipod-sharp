@@ -59,7 +59,7 @@ namespace IPod {
             get {
                 return db.GetTrackById (record.Items[index].TrackId);
             } set {
-                record.Items[index].TrackId = value.Id;
+                record.Items[index].TrackId = value.Record.Id;
             }
         }
 
@@ -86,7 +86,7 @@ namespace IPod {
                 throw new InvalidOperationException ("The On-The-Go playlist cannot be modified");
             
             PlaylistItemRecord item = record.CreateItem ();
-            item.TrackId = track.Id;
+            item.TrackId = track.Record.Id;
 
             record.InsertItem (index, item);
 
@@ -134,7 +134,7 @@ namespace IPod {
         }
 
         public int IndexOf (Track track) {
-            return record.IndexOf (track.Id);
+            return record.IndexOf (track.Record.Id);
         }
     }
 
