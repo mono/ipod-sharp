@@ -2085,7 +2085,7 @@ namespace IPod {
 
         internal Track GetTrackById (int id) {
             foreach (Track track in tracks) {
-                if (track.Id == id)
+                if (track.Record.Id == id)
                     return track;
             }
 
