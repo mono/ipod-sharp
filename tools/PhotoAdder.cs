@@ -11,8 +11,8 @@ public class EntryPoint {
 
     private static void AddThumbnails (Device device, Photo photo, Gdk.Pixbuf pixbuf) {
         foreach (ArtworkFormat format in device.ArtworkFormats) {
-            if (format.Type != ArtworkType.PhotoSmall && format.Type != ArtworkType.PhotoLarge &&
-                format.Type != ArtworkType.PhotoFullScreen && format.Type != ArtworkType.PhotoTvScreen)
+            if (format.ArtworkType != ArtworkType.PhotoSmall && format.ArtworkType != ArtworkType.PhotoLarge &&
+                format.ArtworkType != ArtworkType.PhotoFullScreen && format.ArtworkType != ArtworkType.PhotoTvScreen)
                 continue;
             
             Thumbnail thumbnail = photo.CreateThumbnail ();
@@ -20,7 +20,7 @@ public class EntryPoint {
             thumbnail.Width = format.Width;
             thumbnail.Height = format.Height;
 
-            ArtworkHelpers.SetThumbnail (thumbnail, pixbuf);
+            thumbnail.SetData (ArtworkHelpers.ToBytes (thumbnail.Format, pixbuf));
         }
     }
 
@@ -37,7 +37,7 @@ public class EntryPoint {
                 photo.FullSizeFileName = file;
                 album.Add (photo);
             } catch (Exception e) {
-                Console.Error.WriteLine (e.Message);
+                Console.Error.WriteLine (e);
             }
         }
 

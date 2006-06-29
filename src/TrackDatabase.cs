@@ -1561,6 +1561,10 @@ namespace IPod {
             get { return ControlPath + "iTunes/Play Counts"; }
         }
 
+        public Device Device {
+            get { return device; }
+        }
+
         public IList<Track> Tracks {
             get {
                 return new ReadOnlyCollection<Track> (tracks);
@@ -1618,8 +1622,7 @@ namespace IPod {
             if (!info.Exists || info.Length == 0)
                 return;
             
-            using (BinaryReader reader = new
-                   BinaryReader (File.Open (PlayCountsPath, FileMode.Open, FileAccess.Read))) {
+            using (BinaryReader reader = new BinaryReader (File.OpenRead (PlayCountsPath))) {
 
                 byte[] header = reader.ReadBytes (96);
                 int entryLength = dbrec.ToInt32 (header, 8);
@@ -1663,7 +1666,7 @@ namespace IPod {
 
             List<Track> otgtracks = new List<Track> ();
             
-            using (BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open, FileAccess.Read))) {
+            using (BinaryReader reader = new BinaryReader (File.OpenRead (path))) {
 
                 byte[] header = reader.ReadBytes (20);
 
@@ -1712,7 +1715,7 @@ namespace IPod {
                 return;
             }
 
-            using (BinaryReader reader = new BinaryReader (File.Open (TrackDbPath, FileMode.Open, FileAccess.Read))) {
+            using (BinaryReader reader = new BinaryReader (File.OpenRead (TrackDbPath))) {
 
                 dbrec = new DatabaseRecord (useBE);
                 dbrec.Read (null, reader);
@@ -1808,7 +1811,7 @@ namespace IPod {
                 long count = 0;
                 double lastPercent = 0.0;
 
-                reader = new BinaryReader (new BufferedStream (File.Open (track.FileName, FileMode.Open, FileAccess.Read)));
+                reader = new BinaryReader (new BufferedStream (File.OpenRead (track.FileName)));
                 writer = new BinaryWriter (new BufferedStream (File.Open (dest, FileMode.Create)));
                 
                 do {

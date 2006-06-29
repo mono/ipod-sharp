@@ -1067,7 +1067,7 @@ namespace IPod {
             if (createFresh || !File.Exists (PhotoDbPath))
                 return;
 
-            using (BinaryReader reader = new BinaryReader (File.Open (PhotoDbPath, FileMode.Open))) {
+            using (BinaryReader reader = new BinaryReader (File.OpenRead (PhotoDbPath))) {
                 dfr.Read (reader);
 
                 PhotoDataSetRecord albumSet = dfr[PhotoDataSetIndex.AlbumList];

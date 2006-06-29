@@ -1,3 +1,18 @@
+2006-06-29  James Willcox  <snorp@snorp.net>
+
+	* ui/ArtworkHelpers.cs: remove the SetCoverArt/SetThumbnail methods,
+	and just have ToBytes/ToPixbuf.  Also, do a better job of figuring
+	out the endianess needed for the RGB565 images and handle rotation.
+
+	* src/TrackDatabase.cs: when opening files for read-only access,
+	just use File.OpenRead.
+
+	* src/Device.cs: add the new Size and ImageType properties
+	to ArtworkFormat
+
+	* src/Thumbnail.cs: use the new Size property to ensure that the
+	correct amount of data is received in SetData.
+
 2006-06-27  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: remove the length check in TrackRecord when

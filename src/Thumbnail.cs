@@ -87,18 +87,17 @@ namespace IPod {
         }
 
         public void SetData (byte[] data) {
-            int expectedLength = photo.PhotoDatabase.GetThumbSize (format.CorrelationId);
-            if (expectedLength > 0 && data.Length != expectedLength)
+            if (data.Length < format.Size)
                 throw new ArgumentException (String.Format ("Expected data length of {0}, but got {1}",
-                                                            expectedLength, data.Length));
+                                                            format.Size, data.Length));
             
             Stream stream = photo.PhotoDatabase.GetTempFile ();
             stream.Seek (0, SeekOrigin.End);
             
             record.ThumbnailOffset = (int) stream.Position;
-            record.ImageSize = data.Length;
+            record.ImageSize = format.Size;
             
-            stream.Write (data, 0, data.Length);
+            stream.Write (data, 0, format.Size);
             
             record.Dirty = true;
         }

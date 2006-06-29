@@ -194,35 +194,77 @@ namespace IPod {
             }
         }
 
-        private static Gdk.Pixbuf ToPixbuf (ArtworkFormat format, byte[] data) {
+        public static Gdk.Pixbuf ToPixbuf (ArtworkFormat format, byte[] data) {
             Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, format.Width, format.Height);
-
-            if (format.Type == ArtworkType.PhotoTvScreen) {
+            Gdk.Pixbuf rotated = null;
+            
+            switch (format.ImageType) {
+            case ImageType.Rgb565:
+                UnpackRgb565 (data, pixbuf, false);
+                break;
+            case ImageType.Rgb56590:
+                UnpackRgb565 (data, pixbuf, false);
+                rotated = pixbuf.RotateSimple (Gdk.PixbufRotation.Clockwise);
+                pixbuf.Dispose ();
+                pixbuf = rotated;
+                break;
+            case ImageType.Rgb565BE:
+                UnpackRgb565 (data, pixbuf, true);
+                break;
+            case ImageType.Rgb565BE90:
+                UnpackRgb565 (data, pixbuf, true);
+                rotated = pixbuf.RotateSimple (Gdk.PixbufRotation.Clockwise);
+                pixbuf.Dispose ();
+                pixbuf = rotated;
+                break;
+            case ImageType.IYUV:
                 UnpackIYUV (data, pixbuf);
-            } else {
-                // FIXME: this is totally lame
-                UnpackRgb565 (data, pixbuf, format.Width == 176);
+                break;
+            default:
+                throw new ApplicationException ("Unknown image type: " + format.ImageType);
             }
 
             return pixbuf;
         }
 
-        private static byte[] ToBytes (ArtworkFormat format, Gdk.Pixbuf pixbuf) {
+        public static byte[] ToBytes (ArtworkFormat format, Gdk.Pixbuf pixbuf) {
             bool disposePixbuf = false;
-            
-            // FIXME: preserve aspect ratio
-            if (pixbuf.Height > format.Height || pixbuf.Width > format.Width) {
-                pixbuf = pixbuf.ScaleSimple (format.Width, format.Height,
-                                             Gdk.InterpType.Bilinear);
+
+            if (format.ImageType == ImageType.Rgb56590 || format.ImageType == ImageType.Rgb565BE90) {
+                pixbuf = pixbuf.RotateSimple (Gdk.PixbufRotation.Counterclockwise);
                 disposePixbuf = true;
             }
             
-            byte[] data;
-            if (format.Type == ArtworkType.PhotoTvScreen) {
+            // FIXME: preserve aspect ratio
+            if (pixbuf.Height > format.Height || pixbuf.Width > format.Width) {
+                Gdk.Pixbuf scaled = pixbuf.ScaleSimple (format.Width, format.Height,
+                                                        Gdk.InterpType.Bilinear);
+
+                if (disposePixbuf) {
+                    pixbuf.Dispose ();
+                }
+
+                pixbuf = scaled;
+                
+                disposePixbuf = true;
+            }
+            
+            byte[] data = null;
+            
+            switch (format.ImageType) {
+            case ImageType.Rgb565:
+            case ImageType.Rgb56590:
+                data = PackRgb565 (pixbuf, false);
+                break;
+            case ImageType.Rgb565BE:
+            case ImageType.Rgb565BE90:
+                data = PackRgb565 (pixbuf, true);
+                break;
+            case ImageType.IYUV:
                 data = PackIYUV (pixbuf);
-            } else {
-                // FIXME: this is totally lame
-                data = PackRgb565 (pixbuf, format.Width == 176);
+                break;
+            default:
+                throw new ApplicationException ("Unknown image type: " + format.ImageType);
             }
             
             if (disposePixbuf) {
@@ -230,32 +272,6 @@ namespace IPod {
             }
 
             return data;
-        }
-
-        public static Gdk.Pixbuf GetCoverArt (Track track, ArtworkFormat format) {
-            byte[] data = track.GetCoverArt (format);
-            if (data == null)
-                return null;
-
-            return ToPixbuf (format, data);
-        }
-
-        public static void SetCoverArt (Track track, ArtworkFormat format, Gdk.Pixbuf pixbuf) {
-            byte[] data = ToBytes (format, pixbuf);
-            track.SetCoverArt (format, data);
-        }
-
-        public static Gdk.Pixbuf GetThumbnail (Thumbnail thumbnail) {
-            byte[] data = thumbnail.GetData ();
-            if (data == null)
-                return null;
-
-            return ToPixbuf (thumbnail.Format, data);
-        }
-        
-        public static void SetThumbnail (Thumbnail thumbnail, Gdk.Pixbuf pixbuf) {
-            byte[] data = ToBytes (thumbnail.Format, pixbuf);
-            thumbnail.SetData (data);
         }
     }
 }

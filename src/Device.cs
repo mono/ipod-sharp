@@ -23,15 +23,25 @@ namespace IPod {
         PhotoTvScreen
     }
 
+    public enum ImageType : int {
+        Rgb565,
+        Rgb56590,
+        Rgb565BE,
+        Rgb565BE90,
+        IYUV
+    }
+
     public class ArtworkFormat {
 
-        private ArtworkType type;
+        private ArtworkType artType;
         private short width;
         private short height;
         private short correlationId;
+        private int size;
+        private ImageType imgType;
 
-        public ArtworkType Type {
-            get { return type; }
+        public ArtworkType ArtworkType {
+            get { return artType; }
         }
 
         public short Width {
@@ -42,15 +52,26 @@ namespace IPod {
             get { return height; }
         }
 
+        public int Size {
+            get { return size; }
+        }
+
+        public ImageType ImageType {
+            get { return imgType; }
+        }
+
         internal short CorrelationId {
             get { return correlationId; }
         }
-        
-        internal ArtworkFormat (ArtworkType type, short width, short height, short correlationId) {
-            this.type = type;
+
+        internal ArtworkFormat (ArtworkType artType, short width, short height, short correlationId,
+                                int size, ImageType imgType) {
+            this.artType = artType;
             this.width = width;
             this.height = height;
             this.correlationId = correlationId;
+            this.size = size;
+            this.imgType = imgType;
         }
     }
 
@@ -333,10 +354,10 @@ namespace IPod {
             int offset = 0;
             
             while (true) {
-                int type = Marshal.ReadInt32 (array, offset);
+                int artType = Marshal.ReadInt32 (array, offset);
                 offset += 4;
                 
-                if (type == -1)
+                if (artType == -1)
                     break;
                 
                 short width = Marshal.ReadInt16 (array, offset);
@@ -346,11 +367,16 @@ namespace IPod {
                 offset += 2;
                 
                 short correlationId = Marshal.ReadInt16 (array, offset);
-                offset += 2;
+                offset += 4;
+
+                int size = Marshal.ReadInt32 (array, offset);
+                offset += 4;
+
+                int imgType = Marshal.ReadInt32 (array, offset);
+                offset += 4;
                 
-                offset += 2; // two bytes of padding after the struct; if you read it, it's always 0xffff
-                
-                formats[correlationId] = new ArtworkFormat ((ArtworkType) type, width, height, correlationId);
+                formats[correlationId] = new ArtworkFormat ((ArtworkType) artType, width, height, correlationId,
+                                                            size, (ImageType) imgType);
             }
         }
 
@@ -359,7 +385,7 @@ namespace IPod {
 
         public ArtworkFormat LookupFormat (ArtworkType type) {
             foreach (ArtworkFormat format in formats.Values) {
-                if (format.Type == type)
+                if (format.ArtworkType == type)
                     return format;
             }
 
