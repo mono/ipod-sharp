@@ -1,5 +1,9 @@
 2006-06-29  James Willcox  <snorp@snorp.net>
 
+	* ui/ArtworkHelpers.cs: preserve aspect ratio when scaling
+
+2006-06-29  James Willcox  <snorp@snorp.net>
+
 	* ui/ArtworkHelpers.cs: remove the SetCoverArt/SetThumbnail methods,
 	and just have ToBytes/ToPixbuf.  Also, do a better job of figuring
 	out the endianess needed for the RGB565 images and handle rotation.

@@ -14,13 +14,20 @@ public class EntryPoint {
             if (format.ArtworkType != ArtworkType.PhotoSmall && format.ArtworkType != ArtworkType.PhotoLarge &&
                 format.ArtworkType != ArtworkType.PhotoFullScreen && format.ArtworkType != ArtworkType.PhotoTvScreen)
                 continue;
-            
+
+            byte[] bytes;
+            short padX, padY;
+
+            bytes = ArtworkHelpers.ToBytes (format, pixbuf, out padX, out padY);
+
             Thumbnail thumbnail = photo.CreateThumbnail ();
             thumbnail.Format = format;
-            thumbnail.Width = format.Width;
-            thumbnail.Height = format.Height;
+            thumbnail.Width = (short) pixbuf.Width;
+            thumbnail.Height = (short) pixbuf.Height;
+            thumbnail.HorizontalPadding = padX;
+            thumbnail.VerticalPadding = padY;
 
-            thumbnail.SetData (ArtworkHelpers.ToBytes (thumbnail.Format, pixbuf));
+            thumbnail.SetData (bytes);
         }
     }
 
@@ -36,8 +43,9 @@ public class EntryPoint {
 
                 photo.FullSizeFileName = file;
                 album.Add (photo);
+            } catch (GLib.GException e) {
             } catch (Exception e) {
-                Console.Error.WriteLine (e);
+                Console.WriteLine (e);
             }
         }
 

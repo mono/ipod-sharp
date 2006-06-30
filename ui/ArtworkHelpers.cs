@@ -194,6 +194,31 @@ namespace IPod {
             }
         }
 
+        private static Gdk.Pixbuf Scale (Gdk.Pixbuf pixbuf, int width, int height, out int widthPadding,
+                                         out int heightPadding) {
+            if (pixbuf.Width == width && pixbuf.Height == height) {
+                widthPadding = 0;
+                heightPadding = 0;
+                return pixbuf;
+            }
+
+            double scale = Math.Min  (width / (double) pixbuf.Width, height / (double) pixbuf.Height);
+
+            int scaleWidth = (int) (scale * pixbuf.Width);
+            int scaleHeight = (int) (scale * pixbuf.Height);
+
+            Gdk.Pixbuf scaled = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
+            scaled.Fill (0);
+
+            widthPadding = width - scaleWidth;
+            heightPadding = height - scaleHeight;
+
+            pixbuf.Scale (scaled, widthPadding / 2, heightPadding / 2, scaleWidth, scaleHeight,
+                          widthPadding / 2, heightPadding / 2, scale, scale, Gdk.InterpType.Bilinear);
+
+            return scaled;
+        }
+
         public static Gdk.Pixbuf ToPixbuf (ArtworkFormat format, byte[] data) {
             Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, format.Width, format.Height);
             Gdk.Pixbuf rotated = null;
@@ -228,6 +253,15 @@ namespace IPod {
         }
 
         public static byte[] ToBytes (ArtworkFormat format, Gdk.Pixbuf pixbuf) {
+            short a, b;
+            return ToBytes (format, pixbuf, out a, out b);
+        }
+
+        public static byte[] ToBytes (ArtworkFormat format, Gdk.Pixbuf pixbuf, out short horizontalPadding,
+                                      out short verticalPadding) {
+            horizontalPadding = 0;
+            verticalPadding = 0;
+            
             bool disposePixbuf = false;
 
             if (format.ImageType == ImageType.Rgb56590 || format.ImageType == ImageType.Rgb565BE90) {
@@ -235,17 +269,18 @@ namespace IPod {
                 disposePixbuf = true;
             }
             
-            // FIXME: preserve aspect ratio
-            if (pixbuf.Height > format.Height || pixbuf.Width > format.Width) {
-                Gdk.Pixbuf scaled = pixbuf.ScaleSimple (format.Width, format.Height,
-                                                        Gdk.InterpType.Bilinear);
+            if (pixbuf.Height != format.Height || pixbuf.Width != format.Width) {
+                int padX, padY;
+                Gdk.Pixbuf scaled = Scale (pixbuf, format.Width, format.Height, out padX, out padY);
+
+                horizontalPadding = (short) padX;
+                verticalPadding = (short) padY;
 
                 if (disposePixbuf) {
                     pixbuf.Dispose ();
                 }
 
                 pixbuf = scaled;
-                
                 disposePixbuf = true;
             }
             
