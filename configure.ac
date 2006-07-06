@@ -18,7 +18,7 @@ AC_DEFINE_UNQUOTED(MICRO_VERSION, $MICRO_VERSION, [Micro Version Number])
 
 AM_MAINTAINER_MODE
 
-PKG_CHECK_MODULES(IPODDEVICE, ipoddevice >= 0.3.5 gtk-sharp-2.0)
+PKG_CHECK_MODULES(IPODDEVICE, ipoddevice >= 0.4.6 gtk-sharp-2.0)
 
 dnl Mono	   
 AC_PATH_PROG(MONO, mono)

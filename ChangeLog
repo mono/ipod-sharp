@@ -1,3 +1,7 @@
+2006-07-06  Aaron Bockover  <aaron@abock.org>
+
+	* configure.ac: Require libipoddevice 0.4.6+
+
 2006-06-29  James Willcox  <snorp@snorp.net>
 
 	* ui/ArtworkHelpers.cs: preserve aspect ratio when scaling
