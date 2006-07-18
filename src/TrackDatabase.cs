@@ -1911,11 +1911,11 @@ namespace IPod {
                 }
 
                 // Remove empty Music "F" directories
-                DirectoryInfo music_dir = new DirectoryInfo (MusicBasePath);
-                foreach (DirectoryInfo f_dir in music_dir.GetDirectories ()) {
+                DirectoryInfo musicDir = new DirectoryInfo (MusicBasePath);
+                foreach (DirectoryInfo fdir in musicDir.GetDirectories ()) {
                     try {
-                        if (f_dir.GetFiles ().Length == 0) {
-                            f_dir.Delete();
+                        if (fdir.GetFiles ().Length == 0) {
+                            fdir.Delete();
                         }
                     } catch {
                     }

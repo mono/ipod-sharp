@@ -766,6 +766,7 @@ namespace IPod {
         public DateTime OriginalDate = DateTime.Now;
         public DateTime DigitizedDate = DateTime.Now;
         public int SourceImageSize;
+        public ImageNameRecord FullName;
 
         public IList<ImageNameRecord> Names {
             get {
@@ -784,8 +785,6 @@ namespace IPod {
                 return new ReadOnlyCollection<ImageNameRecord> (removedNames);
             }
         }
-
-        public ImageNameRecord FullName;
         
         public ImageItemRecord (bool isbe) : base (isbe) {
             this.Name = "mhii";
@@ -1108,8 +1107,7 @@ namespace IPod {
                 
                 List<Photo> dirtyPhotos = new List<Photo> ();
                 foreach (Photo photo in photos.Values) {
-                    if (photo.NeedsCopy) {
-                        photo.SetPodFileName ();
+                    if (photo.Dirty) {
                         dirtyPhotos.Add (photo);
                     }
                 }
@@ -1122,7 +1120,19 @@ namespace IPod {
                 for (int i = 0; i < dirtyPhotos.Count; i++) {
                     if (SaveProgressChanged != null)
                         SaveProgressChanged (this, new PhotoSaveProgressArgs ((double) i / (double) dirtyPhotos.Count));
-                    CopyPhoto (dirtyPhotos[i]);
+                    // delete old file if necessary
+                    if (dirtyPhotos[i].CurrentFullSizeFileName != null &&
+                        File.Exists (dirtyPhotos[i].CurrentFullSizeFileName)) {
+
+                        File.Delete (dirtyPhotos[i].CurrentFullSizeFileName);
+                    }
+
+                    // set the new filename in the db
+                    dirtyPhotos[i].SetPodFileName ();
+
+                    // copy new file if necessary
+                    if (dirtyPhotos[i].FullSizeFileName != null)
+                        CopyPhoto (dirtyPhotos[i]);
                 }
 
                 if (SaveProgressChanged != null)

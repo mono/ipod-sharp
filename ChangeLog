@@ -1,3 +1,8 @@
+2006-07-18  James Willcox  <snorp@snorp.net>
+
+	* src/Photo.cs: add an internal CurrentFullSizeFileName property
+	* src/PhotoDatabase.cs: make sure old photos are removed
+
 2006-07-06  Aaron Bockover  <aaron@abock.org>
 
 	* configure.ac: Require libipoddevice 0.4.6+

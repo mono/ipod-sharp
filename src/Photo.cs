@@ -11,7 +11,7 @@ namespace IPod {
         private PhotoDatabase db;
         private List<Thumbnail> thumbnails = new List<Thumbnail> ();
         private string fullSizeFile;
-        private bool needsCopy = false;
+        private bool dirty = false;
 
         internal int Id {
             get { return item.Id; }
@@ -25,8 +25,8 @@ namespace IPod {
             get { return db; }
         }
 
-        internal bool NeedsCopy {
-            get { return needsCopy; }
+        internal bool Dirty {
+            get { return dirty; }
         }
 
         public DateTime OriginalDate {
@@ -51,18 +51,26 @@ namespace IPod {
 
         public string FullSizeFileName {
             get {
-                if (fullSizeFile != null) {
+                if (dirty) {
                     return fullSizeFile;
-                } else if (item.FullName == null) {
-                    return null;
                 } else {
-                    return db.GetFilesystemPath (item.FullName.FileName);
+                    return CurrentFullSizeFileName;
                 }
             } set {
                 fullSizeFile = value;
-                needsCopy = true;
+                dirty = true;
             }
         }
+
+        internal string CurrentFullSizeFileName {
+            get {
+                if (item.FullName == null || item.FullName.FileName == null)
+                    return null;
+
+                return db.GetFilesystemPath (item.FullName.FileName);
+            }
+        }
+                
         
         internal Photo (ImageItemRecord item, PhotoDatabase db) {
             this.item = item;
@@ -74,9 +82,13 @@ namespace IPod {
         }
 
         internal void SetPodFileName () {
-            item.FullName.FileName = String.Format (":Full Resolution:{0}:{1}:{2}:{3}", OriginalDate.Year,
-                                                    OriginalDate.Month, OriginalDate.Day,
-                                                    Path.GetFileName (fullSizeFile));
+            if (fullSizeFile != null) {
+                item.FullName.FileName = String.Format (":Full Resolution:{0}:{1}:{2}:{3}", OriginalDate.Year,
+                                                        OriginalDate.Month, OriginalDate.Day,
+                                                        Path.GetFileName (fullSizeFile));
+            } else {
+                item.FullName = null;
+            }
         }
 
         public Thumbnail CreateThumbnail () {
