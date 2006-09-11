@@ -210,9 +210,9 @@ namespace IPod {
 
         public string Name {
             get {
-                return (string) GetProperty ("device-name").Val;
+                return TrackDatabase.Name;
             } set {
-                SetProperty ("device-name", new GLib.Value (value));
+                TrackDatabase.Name = value;
                 EmitChanged ();
             }
         }
@@ -258,40 +258,6 @@ namespace IPod {
                 return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (formats.Values));
             }
         }
-
-                /*
-                IntPtr array = (IntPtr) GetProperty ("artwork-formats").Val;
-
-                if (array == IntPtr.Zero) {
-                    return new ArtworkFormat[0];
-                }
-                
-                ArrayList list = new ArrayList ();
-                int offset = 0;
-
-                while (true) {
-                    int type = Marshal.ReadInt32 (array, offset);
-                    offset += 4;
-
-                    if (type == -1)
-                        break;
-
-                    short width = Marshal.ReadInt16 (array, offset);
-                    offset += 2;
-
-                    short height = Marshal.ReadInt16 (array, offset);
-                    offset += 2;
-
-                    short correlationId = Marshal.ReadInt16 (array, offset);
-                    offset += 2;
-
-                    offset += 2; // two bytes of padding after the struct; if you read it, it's always 0xffff
-
-                    list.Add (new ArtworkFormat ((ArtworkType) type, width, height, correlationId));
-                }
-
-                return (ArtworkFormat[]) list.ToArray (typeof (ArtworkFormat));
-                */
 
         public Equalizer[] Equalizers {
             get {

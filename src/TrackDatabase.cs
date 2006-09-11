@@ -1561,6 +1561,20 @@ namespace IPod {
             get { return ControlPath + "iTunes/Play Counts"; }
         }
 
+        internal string Name {
+            get {
+                if (dbrec == null)
+                    return null;
+
+                return dbrec[DataSetIndex.Playlist].Library.PlaylistName;
+            } set {
+                if (dbrec == null)
+                    return;
+
+                dbrec[DataSetIndex.Playlist].Library.PlaylistName = value;
+            }
+        }
+
         public Device Device {
             get { return device; }
         }

@@ -1,3 +1,8 @@
+2006-09-11  James Willcox  <snorp@snorp.net>
+
+	* src/Device.cs: use the 'library' playlist name as the device name
+	and remove a bunch of dead code
+
 2006-07-19  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: bump the max supported database version to 18
