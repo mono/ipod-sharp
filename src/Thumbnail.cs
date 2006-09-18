@@ -70,7 +70,7 @@ namespace IPod {
             this.record = record;
 
             if (record.CorrelationId > 0) {
-                Format = photo.PhotoDatabase.Device.LookupFormat (record.CorrelationId);
+                Format = photo.PhotoDatabase.Device.LookupArtworkFormat (record.CorrelationId);
             }
         }
 

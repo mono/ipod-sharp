@@ -3,7 +3,7 @@ AC_CANONICAL_SYSTEM
 
 MAJOR_VERSION=0
 MINOR_VERSION=6
-MICRO_VERSION=1
+MICRO_VERSION=2
 VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
                                                                                 
 AM_INIT_AUTOMAKE(ipod-sharp, $VERSION)
@@ -18,7 +18,7 @@ AC_DEFINE_UNQUOTED(MICRO_VERSION, $MICRO_VERSION, [Micro Version Number])
 
 AM_MAINTAINER_MODE
 
-PKG_CHECK_MODULES(IPODDEVICE, ipoddevice >= 0.4.6 gtk-sharp-2.0)
+PKG_CHECK_MODULES(IPODDEVICE, ipoddevice >= 0.5.0 gtk-sharp-2.0)
 
 dnl Mono	   
 AC_PATH_PROG(MONO, mono)

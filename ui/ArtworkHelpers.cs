@@ -223,30 +223,24 @@ namespace IPod {
             Gdk.Pixbuf pixbuf = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, format.Width, format.Height);
             Gdk.Pixbuf rotated = null;
             
-            switch (format.ImageType) {
-            case ImageType.Rgb565:
+            switch (format.PixelFormat) {
+            case PixelFormat.Rgb565:
                 UnpackRgb565 (data, pixbuf, false);
                 break;
-            case ImageType.Rgb56590:
-                UnpackRgb565 (data, pixbuf, false);
-                rotated = pixbuf.RotateSimple (Gdk.PixbufRotation.Clockwise);
-                pixbuf.Dispose ();
-                pixbuf = rotated;
-                break;
-            case ImageType.Rgb565BE:
+            case PixelFormat.Rgb565BE:
                 UnpackRgb565 (data, pixbuf, true);
                 break;
-            case ImageType.Rgb565BE90:
-                UnpackRgb565 (data, pixbuf, true);
-                rotated = pixbuf.RotateSimple (Gdk.PixbufRotation.Clockwise);
-                pixbuf.Dispose ();
-                pixbuf = rotated;
-                break;
-            case ImageType.IYUV:
+            case PixelFormat.IYUV:
                 UnpackIYUV (data, pixbuf);
                 break;
             default:
-                throw new ApplicationException ("Unknown image type: " + format.ImageType);
+                throw new ApplicationException ("Unknown pixel format: " + format.PixelFormat);
+            }
+
+            if (format.Rotation > 0) {
+                rotated = Rotate (pixbuf, format.Rotation);
+                pixbuf.Dispose ();
+                pixbuf = rotated;
             }
 
             return pixbuf;
@@ -257,6 +251,18 @@ namespace IPod {
             return ToBytes (format, pixbuf, out a, out b);
         }
 
+        private static Gdk.Pixbuf Rotate (Gdk.Pixbuf pixbuf, int angle) {
+            Gdk.Pixbuf rotated = pixbuf;
+            
+            for (int i = 0; i < (angle / 90); i++) {
+                pixbuf = rotated.RotateSimple (Gdk.PixbufRotation.Counterclockwise);
+                rotated.Dispose ();
+                rotated = pixbuf;
+            }
+
+            return rotated;
+        }
+
         public static byte[] ToBytes (ArtworkFormat format, Gdk.Pixbuf pixbuf, out short horizontalPadding,
                                       out short verticalPadding) {
             horizontalPadding = 0;
@@ -264,11 +270,11 @@ namespace IPod {
             
             bool disposePixbuf = false;
 
-            if (format.ImageType == ImageType.Rgb56590 || format.ImageType == ImageType.Rgb565BE90) {
-                pixbuf = pixbuf.RotateSimple (Gdk.PixbufRotation.Counterclockwise);
+            if (format.Rotation > 0) {
+                pixbuf = Rotate (pixbuf, format.Rotation);
                 disposePixbuf = true;
             }
-            
+
             if (pixbuf.Height != format.Height || pixbuf.Width != format.Width) {
                 int padX, padY;
                 Gdk.Pixbuf scaled = Scale (pixbuf, format.Width, format.Height, out padX, out padY);
@@ -286,20 +292,18 @@ namespace IPod {
             
             byte[] data = null;
             
-            switch (format.ImageType) {
-            case ImageType.Rgb565:
-            case ImageType.Rgb56590:
+            switch (format.PixelFormat) {
+            case PixelFormat.Rgb565:
                 data = PackRgb565 (pixbuf, false);
                 break;
-            case ImageType.Rgb565BE:
-            case ImageType.Rgb565BE90:
+            case PixelFormat.Rgb565BE:
                 data = PackRgb565 (pixbuf, true);
                 break;
-            case ImageType.IYUV:
+            case PixelFormat.IYUV:
                 data = PackIYUV (pixbuf);
                 break;
             default:
-                throw new ApplicationException ("Unknown image type: " + format.ImageType);
+                throw new ApplicationException ("Unknown pixel format: " + format.PixelFormat);
             }
             
             if (disposePixbuf) {

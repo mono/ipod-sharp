@@ -10,11 +10,7 @@ public class EntryPoint {
     private static string directory;
 
     private static void AddThumbnails (Device device, Photo photo, Gdk.Pixbuf pixbuf) {
-        foreach (ArtworkFormat format in device.ArtworkFormats) {
-            if (format.ArtworkType != ArtworkType.PhotoSmall && format.ArtworkType != ArtworkType.PhotoLarge &&
-                format.ArtworkType != ArtworkType.PhotoFullScreen && format.ArtworkType != ArtworkType.PhotoTvScreen)
-                continue;
-
+        foreach (ArtworkFormat format in device.LookupArtworkFormats (ArtworkUsage.Photo)) {
             byte[] bytes;
             short padX, padY;
 

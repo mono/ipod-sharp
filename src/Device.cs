@@ -14,34 +14,31 @@ namespace IPod {
         Busy
     };
 
-    public enum ArtworkType : int {
-        CoverSmall,
-        CoverLarge,
-        PhotoSmall,
-        PhotoLarge,
-        PhotoFullScreen,
-        PhotoTvScreen
+    public enum ArtworkUsage : int {
+        Unknown = -1,
+        Photo,
+        Cover
     }
 
-    public enum ImageType : int {
+    public enum PixelFormat : int {
+        Unknown = -1,
         Rgb565,
-        Rgb56590,
         Rgb565BE,
-        Rgb565BE90,
         IYUV
     }
 
     public class ArtworkFormat {
 
-        private ArtworkType artType;
+        private ArtworkUsage usage;
         private short width;
         private short height;
         private short correlationId;
         private int size;
-        private ImageType imgType;
+        private PixelFormat pformat;
+        private short rotation;
 
-        public ArtworkType ArtworkType {
-            get { return artType; }
+        public ArtworkUsage Usage {
+            get { return usage; }
         }
 
         public short Width {
@@ -56,22 +53,27 @@ namespace IPod {
             get { return size; }
         }
 
-        public ImageType ImageType {
-            get { return imgType; }
+        public PixelFormat PixelFormat {
+            get { return pformat; }
+        }
+
+        public short Rotation {
+            get { return rotation; }
         }
 
         internal short CorrelationId {
             get { return correlationId; }
         }
 
-        internal ArtworkFormat (ArtworkType artType, short width, short height, short correlationId,
-                                int size, ImageType imgType) {
-            this.artType = artType;
+        internal ArtworkFormat (ArtworkUsage usage, short width, short height, short correlationId,
+                                int size, PixelFormat pformat, short rotation) {
+            this.usage = usage;
             this.width = width;
             this.height = height;
             this.correlationId = correlationId;
             this.size = size;
-            this.imgType = imgType;
+            this.pformat = pformat;
+            this.rotation = rotation;
         }
     }
 
@@ -253,7 +255,31 @@ namespace IPod {
             }
         }
 
-        public IList<ArtworkFormat> ArtworkFormats {
+        public string ManufacturerId {
+            get {
+                return (string) GetProperty ("manufacturer-id").Val;
+            }
+        }
+
+        public uint ProductionYear {
+            get {
+                return (uint) GetProperty ("production-year").Val;
+            }
+        }
+
+        public uint ProductionWeek {
+            get {
+                return (uint) GetProperty ("production-week").Val;
+            }
+        }
+
+        public uint ProductionIndex {
+            get {
+                return (uint) GetProperty ("production-index").Val;
+            }
+        }
+
+        public ReadOnlyCollection<ArtworkFormat> ArtworkFormats {
             get {
                 return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (formats.Values));
             }
@@ -320,10 +346,10 @@ namespace IPod {
             int offset = 0;
             
             while (true) {
-                int artType = Marshal.ReadInt32 (array, offset);
+                int usage = Marshal.ReadInt32 (array, offset);
                 offset += 4;
                 
-                if (artType == -1)
+                if (usage == -1)
                     break;
                 
                 short width = Marshal.ReadInt16 (array, offset);
@@ -338,27 +364,32 @@ namespace IPod {
                 int size = Marshal.ReadInt32 (array, offset);
                 offset += 4;
 
-                int imgType = Marshal.ReadInt32 (array, offset);
+                int pformat = Marshal.ReadInt32 (array, offset);
+                offset += 4;
+
+                short rotation = Marshal.ReadInt16 (array, offset);
                 offset += 4;
                 
-                formats[correlationId] = new ArtworkFormat ((ArtworkType) artType, width, height, correlationId,
-                                                            size, (ImageType) imgType);
+                formats[correlationId] = new ArtworkFormat ((ArtworkUsage) usage, width, height, correlationId,
+                                                            size, (PixelFormat) pformat, rotation);
             }
         }
 
         public Device (string mountOrDevice) : this (ipod_device_new (mountOrDevice)) {
         }
 
-        public ArtworkFormat LookupFormat (ArtworkType type) {
+        public ReadOnlyCollection<ArtworkFormat> LookupArtworkFormats (ArtworkUsage usage) {
+            List<ArtworkFormat> list = new List<ArtworkFormat> ();
             foreach (ArtworkFormat format in formats.Values) {
-                if (format.ArtworkType == type)
-                    return format;
+                if (format.Usage == usage) {
+                    list.Add (format);
+                }
             }
 
-            return null;
+            return new ReadOnlyCollection<ArtworkFormat> (list);
         }
 
-        internal ArtworkFormat LookupFormat (int correlationId) {
+        internal ArtworkFormat LookupArtworkFormat (int correlationId) {
             return formats[correlationId];
         }
 
