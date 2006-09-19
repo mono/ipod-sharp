@@ -1,3 +1,12 @@
+2006-09-18  Aaron Bockover  <abock@gnome.org>
+
+	* ipod-sharp-ui.pc.in: Add ipod-data-submit.exe
+
+	* tools/Makefile.am: Build/install the data submission tool
+
+	* tools/IpodDataSubmit.cs: A standalone tool to submit data about
+	unknown iPods to banshee-project.org
+
 2006-09-18  James Willcox  <snorp@snorp.net>
 
 	* configure.ac: bump to 0.6.2
