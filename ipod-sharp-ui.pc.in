@@ -1,10 +1,9 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-UIAssembly=@prefix@/lib/ipod-sharp/ipod-sharp-ui.dll
-Libraries=${UIAssembly} @prefix@/lib/ipod-sharp/ipod-data-submit.exe
+Libraries=@prefix@/lib/ipod-sharp/ipod-sharp-ui.dll
 
 Name: ipod-sharp-ui
 Description: ipod-sharp-ui - Widgets useful for working with ipod-sharp
 Version: @VERSION@
-Libs: -r:${UIAssembly}
+Libs: -r:${Libraries}

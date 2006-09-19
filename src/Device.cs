@@ -279,6 +279,17 @@ namespace IPod {
             }
         }
 
+        public string UnknownIpodUrl {
+            get {
+                string serial = SerialNumber;
+                if(serial == null || serial.Length != 11) {
+                    return null;
+                }
+
+                return String.Format("http://banshee-project.org/IpodDataSubmit?serial={0}------{1}", serial.Substring(0, 2), serial.Substring(8));
+            }
+        }
+
         public ReadOnlyCollection<ArtworkFormat> ArtworkFormats {
             get {
                 return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (formats.Values));

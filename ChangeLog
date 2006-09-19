@@ -1,5 +1,15 @@
 2006-09-18  Aaron Bockover  <abock@gnome.org>
 
+	* src/Device.cs: Added UnknownIpodUrl property, replaces the entire
+	tool from yesterday, going for a web-based solution
+
+	* tools/Makefile.am: 
+	* ipod-sharp-ui.pc.in: Reverted
+
+	* tools/IpodDataSubmit.cs: Removed
+
+2006-09-18  Aaron Bockover  <abock@gnome.org>
+
 	* ipod-sharp-ui.pc.in: Add ipod-data-submit.exe
 
 	* tools/Makefile.am: Build/install the data submission tool
