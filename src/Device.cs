@@ -306,7 +306,8 @@ namespace IPod {
         
         public bool ShouldAskIfUnknown {
             get {
-                return SerialNumber != null && SerialNumber.Length == 11 && 
+                return Model == DeviceModel.Unknown && 
+                    SerialNumber != null && SerialNumber.Length == 11 && 
                     !File.Exists(DoNotAskPath);
             }
         }
