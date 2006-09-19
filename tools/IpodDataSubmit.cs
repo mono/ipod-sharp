@@ -26,6 +26,12 @@ namespace IPod.DataSubmit
                 Console.WriteLine(e.Message);
                 return;
             }
+
+            if (device.SerialNumber != null &&
+                File.Exists (String.Format ("{0}/.ipod-data-submit-{1}", Environment.GetEnvironmentVariable ("HOME"),
+                                            device.SerialNumber))) {
+                return;
+            }
             
             DataCollectWindow win = new DataCollectWindow(device);
             win.DeleteEvent += delegate { Application.Quit(); };
@@ -43,6 +49,7 @@ namespace IPod.DataSubmit
         private ComboBox combo_box;
         private Device device;
         private Entry model_entry;
+        private CheckButton dont_ask_button;
 
         public DataCollectWindow(Device device) : base(Catalog.GetString("iPod Data Collector"))
         {
@@ -127,13 +134,21 @@ namespace IPod.DataSubmit
             
             table.Attach(serial_label_value, 1, 2, 2, 3, AttachOptions.Fill | AttachOptions.Expand, 
                 AttachOptions.Fill | AttachOptions.Expand, 0, 0);
+
+            dont_ask_button = new CheckButton ("Don't show this dialog again for this device");
+            table.Attach (dont_ask_button, 1, 2, 3, 4, AttachOptions.Fill | AttachOptions.Expand,
+                          AttachOptions.Fill | AttachOptions.Expand, 0, 0);
                 
             HButtonBox buttons = new HButtonBox();
             buttons.Spacing = 5;
             buttons.Layout = ButtonBoxStyle.End;
             
             Button cancel_button = new Button(Stock.Cancel);
-            cancel_button.Clicked += delegate { Application.Quit(); };
+            cancel_button.Clicked += delegate {
+                WriteNoAskFile ();
+                Application.Quit();
+            };
+            
             cancel_button.UseStock = true;
             
             Button submit_button = new Button(Catalog.GetString("Submit iPod Data"));
@@ -254,12 +269,22 @@ namespace IPod.DataSubmit
             
             Sensitive = false;
         }
+
+        private void WriteNoAskFile ()
+        {
+            if (dont_ask_button.Active && device.SerialNumber != null) {
+                File.Open (String.Format ("{0}/.ipod-data-submit-{1}", Environment.GetEnvironmentVariable ("HOME"),
+                                          device.SerialNumber), FileMode.Create).Close ();
+            }
+            
+        }
         
         private void SubmitDataAsync(object data)
         {
             BeginWork();
             new DataSubmit((string)data);
             StopWork();
+            WriteNoAskFile ();
             Application.Quit();
         }
     }
