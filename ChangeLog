@@ -1,3 +1,7 @@
+2006-09-19  Aaron Bockover  <abock@gnome.org>
+
+	* src/Device.cs: Added ShouldAskIfUnknown and DoNotAskIfUnknown 
+
 2006-09-18  Aaron Bockover  <abock@gnome.org>
 
 	* src/Device.cs: Added UnknownIpodUrl property, replaces the entire

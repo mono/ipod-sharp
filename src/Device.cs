@@ -296,6 +296,26 @@ namespace IPod {
             }
         }
 
+        private string DoNotAskPath {
+            get { 
+                return String.Format ("{0}/.ipod-data-submit-{1}", 
+                    Environment.GetEnvironmentVariable ("HOME"), 
+                    SerialNumber);
+            }
+        }
+        
+        public bool ShouldAskIfUnknown {
+            get {
+                return SerialNumber != null && SerialNumber.Length == 11 && 
+                    !File.Exists(DoNotAskPath);
+            }
+        }
+
+        public void DoNotAskIfUnknown()
+        {
+            File.Open(DoNotAskPath, FileMode.Create).Close ();
+        }
+    
         public Equalizer[] Equalizers {
             get {
                 if (equalizers == null)
