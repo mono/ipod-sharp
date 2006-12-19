@@ -17,7 +17,12 @@ namespace IPod {
         NanoWhite,
         NanoBlack,
         VideoWhite,
-        VideoBlack
+        VideoBlack,
+        NanoSilver,
+        NanoGreen,
+        NanoBlue,
+        NanoPink,
+        NanoProductRed
     }
 }
 

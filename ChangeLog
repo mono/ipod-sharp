@@ -1,3 +1,7 @@
+2006-12-19  Aaron Bockover  <abock@gnome.org>
+
+	* src/DeviceModel.cs: Added NanoProductRed
+
 2006-09-19  Aaron Bockover  <abock@gnome.org>
 
 	* src/Device.cs: Added ShouldAskIfUnknown and DoNotAskIfUnknown 
