@@ -1339,7 +1339,7 @@ namespace IPod {
 
     internal class DatabaseRecord : TrackDbRecord {
 
-        private const int MaxSupportedVersion = 19;
+        private const int MaxSupportedVersion = 20;
         private const int TrackIdStart = 1000;
 
         private int unknownOne = 1;

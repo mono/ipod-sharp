@@ -1,3 +1,8 @@
+2007-03-19  James Willcox  <snorp@snorp.net>
+
+	* src/TrackDatabase.cs: bump the supported database version to 20
+	(which is what iTunes 7.1 uses)
+
 2006-12-19  Aaron Bockover  <abock@gnome.org>
 
 	* src/DeviceModel.cs: Added NanoProductRed
