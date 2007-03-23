@@ -1,3 +1,8 @@
+2007-03-23  Aaron Bockover  <abock@gnome.org>
+
+	* src/Firmware/DmgFirmwareExtract.cs: Updated so my old work isn't lost, 
+	but with iTunes 7, they shattered my dreams of firmware updating... for now
+
 2007-03-19  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: bump the supported database version to 20

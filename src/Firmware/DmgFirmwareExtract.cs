@@ -37,6 +37,7 @@ namespace IPod.Firmware
                 ExtractDmgImage(dmgFile);
                 MountIsoImage();
                 ExtractFirmwareArchive();
+                ExtractLicenseAgreements();
             } finally {
                 UnmountIsoImage();
                 File.Delete(iso_path);
@@ -87,13 +88,21 @@ namespace IPod.Firmware
             }
         }
         
+        private void ExtractLicenseAgreements()
+        {
+            foreach(DirectoryInfo directory in new DirectoryInfo(ResourcesPath).GetDirectories("*.lproj")) {
+                string license_extract_name = String.Format("{0}.rtf", 
+                    directory.Name.Substring(0, directory.Name.Length - 6));
+                File.Copy(Path.Combine(directory.FullName, "License.rtf"), 
+                    Path.Combine(firmware_export_path, license_extract_name));
+            }
+        }
+        
         private void ExtractFirmwareArchive()
         {
             string ipod_package = null;
-            string packages = Path.Combine(dmg_mount, 
-                String.Format("iPod.mpkg{0}Contents{0}Resources", Path.DirectorySeparatorChar));
             
-            foreach(DirectoryInfo directory in new DirectoryInfo(packages).GetDirectories("iPod*.pkg")) {
+            foreach(DirectoryInfo directory in new DirectoryInfo(ResourcesPath).GetDirectories("iPod*.pkg")) {
                 ipod_package = directory.FullName;
                 break;
             }
@@ -153,6 +162,13 @@ namespace IPod.Firmware
             if(process.ExitCode != 0) {
                 string message = process.StandardError.ReadToEnd().Trim();
                 throw new ApplicationException(message);
+            }
+        }
+        
+        public string ResourcesPath { 
+            get { 
+                return Path.Combine(dmg_mount, String.Format("iPod.mpkg{0}Contents{0}Resources", 
+                    Path.DirectorySeparatorChar));
             }
         }
     }
