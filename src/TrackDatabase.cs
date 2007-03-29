@@ -1320,8 +1320,7 @@ namespace IPod {
                 PlaylistList.Save (db, childWriter);
                 break;
             default:
-                //throw new DatabaseReadException ("Can't handle DataSet record index: " + Index);
-				break;
+                throw new DatabaseReadException ("Can't handle DataSet record index: " + Index);
             }
 
             childWriter.Flush ();
