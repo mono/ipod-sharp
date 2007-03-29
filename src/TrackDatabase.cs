@@ -1320,7 +1320,8 @@ namespace IPod {
                 PlaylistList.Save (db, childWriter);
                 break;
             default:
-                throw new DatabaseReadException ("Can't handle DataSet record index: " + Index);
+                //throw new DatabaseReadException ("Can't handle DataSet record index: " + Index);
+				break;
             }
 
             childWriter.Flush ();
@@ -1617,7 +1618,11 @@ namespace IPod {
 
             Reload (createFresh);
 
-            artdb = new PhotoDatabase (device, false, createFresh);
+            try {
+                artdb = new PhotoDatabase (device, false, createFresh);
+            } catch {
+                artdb = null;
+            }
         }
         
         
@@ -1811,7 +1816,7 @@ namespace IPod {
 
                 uniqueName += ext;
             } while(File.Exists(basePath + uniqueName));
-				
+
             return uniqueName.Replace("/", ":");
         }
 
@@ -1904,7 +1909,9 @@ namespace IPod {
                 }
 
                 // Save artwork database
-                artdb.Save ();
+                if (artdb != null) {
+                    artdb.Save ();
+                }
 
                 // Save the shuffle tracks db (will only create if device is shuffle);
                 try {
@@ -2020,11 +2027,13 @@ namespace IPod {
                 dbrec[DataSetIndex.Playlist].Library.RemoveTrack (track.Record.Id);
 
                 // remove from cover art db
-                Photo artPhoto = artdb.LookupPhotoByTrackId (track.Record.DatabaseId);
-                if (artPhoto != null) {
-                    artdb.RemovePhoto (artPhoto);
+                if (artdb != null) {
+                    Photo artPhoto = artdb.LookupPhotoByTrackId (track.Record.DatabaseId);
+                    if (artPhoto != null) {
+                        artdb.RemovePhoto (artPhoto);
+                    }
                 }
-                    
+
                 // remove from the "normal" playlists
                 foreach (Playlist list in playlists) {
                     list.RemoveTrack (track);

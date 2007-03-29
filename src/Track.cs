@@ -269,7 +269,7 @@ namespace IPod {
         }
 
         private void FindCoverPhoto () {
-            if (coverPhoto == null) {
+            if (coverPhoto == null && db.ArtworkDatabase != null) {
                 coverPhoto = db.ArtworkDatabase.LookupPhotoByTrackId (record.DatabaseId);
             }
         }
@@ -293,8 +293,15 @@ namespace IPod {
                 if (!createNew)
                     return null;
                 
-                coverPhoto = db.ArtworkDatabase.CreatePhoto ();
-                coverPhoto.Record.TrackId = record.DatabaseId;
+                
+                if (db.ArtworkDatabase != null) {
+                    coverPhoto = db.ArtworkDatabase.CreatePhoto ();
+                    coverPhoto.Record.TrackId = record.DatabaseId;
+                }
+            }
+
+            if (coverPhoto == null) {
+                return null;
             }
 
             Thumbnail thumbnail = coverPhoto.LookupThumbnail (format);
@@ -319,7 +326,7 @@ namespace IPod {
         public void RemoveCoverArt () {
             FindCoverPhoto ();
 
-            if (coverPhoto != null) {
+            if (coverPhoto != null && db.ArtworkDatabase != null) {
                 db.ArtworkDatabase.RemovePhoto (coverPhoto);
             }
         }

@@ -1,3 +1,10 @@
+2007-03-29  Aaron Bockover  <abock@gnome.org>
+
+	* src/TrackDatabase.cs:
+	* src/Track.cs: Add null checks for the artwork DB as on some devices we
+	may not be able to read the format info, and we shouldn't crash if that's
+	the case
+
 2007-03-23  Aaron Bockover  <abock@gnome.org>
 
 	* src/Firmware/DmgFirmwareExtract.cs: Updated so my old work isn't lost, 
