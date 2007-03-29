@@ -638,8 +638,8 @@ namespace IPod {
         PlaylistRules = 51,
         LibraryIndex = 52,
         Misc = 100,
-        AlbumListArtist = 200,
-        AlbumListAlbum = 201,
+        AlbumListAlbum = 200,
+        AlbumListArtist = 201,
     }
 
     internal enum IndexType {
@@ -784,7 +784,7 @@ namespace IPod {
             writer.Write (unknownOne);
             writer.Write (unknownTwo);
 
-            if ((int) Type < 50) {
+            if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum) {
                 if (Type == DetailType.PodcastUrl || Type == DetailType.PodcastUrl2 ||
                     Type == DetailType.ChapterData) {
                     writer.Write (valbytes);
@@ -1560,11 +1560,6 @@ namespace IPod {
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
-            DataSetRecord albumSet = this[DataSetIndex.AlbumList];
-            if (albumSet != null) {
-                datasets.Remove (albumSet);
-            }
-                
             ReassignTrackIds ();
             
             MemoryStream stream = new MemoryStream ();
@@ -2031,11 +2026,11 @@ namespace IPod {
                     continue;
                 
                 DetailRecord albumDetail = new DetailRecord (dbrec.IsBE);
-                albumDetail.Type = DetailType.Album;
+                albumDetail.Type = DetailType.AlbumListAlbum;
                 albumDetail.Value = splitAlbum[0];
                 
                 DetailRecord artistDetail = new DetailRecord (dbrec.IsBE);
-                artistDetail.Type = DetailType.Artist;
+                artistDetail.Type = DetailType.AlbumListArtist;
                 artistDetail.Value = splitAlbum[1];
                 
                 item.Add (albumDetail);
@@ -2047,6 +2042,7 @@ namespace IPod {
         public void Save () {
 
             CheckFreeSpace ();
+            CreateAlbumList ();
 
             // make sure all the new tracks have file names, and that they exist
             foreach (Track track in tracksToAdd) {

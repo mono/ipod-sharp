@@ -1,5 +1,10 @@
 2007-03-29  James Willcox  <snorp@snorp.net>
 
+	* src/TrackDatabase.cs: add write support for this new album list
+	data
+
+2007-03-29  James Willcox  <snorp@snorp.net>
+
 	* src/TrackDatabase.cs: oops, there are some new mhod types in the
 	album list data.  This adds them.
 
