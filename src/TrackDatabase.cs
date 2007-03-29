@@ -637,7 +637,9 @@ namespace IPod {
         PlaylistData = 50,
         PlaylistRules = 51,
         LibraryIndex = 52,
-        Misc = 100
+        Misc = 100,
+        AlbumListArtist = 200,
+        AlbumListAlbum = 201,
     }
 
     internal enum IndexType {
@@ -681,13 +683,14 @@ namespace IPod {
             
             Type = (DetailType) ToInt32 (body, 0);
 
-            if ((int) Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex)
+            if ((int) Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex &&
+                Type != DetailType.AlbumListArtist && Type != DetailType.AlbumListAlbum)
                 throw new DatabaseReadException ("Unsupported detail type: " + Type);
 
             unknownOne = ToInt32 (body, 4);
             unknownTwo = ToInt32 (body, 8);
             
-            if ((int) Type < 50) {
+            if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum) {
                 if (Type == DetailType.PodcastUrl ||
                     Type == DetailType.PodcastUrl2) {
 
@@ -704,7 +707,7 @@ namespace IPod {
                     int strlen = 0;
                     //int strenc = 0;
             
-                    if ((int) Type < 50) {
+                    if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum) {
                         // 'string' mhods       
                         strlen = ToInt32 (body, 16);
                         //strenc = ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
@@ -754,7 +757,7 @@ namespace IPod {
 
             byte[] valbytes = null;
 
-            if ((int) Type < 50) {
+            if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum) {
                 if (Type == DetailType.PodcastUrl || Type == DetailType.PodcastUrl2) {
                     valbytes = Encoding.UTF8.GetBytes (Value);
                     writer.Write (24 + valbytes.Length);
@@ -1336,9 +1339,9 @@ namespace IPod {
 
             base.Read (db, reader);
             
-            reader.ReadBytes (this.HeaderOne - 12);
+            byte[] body = reader.ReadBytes (this.HeaderOne - 12);
 
-            int detailCount = this.HeaderTwo;
+            int detailCount = ToInt32 (body, 0);
 
             details.Clear ();
 
@@ -1366,6 +1369,7 @@ namespace IPod {
             WriteName (writer);
             writer.Write (16);
             writer.Write (16 + childDataLength);
+            writer.Write (details.Count);
             writer.Write (childData, 0, childDataLength);
         }
     }

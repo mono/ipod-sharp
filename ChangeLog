@@ -1,5 +1,10 @@
 2007-03-29  James Willcox  <snorp@snorp.net>
 
+	* src/TrackDatabase.cs: oops, there are some new mhod types in the
+	album list data.  This adds them.
+
+2007-03-29  James Willcox  <snorp@snorp.net>
+
 	* src/TrackDatabase.cs: parse the new "album list" data set found on
 	2nd gen nano and shuffle after being synced with iTunes 7.1.
 
