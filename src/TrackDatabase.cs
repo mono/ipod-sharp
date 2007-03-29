@@ -1244,10 +1244,137 @@ namespace IPod {
         }
     }
 
+    // should be AlbumListRecord, but that exists in PhotoDatabase already, sigh
+    internal class TrackAlbumListRecord : TrackDbRecord {
+
+        private List<TrackAlbumItemRecord> albums = new List<TrackAlbumItemRecord> ();
+
+        public IList<TrackAlbumItemRecord> Albums {
+            get { return new ReadOnlyCollection<TrackAlbumItemRecord> (albums); }
+        }
+
+        public TrackAlbumListRecord (bool isbe) : base (isbe) {
+            this.Name = "mhla";
+        }
+
+        public void Clear () {
+            albums.Clear ();
+        }
+
+        public void Remove (TrackAlbumItemRecord item) {
+            albums.Remove (item);
+        }
+
+        public void Add (TrackAlbumItemRecord item) {
+            albums.Add (item);
+        }
+        
+        public override void Read (DatabaseRecord db, BinaryReader reader) {
+
+            base.Read (db, reader);
+            
+            reader.ReadBytes (this.HeaderOne - 12);
+
+            int albumCount = this.HeaderTwo;
+
+            albums.Clear ();
+
+            for (int i = 0; i < albumCount; i++) {
+                TrackAlbumItemRecord rec = new TrackAlbumItemRecord (IsBE);
+                rec.Read (db, reader);
+                albums.Add (rec);
+            }
+        }
+
+        public override void Save (DatabaseRecord db, BinaryWriter writer) {
+
+            MemoryStream stream = new MemoryStream ();
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
+
+            foreach (TrackAlbumItemRecord rec in albums) {
+                rec.Save (db, childWriter);
+            }
+
+            childWriter.Flush ();
+            byte[] childData = stream.GetBuffer ();
+            int childDataLength = (int) stream.Length;
+            childWriter.Close ();
+
+            WriteName (writer);
+            writer.Write (12 + PadLength);
+            writer.Write (albums.Count);
+            writer.Write (new byte[PadLength]);
+            writer.Write (childData, 0, childDataLength);
+        }
+    }
+
+    internal class TrackAlbumItemRecord : TrackDbRecord {
+
+        private List<DetailRecord> details = new List<DetailRecord> ();
+
+        public IList<DetailRecord> Details {
+            get { return new ReadOnlyCollection<DetailRecord> (details); }
+        }
+
+        public TrackAlbumItemRecord (bool isbe) : base (isbe) {
+            this.Name = "mhia";
+        }
+
+        public void Clear () {
+            details.Clear ();
+        }
+
+        public void Remove (DetailRecord item) {
+            details.Remove (item);
+        }
+
+        public void Add (DetailRecord item) {
+            details.Add (item);
+        }
+        
+        public override void Read (DatabaseRecord db, BinaryReader reader) {
+
+            base.Read (db, reader);
+            
+            reader.ReadBytes (this.HeaderOne - 12);
+
+            int detailCount = this.HeaderTwo;
+
+            details.Clear ();
+
+            for (int i = 0; i < detailCount; i++) {
+                DetailRecord detail = new DetailRecord (IsBE);
+                detail.Read (db, reader);
+                details.Add (detail);
+            }
+        }
+
+        public override void Save (DatabaseRecord db, BinaryWriter writer) {
+
+            MemoryStream stream = new MemoryStream ();
+            BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
+
+            foreach (DetailRecord detail in details) {
+                detail.Save (db, childWriter);
+            }
+
+            childWriter.Flush ();
+            byte[] childData = stream.GetBuffer ();
+            int childDataLength = (int) stream.Length;
+            childWriter.Close ();
+
+            WriteName (writer);
+            writer.Write (16);
+            writer.Write (16 + childDataLength);
+            writer.Write (childData, 0, childDataLength);
+        }
+    }
+
     internal enum DataSetIndex {
         Library = 1,
         Playlist = 2,
-        PlaylistDuplicate = 3
+        PlaylistDuplicate = 3,
+        AlbumList = 4
     }
 
     internal class DataSetRecord : TrackDbRecord {
@@ -1256,6 +1383,7 @@ namespace IPod {
 
         public TrackListRecord TrackList;
         public PlaylistListRecord PlaylistList;
+        public TrackAlbumListRecord AlbumList;
 
         public PlaylistRecord Library {
             get {
@@ -1298,6 +1426,10 @@ namespace IPod {
                 this.PlaylistList = new PlaylistListRecord (IsBE);
                 this.PlaylistList.Read (db, reader);
                 break;
+            case DataSetIndex.AlbumList:
+                this.AlbumList = new TrackAlbumListRecord (IsBE);
+                this.AlbumList.Read (db, reader);
+                break;
             default:
                 throw new DatabaseReadException ("Can't handle dataset index: " + Index);
             }
@@ -1318,6 +1450,9 @@ namespace IPod {
             case DataSetIndex.Playlist:
             case DataSetIndex.PlaylistDuplicate:
                 PlaylistList.Save (db, childWriter);
+                break;
+            case DataSetIndex.AlbumList:
+                AlbumList.Save (db, childWriter);
                 break;
             default:
                 throw new DatabaseReadException ("Can't handle DataSet record index: " + Index);
@@ -1421,7 +1556,11 @@ namespace IPod {
         }
 
         public override void Save (DatabaseRecord db, BinaryWriter writer) {
-
+            DataSetRecord albumSet = this[DataSetIndex.AlbumList];
+            if (albumSet != null) {
+                datasets.Remove (albumSet);
+            }
+                
             ReassignTrackIds ();
             
             MemoryStream stream = new MemoryStream ();
@@ -1857,6 +1996,47 @@ namespace IPod {
 
                 if (writer != null)
                     writer.Close ();
+            }
+        }
+
+        private void CreateAlbumList () {
+            DataSetRecord ds = dbrec[DataSetIndex.AlbumList];
+
+            // FIXME: figure out when we should create one of these if it doesn't exit
+            if (ds == null)
+                return;
+
+            TrackAlbumListRecord albumList = ds.AlbumList;
+
+            albumList.Clear ();
+            
+            List<string> albums = new List<string> ();
+            
+            foreach (Track track in tracks) {
+                string key = track.Album + "|" + track.Artist;
+                if (!albums.Contains (key)) {
+                    albums.Add (key);
+                }
+            }
+            
+            foreach (string album in albums) {
+                TrackAlbumItemRecord item = new TrackAlbumItemRecord (dbrec.IsBE);
+                
+                string[] splitAlbum = album.Split(new char[] {'|'}, 2);
+                if (splitAlbum.Length != 2)
+                    continue;
+                
+                DetailRecord albumDetail = new DetailRecord (dbrec.IsBE);
+                albumDetail.Type = DetailType.Album;
+                albumDetail.Value = splitAlbum[0];
+                
+                DetailRecord artistDetail = new DetailRecord (dbrec.IsBE);
+                artistDetail.Type = DetailType.Artist;
+                artistDetail.Value = splitAlbum[1];
+                
+                item.Add (albumDetail);
+                item.Add (artistDetail);
+                albumList.Add (item);
             }
         }
 
