@@ -1749,7 +1749,7 @@ namespace IPod {
         internal TrackDatabase (Device device, bool createFresh) {
             this.device = device;
             
-            if(createFresh && File.Exists(TrackDbPath)) {
+            if(createFresh && File.Exists(TrackDbPath) && device.CanWrite) {
                 File.Copy (TrackDbPath, TrackDbBackupPath, true);
             }
 
@@ -2058,7 +2058,7 @@ namespace IPod {
                 SaveStarted (this, new EventArgs ());
 
             // Back up the current track db
-            if (File.Exists (TrackDbPath))
+            if (File.Exists (TrackDbPath) && device.CanWrite)
                 File.Copy (TrackDbPath, TrackDbBackupPath, true);
             
             try {
@@ -2124,7 +2124,7 @@ namespace IPod {
                 Mono.Unix.Native.Syscall.sync ();
             } catch (Exception e) {
                 // rollback the track db
-                if (File.Exists (TrackDbBackupPath))
+                if (File.Exists (TrackDbBackupPath) && device.CanWrite)
                     File.Copy (TrackDbBackupPath, TrackDbPath, true);
 
                 throw new DatabaseWriteException (e, "Failed to save database");

@@ -1,3 +1,7 @@
+2007-03-30  Aaron Bockover  <abock@gnome.org>
+
+	* src/TrackDatabase.cs: do not copy iTunesDB if read only (HFS+)
+
 2007-03-29  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: add write support for this new album list
