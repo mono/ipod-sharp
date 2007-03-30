@@ -225,6 +225,14 @@ namespace IPod {
             }
         }
 
+        public bool IsShuffle {
+            get { 
+                return Model == DeviceModel.Shuffle || (
+                    Model >= DeviceModel.ShuffleSilver &&
+                    Model <= DeviceModel.ShuffleOrange);
+            }
+        }
+
         public string SerialNumber {
             get {
                 return (string) GetProperty ("serial-number").Val;

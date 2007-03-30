@@ -22,7 +22,12 @@ namespace IPod {
         NanoGreen,
         NanoBlue,
         NanoPink,
-        NanoProductRed
+        NanoProductRed,
+        ShuffleSilver,
+        ShufflePink,
+        ShuffleBlue,
+        ShuffleGreen,
+        ShuffleOrange
     }
 }
 

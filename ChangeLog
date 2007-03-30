@@ -1,5 +1,11 @@
 2007-03-30  Aaron Bockover  <abock@gnome.org>
 
+	* src/DeviceModel.cs: Added new model types from libipoddevice (shuffle 2)
+
+	* src/Device.cs: Added an IsShuffle property
+
+2007-03-30  Aaron Bockover  <abock@gnome.org>
+
 	* src/TrackDatabase.cs: do not copy iTunesDB if read only (HFS+)
 
 2007-03-29  James Willcox  <snorp@snorp.net>
