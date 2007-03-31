@@ -1,3 +1,8 @@
+2007-03-31  James Willcox  <snorp@snorp.net>
+
+	* src/TrackDatabase.cs: add support for another detail type found in
+	the album list.
+
 2007-03-30  Aaron Bockover  <abock@gnome.org>
 
 	* src/DeviceModel.cs: Added new model types from libipoddevice (shuffle 2)
