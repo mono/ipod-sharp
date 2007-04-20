@@ -640,6 +640,7 @@ namespace IPod {
         Misc = 100,
         AlbumListAlbum = 200,
         AlbumListArtist = 201,
+        AlbumListTitle = 202,
         AlbumListPodcastUrl = 203
     }
 
@@ -685,13 +686,14 @@ namespace IPod {
             Type = (DetailType) ToInt32 (body, 0);
 
             if ((int) Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex &&
-                Type != DetailType.AlbumListArtist && Type != DetailType.AlbumListAlbum && Type != DetailType.AlbumListPodcastUrl)
+                Type != DetailType.AlbumListArtist && Type != DetailType.AlbumListAlbum &&
+                Type != DetailType.AlbumListPodcastUrl && Type != DetailType.AlbumListTitle)
                 throw new DatabaseReadException ("Unsupported detail type: " + Type);
 
             unknownOne = ToInt32 (body, 4);
             unknownTwo = ToInt32 (body, 8);
             
-            if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum || Type == DetailType.AlbumListPodcastUrl) {
+            if ((int) Type < 50 || (int) Type >= 200) {
                 if (Type == DetailType.PodcastUrl ||
                     Type == DetailType.PodcastUrl2) {
 
@@ -708,7 +710,7 @@ namespace IPod {
                     int strlen = 0;
                     //int strenc = 0;
             
-                    if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum || Type == DetailType.AlbumListPodcastUrl) {
+                    if ((int) Type < 50 || (int) Type >= 200) {
                         // 'string' mhods       
                         strlen = ToInt32 (body, 16);
                         //strenc = ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
@@ -758,8 +760,7 @@ namespace IPod {
 
             byte[] valbytes = null;
 
-            if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum ||
-                Type == DetailType.AlbumListPodcastUrl) {
+            if ((int) Type < 50 || (int) Type >= 200) {
                 if (Type == DetailType.PodcastUrl || Type == DetailType.PodcastUrl2) {
                     valbytes = Encoding.UTF8.GetBytes (Value);
                     writer.Write (24 + valbytes.Length);
@@ -786,8 +787,7 @@ namespace IPod {
             writer.Write (unknownOne);
             writer.Write (unknownTwo);
 
-            if ((int) Type < 50 || Type == DetailType.AlbumListArtist || Type == DetailType.AlbumListAlbum ||
-                Type == DetailType.AlbumListPodcastUrl) {
+            if ((int) Type < 50 || (int) Type >= 200) {
                 if (Type == DetailType.PodcastUrl || Type == DetailType.PodcastUrl2 ||
                     Type == DetailType.ChapterData) {
                     writer.Write (valbytes);
