@@ -1161,47 +1161,37 @@ namespace IPod {
 
         public long NextDatabaseId = 1;
 
-        private List<TrackRecord> tracks = new List<TrackRecord> ();
+        private SortedList<int, TrackRecord> tracks = new SortedList<int, TrackRecord>();
 
         public IList<TrackRecord> Tracks {
-            get { return new ReadOnlyCollection<TrackRecord> (tracks); }
+            get { return new ReadOnlyCollection<TrackRecord>(tracks.Values); }
         }
 
-        public TrackListRecord (bool isbe) : base (isbe) {
+        public TrackListRecord(bool isbe) : base(isbe) {
             this.Name = "mhlt";
         }
 
-        public void Remove (int id) {
-            foreach (TrackRecord track in tracks) {
-                if (track.Id == id) {
-                    tracks.Remove (track);
-                    break;
-                }
-            }
+        public void Remove(int id) {
+            tracks.Remove(id);
         }
 
-        public void Add (TrackRecord track) {
-            tracks.Add (track);
+        public void Add(TrackRecord track) {
+            tracks.Add(track.Id, track);
         }
 
-        public IEnumerator GetEnumerator () {
-            return tracks.GetEnumerator ();
+        public IEnumerator GetEnumerator() {
+            return ((IEnumerable)tracks.Values).GetEnumerator();
         }
 
-        public TrackRecord LookupTrack (int id) {
-            foreach (TrackRecord record in tracks) {
-                if (record.Id == id)
-                    return record;
-            }
+        public TrackRecord LookupTrack(int id) {
+            if (tracks.ContainsKey(id))
+                return tracks[id];
 
             return null;
         }
 
-        public int IndexOf (int id) {
-            for (int i = 0; i < tracks.Count; i++) {
-                if ((tracks[i] as TrackRecord).Id == id)
-                    return i;
-            }
+        public int IndexOf(int id) {
+            tracks.IndexOfKey(id);
 
             return -1;
         }
@@ -1224,7 +1214,7 @@ namespace IPod {
                     NextDatabaseId = rec.DatabaseId + 1;
                 }
                 
-                tracks.Add (rec);
+                tracks.Add(rec.Id, rec);
             }
         }
 
@@ -1233,7 +1223,7 @@ namespace IPod {
             MemoryStream stream = new MemoryStream ();
             BinaryWriter childWriter = new EndianBinaryWriter (stream, IsBE);
 
-            foreach (TrackRecord rec in tracks) {
+            foreach (TrackRecord rec in tracks.Values) {
                 rec.Save (db, childWriter);
             }
 

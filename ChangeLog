@@ -1,3 +1,8 @@
+2007-06-15  James Willcox  <snorp@snorp.net>
+
+	* src/TrackDatabase.cs: make track add/remove/lookup operations much
+	faster.  Patch from Justin Cherniak <justin.cherniak@gmail.com>
+
 2007-04-20  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: add yet another detail type found in
