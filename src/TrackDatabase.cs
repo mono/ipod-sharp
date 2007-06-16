@@ -1191,9 +1191,7 @@ namespace IPod {
         }
 
         public int IndexOf(int id) {
-            tracks.IndexOfKey(id);
-
-            return -1;
+            return tracks.IndexOfKey(id);
         }
         
         public override void Read (DatabaseRecord db, BinaryReader reader) {
