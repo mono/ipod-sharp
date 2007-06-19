@@ -444,11 +444,11 @@ namespace IPod {
             return formats[correlationId];
         }
 
-        public void LoadPhotoDatabase () {
+        private void LoadPhotoDatabase () {
             LoadPhotoDatabase (false);
         }
 
-        public void LoadPhotoDatabase (bool createFresh) {
+        private void LoadPhotoDatabase (bool createFresh) {
             //FIXME: refuse if the device lacks photo capability
 
             if (photos == null)
@@ -460,11 +460,11 @@ namespace IPod {
                 sportKitManager = new SportKitManager (this);
         }
         
-        public void LoadTrackDatabase () {
+        private void LoadTrackDatabase () {
             LoadTrackDatabase (false);
         }
         
-        public void LoadTrackDatabase (bool createFresh) {
+        private void LoadTrackDatabase (bool createFresh) {
             if (!IsIPod) {
                 throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
             }

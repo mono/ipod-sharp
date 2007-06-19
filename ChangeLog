@@ -1,3 +1,8 @@
+2007-06-19  James Willcox  <snorp@snorp.net>
+
+	* src/Device.cs: s/public/private/ for some methods which were
+	accidentally marked public (LoadTrackDatabase, etc)
+
 2007-06-16  Brad Taylor  <brad@getcoded.net>
 	
 	* src/Device.cs:
