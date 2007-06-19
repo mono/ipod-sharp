@@ -34,7 +34,8 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs \
 	$(srcdir)/Utility.cs \
-	$(srcdir)/ShuffleTrackDatabase.cs
+	$(srcdir)/ShuffleTrackDatabase.cs \
+	$(srcdir)/SportKitManager.cs
 
 ASSEMBLY_RESOURCES =
 

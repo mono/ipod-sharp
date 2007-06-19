@@ -105,6 +105,7 @@ namespace IPod {
         private TrackDatabase tracks;
         private PhotoDatabase photos;
         private Dictionary<int, ArtworkFormat> formats = new Dictionary<int, ArtworkFormat> ();
+        private SportKitManager sportKitManager;
 
         public event EventHandler Changed;
 
@@ -354,6 +355,16 @@ namespace IPod {
             }
         }
 
+        public SportKitManager SportKitManager {
+            get {
+                if (sportKitManager == null) {
+                    LoadSportKitManager ();
+                }
+                
+                return sportKitManager;
+            }
+        }
+
         internal bool IsBE {
             get { return ControlPath.EndsWith ("iTunes_Control"); }
         }
@@ -442,6 +453,11 @@ namespace IPod {
 
             if (photos == null)
                 photos = new PhotoDatabase (this, true, createFresh);
+        }
+
+        private void LoadSportKitManager () {
+            if (sportKitManager == null)
+                sportKitManager = new SportKitManager (this);
         }
         
         public void LoadTrackDatabase () {

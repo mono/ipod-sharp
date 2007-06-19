@@ -1,3 +1,12 @@
+2007-06-16  Brad Taylor  <brad@getcoded.net>
+	
+	* src/Device.cs:
+	* src/SportKitManager.cs: Implement support for iPod Sport devices.
+	
+	* tools/PodTool.cs: Add a flag (--dump-sportkits) to print out the
+	  workouts of each sport kit stored on the selected iPod for debugging
+	  purposes.
+
 2007-06-15  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: make track add/remove/lookup operations much

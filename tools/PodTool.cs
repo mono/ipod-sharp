@@ -118,6 +118,50 @@ namespace IPod.Tools {
                                        track.PlayCount, track.LatestPlayCount);
                 }
                 break;
+            case "--dump-sportkits":
+                SportKit[] kits = device.SportKitManager.SportKits;
+                Console.WriteLine ("{0} sport kits found.", kits.Length);
+
+                for (int i = 0; i < kits.Length; i++) {
+                    SportKit kit = kits[i];
+
+                    Console.WriteLine ("Kit {0}:", i);
+                    Console.WriteLine ("  ID: {0}", kit.ID);
+                    Console.WriteLine ("  Path: {0}", kit.Path);
+
+                    // ugly ugly ugly
+                    foreach (object[] data in new object[] { new object[] { "Latest Workouts", kit.LatestWorkouts },
+                                                             new object[] { "Synched Workouts", kit.SynchedWorkouts } } ) {
+                        Console.WriteLine ("  {0}:", data[0]);
+
+                        foreach (Workout w in ((Workout[])data[1])) {
+                            Console.WriteLine ("   - Workout on {0}:", w.Time);
+                            Console.WriteLine ("      * FileName: {0}", w.FileName);
+                            Console.WriteLine ("      * Format Version: {0}", w.Version);
+                            Console.WriteLine ("      * Name: {0}", w.Name);
+                            Console.WriteLine ("      * Duration: {0} ({1} min)", w.Duration, w.Duration.TotalMinutes);
+                            Console.WriteLine ("      * Distance: {0} {1}", w.Distance, w.DistanceUnit);
+                            Console.WriteLine ("      * Pace: {0}", w.Pace);
+                            Console.WriteLine ("      * Calories: {0}", w.Calories);
+                            Console.WriteLine ("      * Template ID: {0}", w.TemplateID);
+                            Console.WriteLine ("      * Template Name: {0}", w.TemplateName);
+                            Console.WriteLine ("      * Start Time: {0}", w.StartTime);
+                            Console.WriteLine ("      * Interval Value: {0}", w.IntervalValue);
+                            
+                            Console.WriteLine ("      * Intervals:");
+                            Console.Write ("        ");
+
+                            foreach (double interval in w.Intervals) {
+                                Console.Write ("{0}  ", interval);
+                            }
+
+                            Console.WriteLine ();
+                            Console.WriteLine ();
+                        }
+                    }
+                }
+
+                return;
             default:
                 Usage ();
                 break;
