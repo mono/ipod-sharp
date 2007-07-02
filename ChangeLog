@@ -1,3 +1,58 @@
+2007-07-02  Justin Cherniak <justin.cherniak@gmail.com>
+
+	Added Win32 support to the library.
+	
+	* All Mono specific bits are cased in "#if !DOTNET" blocks to allow 
+	the code to compile for windows using Microsoft .NET (All Win32 specific
+	code compiles under Mono, so to build a cross platform build, use mono.
+	This allows the code to be compiled under Micrsoft .NET for Windows use)
+
+	* src/Unix: Moved Unix specific implementations (Device.cs, 
+	DeviceAddedHandler.cs, DeviceEventListener.cs,
+	DeviceRemovedHandler.cs, Initializer.cs) to this directory and to
+	IPod.Unix namespace
+	
+	* src/Win32: Added Windows specific implementation of Device.cs in 
+	IPod.Win32 namespace
+	
+	* src/Device.cs: Completely redone.  Moved all platform specific stuff
+	to src/Unix/Device.cs and src/Win32/Device.cs.  This file now creates 
+	and uses one of the platform specific devices depending on the OS on
+	which it is run.
+
+	* src/IDevice.cs: Interface that both Unix and Win32 Devices implement
+	so that Ipod.Device can utilize either one depending on the runtime OS.
+
+	* src/PhotoDatabase.cs: Changed Mono specific call to .NET call.
+
+	* src/TrackDatabase.cs: Added Win32 FlushFileBuffers call for .NET
+	compilation
+	
+	* src/SysInfo.cs: Rudementary parser for the SysInfo file stored on the
+	iPod.  Currently only used in the Win32 implementation.
+	
+	* src/SysInfoExtended.cs: XML Parser for SysInfoExtended stored in the 
+	iPod firmware.  Some code taken from libipoddevice.  Currently only used
+	in the Win32 implementation.
+	
+	* src/Win32/WinAPI.cs: Included Win32 API Wrappers used throughout the
+	solution
+
+	* src/Win32/DeviceEventListener.cs:
+	* src/Win32/DeviceWatcherWindow.cs: Implements a DeviceEventListener
+	for Win32 by monitoring WM_DEVICECHANGE
+
+	* src/Unix/DeviceEventLister.cs: Moved to IPod.Unix namespace.
+	
+	* src/Unix/Device.cs: Removed common (between platforms) functionality 
+	to IPod.Device. Added explict conversion between IPod.Device
+
+	* src/ipod-sharp.csproj: Added Visual Studio 2005 project with DOTNET 
+	compilation symbol on by default (allowing library to build in Visual
+	Studio for Win32 with Microsoft .NET)
+
+	* src/ipod-sharp.mdp: Updated project to reflect new paths
+
 2007-06-19  James Willcox  <snorp@snorp.net>
 
 	* configure.ac: bump to 0.6.4

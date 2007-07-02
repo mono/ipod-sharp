@@ -1,4 +1,6 @@
-namespace IPod {
+#if !DOTNET
+
+namespace IPod.Unix {
 
     using System;
 
@@ -13,3 +15,5 @@ namespace IPod {
 
     }
 }
+
+#endif

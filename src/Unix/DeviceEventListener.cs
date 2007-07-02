@@ -1,9 +1,11 @@
+#if !DOTNET
+
 using System;
 using System.Threading;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-namespace IPod {
+namespace IPod.Unix {
 
     public  class DeviceEventListener : GLib.Object {
 
@@ -40,10 +42,10 @@ namespace IPod {
             if (sig == null)
                 throw new Exception("Unknown signal GC handle received " + gch);
 
-            IPod.DeviceRemovedArgs args = new IPod.DeviceRemovedArgs ();
+            IPod.Unix.DeviceRemovedArgs args = new IPod.Unix.DeviceRemovedArgs ();
             args.Args = new object[1];
             args.Args[0] = GLib.Marshaller.Utf8PtrToString(arg1);
-            IPod.DeviceRemovedHandler handler = (IPod.DeviceRemovedHandler) sig.Handler;
+            IPod.Unix.DeviceRemovedHandler handler = (IPod.Unix.DeviceRemovedHandler) sig.Handler;
             handler (GLib.Object.GetObject (arg0), args);
         }
 
@@ -64,7 +66,7 @@ namespace IPod {
             OverrideVirtualMethod (gtype, "device-removed", DeviceRemovedVMCallback);
         }
  
-        [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideDeviceRemoved")]
+        [GLib.DefaultSignalHandler(Type=typeof(IPod.Unix.DeviceEventListener), ConnectionMethod="OverrideDeviceRemoved")]
         protected virtual void OnDeviceRemoved (string udi) {
             GLib.Value ret = GLib.Value.Empty;
             GLib.ValueArray inst_and_params = new GLib.ValueArray (2);
@@ -80,7 +82,7 @@ namespace IPod {
 #pragma warning restore 0169
 
         [GLib.Signal("device-removed")]
-        public event IPod.DeviceRemovedHandler DeviceRemoved {
+        public event IPod.Unix.DeviceRemovedHandler DeviceRemoved {
             add {
                 GLib.Signal sig = GLib.Signal.Lookup (this, "device-removed", new DeviceRemovedSignalDelegate(DeviceRemovedSignalCallback));
                 sig.AddDelegate (value);
@@ -99,10 +101,10 @@ namespace IPod {
             if (sig == null)
                 throw new Exception("Unknown signal GC handle received " + gch);
 
-            IPod.DeviceAddedArgs args = new IPod.DeviceAddedArgs ();
+            IPod.Unix.DeviceAddedArgs args = new IPod.Unix.DeviceAddedArgs ();
             args.Args = new object[1];
             args.Args[0] = GLib.Marshaller.Utf8PtrToString(arg1);
-            IPod.DeviceAddedHandler handler = (IPod.DeviceAddedHandler) sig.Handler;
+            IPod.Unix.DeviceAddedHandler handler = (IPod.Unix.DeviceAddedHandler) sig.Handler;
             handler (GLib.Object.GetObject (arg0), args);
         }
 
@@ -124,7 +126,7 @@ namespace IPod {
         }
 #pragma warning restore 0169
 
-        [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideDeviceAdded")]
+        [GLib.DefaultSignalHandler(Type=typeof(IPod.Unix.DeviceEventListener), ConnectionMethod="OverrideDeviceAdded")]
         protected virtual void OnDeviceAdded (string udi) {
             GLib.Value ret = GLib.Value.Empty;
             GLib.ValueArray inst_and_params = new GLib.ValueArray (2);
@@ -139,7 +141,7 @@ namespace IPod {
         }
 
         [GLib.Signal("device-added")]
-        public event IPod.DeviceAddedHandler DeviceAdded {
+        public event IPod.Unix.DeviceAddedHandler DeviceAdded {
             add {
                 GLib.Signal sig = GLib.Signal.Lookup (this, "device-added", new DeviceAddedSignalDelegate(DeviceAddedSignalCallback));
                 sig.AddDelegate (value);
@@ -168,7 +170,7 @@ namespace IPod {
         }
 #pragma warning restore 0169
 
-        [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideNotifyDeviceAdded")]
+        [GLib.DefaultSignalHandler(Type=typeof(IPod.Unix.DeviceEventListener), ConnectionMethod="OverrideNotifyDeviceAdded")]
         protected virtual void OnNotifyDeviceAdded () {
             GLib.Value ret = GLib.Value.Empty;
             GLib.ValueArray inst_and_params = new GLib.ValueArray (1);
@@ -210,7 +212,7 @@ namespace IPod {
         }
 #pragma warning restore 0169
 
-        [GLib.DefaultSignalHandler(Type=typeof(IPod.DeviceEventListener), ConnectionMethod="OverrideNotifyDeviceRemoved")]
+        [GLib.DefaultSignalHandler(Type=typeof(IPod.Unix.DeviceEventListener), ConnectionMethod="OverrideNotifyDeviceRemoved")]
         protected virtual void OnNotifyDeviceRemoved () {
             GLib.Value ret = GLib.Value.Empty;
             GLib.ValueArray inst_and_params = new GLib.ValueArray (1);
@@ -250,3 +252,5 @@ namespace IPod {
         }
     }
 }
+
+#endif

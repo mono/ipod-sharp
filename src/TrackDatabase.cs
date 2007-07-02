@@ -2112,8 +2112,22 @@ namespace IPod {
                     }
                 }
 
-                Mono.Unix.Native.Syscall.sync ();
-            } catch (Exception e) {
+#if !DOTNET
+                if(Device.OS == OS.Unix)
+                    Mono.Unix.Native.Syscall.sync ();
+                else
+#endif
+                {
+                    string driveName = "\\\\.\\" + ((Win32.Device)device.platformDevice).Drive.ToString ().Substring (0, 2);
+
+                    Microsoft.Win32.SafeHandles.SafeFileHandle fileHandle = IPod.Win32.WinAPI.ApiFunctions.CreateFile 
+                        (driveName, IPod.Win32.WinAPI.AccessMask.GENERIC_READ, System.IO.FileShare.ReadWrite, 0, 
+							 System.IO.FileMode.Open, 0, IntPtr.Zero);
+
+                    Win32.WinAPI.ApiFunctions.FlushFileBuffers (fileHandle);
+                }
+            }
+            catch (Exception e) {
                 // rollback the track db
                 if (File.Exists (TrackDbBackupPath) && device.CanWrite)
                     File.Copy (TrackDbBackupPath, TrackDbPath, true);

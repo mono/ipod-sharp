@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.IO;
-using Mono.Unix;
-using Mono.Unix.Native;
 
 namespace IPod {
 
@@ -1395,9 +1393,9 @@ namespace IPod {
                         existing.SetData (stream, data);
                     }
                 }
-            }
 
-            Syscall.truncate (thumbPath, (long) fileLength);
+                stream.SetLength(fileLength);
+            }
         }
 
         internal Stream GetTempFile () {

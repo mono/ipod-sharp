@@ -1,8 +1,10 @@
+#if !DOTNET
+
 using System;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace IPod {
+namespace IPod.Unix {
 
     internal class Initializer {
         private static bool inited;
@@ -43,3 +45,5 @@ namespace IPod {
         */
     }
 }
+
+#endif

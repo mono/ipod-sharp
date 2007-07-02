@@ -1,0 +1,71 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A8D5E24A-FDEB-46F6-A0C8-6F63436E6504}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <RootNamespace>IPod</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>.\bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DOTNET</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>.\bin\Release\</OutputPath>
+    <DefineConstants>TRACE;DOTNET</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Album.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="DatabaseReadException.cs" />
+    <Compile Include="DatabaseWriteException.cs" />
+    <Compile Include="Device.cs" />
+    <Compile Include="DeviceBusyException.cs" />
+    <Compile Include="DeviceException.cs" />
+    <Compile Include="DeviceGeneration.cs" />
+    <Compile Include="DeviceModel.cs" />
+    <Compile Include="EndianBinaryWriter.cs" />
+    <Compile Include="Equalizer.cs" />
+    <Compile Include="IDevice.cs" />
+    <Compile Include="ObjectDumper.cs" />
+    <Compile Include="Photo.cs" />
+    <Compile Include="PhotoDatabase.cs" />
+    <Compile Include="Playlist.cs" />
+    <Compile Include="ShuffleTrackDatabase.cs" />
+    <Compile Include="SportKitManager.cs" />
+    <Compile Include="Thumbnail.cs" />
+    <Compile Include="Track.cs" />
+    <Compile Include="TrackDatabase.cs" />
+    <Compile Include="Unix\Device.cs" />
+    <Compile Include="Unix\DeviceAddedHandler.cs" />
+    <Compile Include="Unix\DeviceEventListener.cs" />
+    <Compile Include="Unix\DeviceRemovedHandler.cs" />
+    <Compile Include="Unix\Initializer.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="Win32\Device.cs" />
+    <Compile Include="SysInfo.cs" />
+    <Compile Include="SysInfoExtended.cs" />
+    <Compile Include="Win32\DeviceEventListener.cs" />
+    <Compile Include="Win32\DeviceWatcherWindow.cs" />
+    <Compile Include="Win32\WinAPI.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>

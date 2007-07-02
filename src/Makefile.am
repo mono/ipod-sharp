@@ -15,27 +15,37 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
 	$(srcdir)/DatabaseReadException.cs	\
 	$(srcdir)/DatabaseWriteException.cs	\
-	$(srcdir)/Device.cs		\
-	$(srcdir)/DeviceAddedHandler.cs	\
-	$(srcdir)/DeviceEventListener.cs	\
-	$(srcdir)/DeviceGeneration.cs	\
-	$(srcdir)/DeviceRemovedHandler.cs	\
-	$(srcdir)/DeviceModel.cs	\
-	$(srcdir)/DeviceException.cs	\
+	$(srcdir)/Device.cs \ 
 	$(srcdir)/DeviceBusyException.cs	\
+	$(srcdir)/DeviceEventListener.cs	\
+	$(srcdir)/DeviceException.cs	\
+	$(srcdir)/DeviceModel.cs	\
+	$(srcdir)/DeviceGeneration.cs	\
 	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
-	$(srcdir)/Initializer.cs	\
+	$(srcdir)/IDevice.cs	\
+	$(srcdir)/ObjectDumper.cs		\
 	$(srcdir)/Photo.cs	\
 	$(srcdir)/PhotoDatabase.cs		\
 	$(srcdir)/Playlist.cs		\
-	$(srcdir)/ObjectDumper.cs		\
+	$(srcdir)/ShuffleTrackDatabase.cs \
+	$(srcdir)/SportKitManager.cs	\
+	$(srcdir)/SysInfo.cs	\
+	$(srcdir)/SysInfoExtended.cs	\
 	$(srcdir)/Thumbnail.cs		\
 	$(srcdir)/Track.cs		\
-	$(srcdir)/TrackDatabase.cs \
-	$(srcdir)/Utility.cs \
-	$(srcdir)/ShuffleTrackDatabase.cs \
-	$(srcdir)/SportKitManager.cs
+	$(srcdir)/TrackDatabase.cs	\
+	$(srcdir)/Utility.cs	\
+	$(srcdir)/Unix/Device.cs	\ 
+	$(srcdir)/Unix/DeviceAddedHandler.cs	\
+	$(srcdir)/Unix/DeviceEventListener.cs	\ 
+	$(srcdir)/Unix/DeviceRemovedHandler.cs	\
+	$(srcdir)/Unix/Initializer.cs	\
+	$(srcdir)/Win32/Device.cs	\
+	$(srcdir)/Win32/DeviceEventListener.cs	\
+	$(srcdir)/Win32/DeviceWatcherWindow.cs	\
+	$(srcdir)/Win32/WinAPI.cs	\ 
+
 
 ASSEMBLY_RESOURCES =
 
