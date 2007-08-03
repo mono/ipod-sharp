@@ -1,3 +1,9 @@
+2007-08-03  Justin Cherniak <justin.cherniak@gmail.com>
+	
+	Recursively applied svn:eol-style=native to all text files
+	* src/Win32/WinAPI.cs: Fixed inconsistent eol's
+	* src/Device.cs: Fixed inconsistent eol's
+
 2007-07-02  Justin Cherniak <justin.cherniak@gmail.com>
 
 	Added Win32 support to the library.
