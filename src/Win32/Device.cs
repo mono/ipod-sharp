@@ -174,16 +174,12 @@ namespace IPod.Win32
 
         #endregion
 
-        public static Device [] ListDevices ()
+        public static IPod.Device [] ListDevices ()
         {
-            List<Device> iPodList = new List<Device> ();
+            IPod.Device[] array = new IPod.Device[DeviceEventListener.Devices.Count];
+            DeviceEventListener.Devices.CopyTo(array,0);
 
-            foreach (string drive in Environment.GetLogicalDrives ()) {
-                if (Directory.Exists (drive + "iPod_Control"))
-                    iPodList.Add (new Device (drive));
-            }
-
-            return iPodList.ToArray ();
+            return array;
         }
 
         #region Unimplemented IDevice Members
@@ -257,7 +253,7 @@ namespace IPod.Win32
             Win32.Device wDevice = dev.platformDevice as Win32.Device;
 
             if (wDevice == null)
-                throw new ArgumentException ("Device is not a Win32.Device");
+                throw new InvalidCastException ("Device is not a Win32.Device");
 
             return wDevice;
         }

@@ -5,50 +5,80 @@ using System.IO;
 
 namespace IPod.Win32
 {
-    internal class DeviceEventListener
+    public class DeviceEventListener
     {
-        public event EventHandler DeviceAdded;
-        public event EventHandler DeviceRemoved;
+        public event EventHandler<DeviceEventArgs> DeviceAdded;
+        public event EventHandler<DeviceEventArgs> DeviceRemoved;
 
-        private DeviceWatcherWindow watcher_window;
-        private static List<char> ipod_drives;
+        public DeviceEventListener()
+        {
+            DeviceEventListener.device_added += new EventHandler<DeviceEventArgs>(DeviceEventListener_device_added);
+            DeviceEventListener.device_removed += new EventHandler<DeviceEventArgs>(DeviceEventListener_device_removed);
+        }
 
-        public DeviceEventListener ()
+        private void DeviceEventListener_device_added(object sender, DeviceEventArgs e)
+        {
+            if (DeviceAdded != null)
+                DeviceAdded(this, e);
+        }
+        private void DeviceEventListener_device_removed(object sender, DeviceEventArgs e)
+        {
+            if (DeviceRemoved != null)
+                DeviceRemoved(this, e);
+        }
+
+        #region Static
+
+        private static event EventHandler<DeviceEventArgs> device_added;
+        private static event EventHandler<DeviceEventArgs> device_removed;
+
+        private static DeviceWatcherWindow watcher_window;
+
+        private static SortedList<char, IPod.Device> devices = new SortedList<char, IPod.Device>();
+        internal static IList<IPod.Device> Devices { get { return devices.Values; } }
+
+        static DeviceEventListener ()
         {
             watcher_window = new DeviceWatcherWindow ("ipod-sharp DeviceEventListener Message Window");
 
-            watcher_window.DeviceArrived += new EventHandler<DeviceEventArgs> (watcherWindow_DeviceArrived);
-            watcher_window.DeviceRemoved += new EventHandler<DeviceEventArgs> (watcherWindow_DeviceRemoved);
+            watcher_window.DeviceArrived += new EventHandler<DeviceWindowEventArgs> (watcherWindow_DeviceArrived);
+            watcher_window.DeviceRemoved += new EventHandler<DeviceWindowEventArgs>(watcherWindow_DeviceRemoved);
 
             foreach (string drive in Environment.GetLogicalDrives ()) {
                 if (IsIpodDrive (drive [0]))
-                    ipod_drives.Add (drive [0]);
+                    devices.Add (drive [0], new IPod.Device(drive));
             }
         }
 
-        private void watcherWindow_DeviceArrived (object sender, DeviceEventArgs e)
+        private static void watcherWindow_DeviceArrived(object sender, DeviceWindowEventArgs e)
         {
             foreach (char dr in e.Drives) {
-                if (IsIpodDrive (dr))
-                    ipod_drives.Add (dr);
+                if (IsIpodDrive(dr))
+                {
+                    IPod.Device device = new IPod.Device(dr + ":\\");
+                    devices.Add (dr, device);
 
-                if (DeviceAdded != null)
-                    DeviceAdded (this, new EventArgs ());
+                    if (device_added != null)
+                        device_added (null, new DeviceEventArgs(device));
+                }
             }
         }
 
-        private void watcherWindow_DeviceRemoved (object sender, DeviceEventArgs e)
+        private static void watcherWindow_DeviceRemoved(object sender, DeviceWindowEventArgs e)
         {
             foreach (char dr in e.Drives)
-                if (ipod_drives.Contains (dr)) {
-                    ipod_drives.Remove (dr);
+                if (devices.ContainsKey (dr)) {
+                    
+                    IPod.Device device = devices[dr];
 
-                    if (DeviceRemoved != null)
-                        DeviceRemoved (this, new EventArgs ());
+                    devices.Remove (dr);
+
+                    if (device_removed != null)
+                        device_removed(null, new DeviceEventArgs(device));
                 }
         }
 
-        private bool IsIpodDrive (char driveLetter)
+        private static bool IsIpodDrive(char driveLetter)
         {
             DirectoryInfo dir = new DirectoryInfo (driveLetter + ":\\iPod_Control");
             if (dir.Exists)
@@ -59,6 +89,19 @@ namespace IPod.Win32
                 return true;
 
             return false;
+        }
+
+        #endregion
+    }
+
+    public class DeviceEventArgs : EventArgs
+    {
+        private IPod.Device _device;
+        public IPod.Device Device { get { return _device; } }
+
+        internal DeviceEventArgs(IPod.Device Device)
+        {
+            _device = Device;
         }
     }
 }

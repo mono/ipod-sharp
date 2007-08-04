@@ -449,22 +449,12 @@ namespace IPod
 
         public static Device [] ListDevices ()
         {
-            IDevice [] iDevices;
 #if !DOTNET
             if (OS == OS.Unix)
-                iDevices= Unix.Device.ListDevices();
+                return Unix.Device.ListDevices();
             else
 #endif
-            iDevices = Win32.Device.ListDevices ();
-
-            List<Device> devices = new List<Device> ();
-
-            foreach (IDevice iDev in iDevices) {
-                Device dev = new Device (iDev);
-                devices.Add (dev);
-            }
-
-            return devices.ToArray ();
+            return Win32.Device.ListDevices ();
         }
     }
 }

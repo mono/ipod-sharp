@@ -4,7 +4,10 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+#if !DOTNET
 using Mono.Unix;
+#endif
 
 namespace IPod {
 
@@ -634,6 +637,7 @@ namespace IPod {
         PodcastUrl = 15,
         PodcastUrl2 = 16,
         ChapterData = 17,
+        AlbumArtist = 22,
         PlaylistData = 50,
         PlaylistRules = 51,
         LibraryIndex = 52,
@@ -1629,8 +1633,9 @@ namespace IPod {
         }
     }
 
-    public delegate void PlaylistHandler (object o, Playlist playlist);
-    public delegate void TrackSaveProgressHandler (object o, TrackSaveProgressArgs args);
+    public delegate void PlaylistHandler (object sender, Playlist playlist);
+    public delegate void TrackHandler(object sender, Track track);
+    public delegate void TrackSaveProgressHandler (object sender, TrackSaveProgressArgs args);
 
     public class TrackDatabase {
 
@@ -1657,6 +1662,9 @@ namespace IPod {
 
         public event PlaylistHandler PlaylistAdded;
         public event PlaylistHandler PlaylistRemoved;
+
+        public event TrackHandler TrackAdded;
+        public event TrackHandler TrackRemoved;
 
         public event EventHandler Reloaded;
 
@@ -1790,9 +1798,14 @@ namespace IPod {
                     // if it has rating info, get it
                     if (entryLength >= 16) {
                         // Why is this one byte in iTunesDB and 4 here?
-                        
                         int rating = dbrec.ToInt32 (entry, 12);
-                        (tracks[i] as Track).Record.Rating  = (byte) rating;
+
+                        /* It seems that this record is set for every track once a rating is set for a single track on 
+                         * the iPod so this keeps LatestRating==null if the rating hasn't been changed since the last sync.*/
+                        if ((tracks[i] as Track).Record.Rating != (byte)rating) {
+                            (tracks[i] as Track).LatestRating = (TrackRating)rating;
+                            (tracks[i] as Track).Record.Rating = (byte)rating;
+                        }
                     }
                 }
             }
@@ -1894,7 +1907,7 @@ namespace IPod {
         }
 
         internal bool IsTrackOnDevice(string path) {
-            return path.StartsWith (MusicBasePath + "/F");
+            return path.StartsWith (MusicBasePath + Path.DirectorySeparatorChar+"F");
         }
 
         private string FormatSpace (UInt64 bytes) {
@@ -2195,6 +2208,9 @@ namespace IPod {
                 tracksToRemove.Remove (track);
                 
             tracks.Add (track);
+
+            if (TrackAdded != null)
+                TrackAdded(this, track);
         }
 
         public void RemoveTrack (Track track) {
@@ -2227,6 +2243,9 @@ namespace IPod {
                 foreach (Playlist list in otgPlaylists) {
                     list.RemoveOTGTrack (track);
                 }
+
+                if (TrackRemoved != null)
+                    TrackRemoved(this, track);
             }
         }
 
@@ -2241,6 +2260,19 @@ namespace IPod {
             
             AddTrack (t, false);
             
+            return t;
+        }
+
+        public Track CreateTrack(string filename)
+        {
+            Track t = CreateTrack();
+
+            t.FileName = filename;
+
+            string dest = GetFilesystemPath(t.Record.GetDetail(DetailType.Location).Value);
+            File.Copy(filename, dest);
+            t.FileName = dest;
+
             return t;
         }
 

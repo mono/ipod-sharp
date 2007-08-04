@@ -1226,6 +1226,9 @@ namespace IPod {
 
         internal Photo LookupPhotoById (int id) {
             try {
+                if (!photos.ContainsKey(id))
+                    return null;
+
                 return photos[id];
             } catch (KeyNotFoundException e) {
                 return null;
@@ -1234,6 +1237,9 @@ namespace IPod {
 
         internal Photo LookupPhotoByTrackId (long id) {
             try {
+                if (!trackPhotos.ContainsKey(id))
+                    return null;
+
                 return trackPhotos[id];
             } catch (KeyNotFoundException e) {
                 return null;

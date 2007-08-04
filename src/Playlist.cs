@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace IPod {
 
-    public delegate void PlaylistTrackHandler (object o, int index, Track track);
+    public delegate void PlaylistTrackHandler (object sender, int index, Track track);
     
     public class Playlist {
 

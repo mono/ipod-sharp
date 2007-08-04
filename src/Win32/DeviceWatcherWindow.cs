@@ -11,8 +11,8 @@ namespace IPod.Win32
     {
         const int WM_DEVICECHANGE = 0x219;
 
-        public event EventHandler<DeviceEventArgs> DeviceArrived;
-        public event EventHandler<DeviceEventArgs> DeviceRemoved;
+        public event EventHandler<DeviceWindowEventArgs> DeviceArrived;
+        public event EventHandler<DeviceWindowEventArgs> DeviceRemoved;
 
         public DeviceWatcherWindow(string Caption)
         {
@@ -38,11 +38,11 @@ namespace IPod.Win32
                             {
                                 case WmDeviceChangeEvent.DBT_DEVICEARRIVAL:
                                     if (DeviceArrived != null)
-                                        DeviceArrived(this, new DeviceEventArgs(VolumeHdr.dbcv_unitmask));
+                                        DeviceArrived(this, new DeviceWindowEventArgs(VolumeHdr.dbcv_unitmask));
                                     break;
                                 case WmDeviceChangeEvent.DBT_DEVICEREMOVECOMPLETE:
                                     if (DeviceRemoved != null)
-                                        DeviceRemoved(this, new DeviceEventArgs(VolumeHdr.dbcv_unitmask));
+                                        DeviceRemoved(this, new DeviceWindowEventArgs(VolumeHdr.dbcv_unitmask));
                                     break;
                             }
                         }
@@ -75,13 +75,13 @@ namespace IPod.Win32
         #endregion
     }
 
-    internal class DeviceEventArgs : EventArgs
+    internal class DeviceWindowEventArgs : EventArgs
     {
         List<char> drives;
 
         public List<char> Drives { get { return drives; } }
 
-        public DeviceEventArgs(int BroadcastVolMask)
+        public DeviceWindowEventArgs(int BroadcastVolMask)
         {
             drives = ConvertMaskToChars(BroadcastVolMask);
         }

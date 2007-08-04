@@ -133,7 +133,7 @@ namespace IPod
 
                 byte page_code, page_start, page_end = 0;
 
-                driveHandle = ApiFunctions.CreateFile (device, AccessMask.GENERIC_READ, 
+                driveHandle = ApiFunctions.CreateFile (device, AccessMask.GENERIC_ALL, 
                     System.IO.FileShare.ReadWrite, 0, System.IO.FileMode.Open, 0, IntPtr.Zero);
 
                 if (driveHandle.IsInvalid)
@@ -168,7 +168,7 @@ namespace IPod
                     pSptwb, Marshal.SizeOf (typeof (SCSI_PASS_THROUGH)), pSptwb, length, out returned, ref nativeOverlapped);
 
                 if (!status)
-                    throw new FileLoadException ("DeviceIoControl Error");
+                    throw new FileLoadException("DeviceIoControl Error", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
 
                 sptwb = (ScsiPassThroughWithBuffers)Marshal.PtrToStructure (pSptwb, typeof (ScsiPassThroughWithBuffers));
 
@@ -201,7 +201,7 @@ namespace IPod
                         pSptwb, Marshal.SizeOf (typeof (SCSI_PASS_THROUGH)), pSptwb, length, out returned, ref nativeOverlapped);
 
                     if (!status)
-                        throw new FileLoadException ("DeviceIoControl Error");
+                        throw new FileLoadException ("DeviceIoControl Error", Marshal.GetExceptionForHR(Marshal.GetLastWin32Error()));
 
                     sptwb = (ScsiPassThroughWithBuffers)Marshal.PtrToStructure (pSptwb, typeof (ScsiPassThroughWithBuffers));
 

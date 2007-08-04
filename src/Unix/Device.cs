@@ -299,16 +299,22 @@ namespace IPod.Unix {
             Unix.Device uDevice = dev.platformDevice as Unix.Device;
 
             if (uDevice == null)
-                throw new ArgumentException ("Device is not a Unix.Device");
+                throw new InvalidCastException ("Device is not a Unix.Device");
 
             return uDevice;
         }
         
-        public static Device[] ListDevices () {
+        public static IPod.Device[] ListDevices () {
             GLib.List list = new GLib.List (ipod_device_list_devices ());
 
             ArrayList alist = new ArrayList (list);
-            return (Device[]) alist.ToArray (typeof (Device));
+            Unix.Device[] uDevices = (Unix.Device[])alist.ToArray(typeof(Unix.Device));
+
+            List<IPod.Device> devices = new List<IPod.Device>();
+            foreach (Unix.Device uDev in uDevices)
+                devices.Add(new IPod.Device(uDev));
+
+            return devices.ToArray();
         }
     }
 #endif

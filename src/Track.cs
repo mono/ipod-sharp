@@ -28,16 +28,14 @@ namespace IPod {
     
     public class Track {
 
-        private static char[] CharsToQuote = { ';', '?', ':', '@', '&', '=', '$', ',', '#', '%' };
+        private static char[] CharsToQuote = { ';', '?', '@', '&', '=', '$', ',', '#', '%' };
 
         private TrackRecord record;
         private TrackDatabase db;
         private int latestPlayCount;
+        private int? latestRating = null;
         private Uri uri;
         private Photo coverPhoto;
-
-        internal int playCount;
-        internal DateTime lastPlayed;
 
         internal TrackRecord Record {
             get { return record; }
@@ -103,6 +101,7 @@ namespace IPod {
 
         public int Size {
             get { return record.Size; }
+            set { record.Size = value; }
         }
 
         public TimeSpan Duration {
@@ -118,6 +117,21 @@ namespace IPod {
         public int TotalTracks {
             get { return record.TotalTracks; }
             set { record.TotalTracks = value; }
+        }
+
+        public int DiscNumber {
+            get { return record.DiscNumber; }
+            set { record.DiscNumber = value; }
+        }
+
+        public int TotalDiscs {
+            get { return record.TotalDiscs; }
+            set { record.TotalDiscs = value; }
+        }
+
+        public short BPM {
+            get { return record.BPM; }
+            set { record.BPM = value; }
         }
         
         public int Year {
@@ -164,6 +178,17 @@ namespace IPod {
                 detail.Value = value;
             }
         }
+
+
+        public string AlbumArtist {
+            get {
+                DetailRecord detail = record.GetDetail(DetailType.AlbumArtist);
+                return detail.Value;
+            } set {
+                DetailRecord detail = record.GetDetail(DetailType.AlbumArtist);
+                detail.Value = value;
+            }
+        }
         
         public string Genre {
             get {
@@ -185,6 +210,16 @@ namespace IPod {
             }
         }
 
+        public string Composer {
+            get {
+                DetailRecord detail = record.GetDetail(DetailType.Composer);
+                return detail.Value;
+            } set {
+                DetailRecord detail = record.GetDetail(DetailType.Composer);
+                detail.Value = value;
+            }
+        }
+
         public int PlayCount {
             get { return record.PlayCount; }
             set { record.PlayCount = value; }
@@ -193,6 +228,16 @@ namespace IPod {
         public int LatestPlayCount {
             get { return latestPlayCount; }
             internal set { latestPlayCount = value; }
+        }
+
+        /// <summary>
+        /// The rating set since the last sync (if any)
+        /// 
+        /// This is the rating referenced from the PlayCounts file on the iPod
+        /// </summary>
+        public TrackRating? LatestRating {
+            get { return (TrackRating?)latestRating; }
+            internal set { latestRating = (int?)value; }
         }
 
         public bool IsCompilation {
@@ -216,8 +261,17 @@ namespace IPod {
 
         public DateTime DateAdded {
             get { return Utility.MacTimeToDate (record.Date); }
+            set { record.Date = Utility.DateToMacTime(value); }
         }
 
+        public DateTime LastModifiedTime {
+            get { return Utility.MacTimeToDate (record.LastModifiedTime); }
+            set { record.LastModifiedTime = Utility.DateToMacTime(value); }
+        }
+
+        /// <summary>
+        /// The latest rating on the iPod (if LatestRating !=null, Rating == LatestRating)
+        /// </summary>
         public TrackRating Rating {
             get { return (TrackRating) record.Rating; }
             set { record.Rating = (byte) value; }
@@ -342,7 +396,7 @@ namespace IPod {
             if (path == null)
                 return null;
 
-            path = Path.GetFullPath (path);
+            path = Path.GetFullPath (path).Replace('\\','/');
 
             StringBuilder builder = new StringBuilder ();
             builder.Append (Uri.UriSchemeFile);

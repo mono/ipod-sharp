@@ -1,3 +1,32 @@
+2007-08-04  Justin Cherniak <justin.cherniak@gmail.com>
+	
+	* src/Device.cs: changed ListDevices() so that it relies on the
+	platform device to generate IPod.Devices instead of doing the
+	conversion b/w IDevices and Devices itself
+
+	* src/PhotoDatabase.cs: Added checks to LookupPhoto functions (faster
+	than catching exceptions)
+
+	* src/SysInfoExtended.cs: Compatibility fix for Windows Vista.
+
+	* src/Track.cs: Added the following fields: DiscNumber, TotalDiscs,
+	BPM, AlbumArtist, Composer, LatestRating, LastLastModifiedTime.  Added 
+	write accessors for DateAdded, Size.  Compatibility fix for URI 
+	generation under Win32
+
+	* src/TrackDatabase.cs: Added TrackAdded/TrackRemoved events, support
+	for Track.LatestRating.  Compatibility fixes for Win32.  Added
+	CreateTrack overload which copies the track to the iPod immediately
+	versus waiting for TrackDatabase.Save()
+
+	* src/Win32/DeviceEventListener.cs:  Rewrote Win32.DeviceEventListener
+	so that it mainly operates statically.  This allows it to keep one
+	list of Devices instead of creating different devices for different
+	listeners (when in truth, they would be the same physical device).
+
+	* src/Win32/Device.cs: Now gets its device list from
+	DeviceEventListener.
+
 2007-08-03  Justin Cherniak <justin.cherniak@gmail.com>
 	
 	Recursively applied svn:eol-style=native to all text files
