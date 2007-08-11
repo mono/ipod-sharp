@@ -1,3 +1,9 @@
+2007-08-10  Justin Cherniak <justin.cherniak@gmail.com>
+
+	* src/TrackDatabase.cs: Fixed bug where calling 
+	DatabaseRecord.ReassignTrackIds() would invalidate the track ids
+	within the TrackListRecord.
+
 2007-08-04  Justin Cherniak <justin.cherniak@gmail.com>
 	
 	* src/Device.cs: changed ListDevices() so that it relies on the
