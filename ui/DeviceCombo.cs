@@ -8,7 +8,9 @@ namespace IPod {
     public class DeviceCombo : ComboBox {
 
         private ListStore store;
-        private DeviceEventListener listener;
+#if !WINDOWS
+        private Unix.DeviceEventListener listener;
+#endif
 
         private ArrayList devices = new ArrayList ();
         private ArrayList addedUdis = new ArrayList ();
@@ -53,25 +55,29 @@ namespace IPod {
 
                 SetActive ();
             }
-            
-            listener = new DeviceEventListener ();
+
+#if !WINDOWS
+            listener = new Unix.DeviceEventListener ();
             listener.DeviceAdded += OnDeviceAdded;
             listener.DeviceRemoved += OnDeviceRemoved;
+#endif
         }
 
-        private void OnDeviceAdded (object o, DeviceAddedArgs args) {
+#if !WINDOWS
+        private void OnDeviceAdded (object o, Unix.DeviceAddedArgs args) {
             lock (this) {
                 addedUdis.Add (args.Udi);
                 notify.WakeupMain ();
             }
         }
 
-        private void OnDeviceRemoved (object o, DeviceRemovedArgs args) {
+        private void OnDeviceRemoved (object o, Unix.DeviceRemovedArgs args) {
             lock (this) {
                 removedUdis.Add (args.Udi);
                 notify.WakeupMain ();
             }
         }
+#endif
 
         private void OnDeviceChanged (object o, EventArgs args) {
             lock (this) {
@@ -146,7 +152,7 @@ namespace IPod {
 
                 if (device != null) {
                     
-                    if (device.VolumeId == udi)
+                    if (device.VolumeID == udi)
                         return iter;
                 }
 

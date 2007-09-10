@@ -1,3 +1,12 @@
+2007-09-10  James Willcox  <snorp@snorp.net>
+
+	* src/Device.cs: change the #ifdef to WINDOWS instead of DOTNET
+	and remove all of the runtime OS checking.
+	
+	* ui/DeviceCombo.cs: make it build again
+
+	* src/TrackDatabase.cs: up MaxSupportedVersion to 25 (!)
+
 2007-08-10  Justin Cherniak <justin.cherniak@gmail.com>
 
 	* src/TrackDatabase.cs: Fixed bug where calling 

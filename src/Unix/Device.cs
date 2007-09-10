@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace IPod.Unix {
 
-    #if !DOTNET
+    #if !WINDOWS
     public class Device : GLib.Object, IDevice {
 
         [DllImport ("ipoddevice")]

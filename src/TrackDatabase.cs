@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-#if !DOTNET
+#if !WINDOWS
 using Mono.Unix;
 #endif
 
@@ -1714,7 +1714,7 @@ namespace IPod
     internal class DatabaseRecord : TrackDbRecord
     {
 
-        private const int MaxSupportedVersion = 20;
+        private const int MaxSupportedVersion = 25;
         private const int TrackIdStart = 1000;
 
         private int unknownOne = 1;
@@ -2483,11 +2483,9 @@ namespace IPod
                     }
                 }
 
-#if !DOTNET
-                if(Device.OS == OS.Unix)
-                    Mono.Unix.Native.Syscall.sync ();
-                else
-#endif
+#if !WINDOWS
+                Mono.Unix.Native.Syscall.sync ();
+#else
                 {
                     string driveName = "\\\\.\\" + ((Win32.Device)device.platformDevice).Drive.ToString().Substring(0, 2);
 
@@ -2497,6 +2495,7 @@ namespace IPod
 
                     Win32.WinAPI.ApiFunctions.FlushFileBuffers(fileHandle);
                 }
+#endif
             }
             catch (Exception e)
             {

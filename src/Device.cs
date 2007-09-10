@@ -7,12 +7,6 @@ using System.IO;
 
 namespace IPod
 {
-    internal enum OS
-    {
-        Win32,
-        Unix
-    }
-
     internal enum EjectResult : uint
     {
         Ok,
@@ -96,17 +90,6 @@ namespace IPod
 
     public class Device
     {
-        internal static readonly OS OS;
-
-        static Device ()
-        {
-            int env = (int)Environment.OSVersion.Platform;
-            if (env == 4 || env == 128)
-                OS = OS.Unix;
-            else
-                OS = OS.Win32;
-        }
-
         private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
         private TrackDatabase tracks;
@@ -278,12 +261,11 @@ namespace IPod
 
         public Device (string mountPathOrDrive)
         {
-#if !DOTNET
-            if (OS == OS.Unix)
-                platformDevice = new Unix.Device(mountPathOrDrive);
-            else //Win32
-#endif
+#if WINDOWS
             platformDevice = new Win32.Device (mountPathOrDrive);
+#else
+            platformDevice = new Unix.Device (mountPathOrDrive);
+#endif
             platformDevice.Host = this;
         }
 
@@ -292,17 +274,6 @@ namespace IPod
             platformDevice = device;
             platformDevice.Host = this;
         }
-
-#if !DOTNET
-        internal Device (IntPtr ptr)
-        {
-            if (OS == OS.Win32)
-                throw new NotSupportedException ("This constructor is only valid on Unix systems using libipoddevice.");
-
-            platformDevice = new Unix.Device (ptr);
-            platformDevice.Host = this;
-        }
-#endif
 
         #endregion
 
@@ -449,12 +420,11 @@ namespace IPod
 
         public static Device [] ListDevices ()
         {
-#if !DOTNET
-            if (OS == OS.Unix)
-                return Unix.Device.ListDevices();
-            else
-#endif
+#if WINDOWS
             return Win32.Device.ListDevices ();
+#else
+            return Unix.Device.ListDevices ();
+#endif
         }
     }
 }

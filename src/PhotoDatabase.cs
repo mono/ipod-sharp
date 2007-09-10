@@ -895,7 +895,7 @@ namespace IPod {
         public FileRecord LookupFile (int correlationId) {
             try {
                 return files[correlationId];
-            } catch (KeyNotFoundException e) {
+            } catch (KeyNotFoundException) {
                 return null;
             }
         }
@@ -1230,7 +1230,7 @@ namespace IPod {
                     return null;
 
                 return photos[id];
-            } catch (KeyNotFoundException e) {
+            } catch (KeyNotFoundException) {
                 return null;
             }
         }
@@ -1241,7 +1241,7 @@ namespace IPod {
                     return null;
 
                 return trackPhotos[id];
-            } catch (KeyNotFoundException e) {
+            } catch (KeyNotFoundException) {
                 return null;
             }
         }

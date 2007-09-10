@@ -1,4 +1,4 @@
-#if !DOTNET
+#if !WINDOWS
 
 using System;
 using System.Threading;

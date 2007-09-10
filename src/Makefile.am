@@ -15,9 +15,8 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/AssemblyInfo.cs	\
 	$(srcdir)/DatabaseReadException.cs	\
 	$(srcdir)/DatabaseWriteException.cs	\
-	$(srcdir)/Device.cs \ 
+	$(srcdir)/Device.cs \
 	$(srcdir)/DeviceBusyException.cs	\
-	$(srcdir)/DeviceEventListener.cs	\
 	$(srcdir)/DeviceException.cs	\
 	$(srcdir)/DeviceModel.cs	\
 	$(srcdir)/DeviceGeneration.cs	\
@@ -31,20 +30,15 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/ShuffleTrackDatabase.cs \
 	$(srcdir)/SportKitManager.cs	\
 	$(srcdir)/SysInfo.cs	\
-	$(srcdir)/SysInfoExtended.cs	\
 	$(srcdir)/Thumbnail.cs		\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs	\
 	$(srcdir)/Utility.cs	\
-	$(srcdir)/Unix/Device.cs	\ 
+	$(srcdir)/Unix/Device.cs	\
 	$(srcdir)/Unix/DeviceAddedHandler.cs	\
-	$(srcdir)/Unix/DeviceEventListener.cs	\ 
+	$(srcdir)/Unix/DeviceEventListener.cs	\
 	$(srcdir)/Unix/DeviceRemovedHandler.cs	\
-	$(srcdir)/Unix/Initializer.cs	\
-	$(srcdir)/Win32/Device.cs	\
-	$(srcdir)/Win32/DeviceEventListener.cs	\
-	$(srcdir)/Win32/DeviceWatcherWindow.cs	\
-	$(srcdir)/Win32/WinAPI.cs	\ 
+	$(srcdir)/Unix/Initializer.cs
 
 
 ASSEMBLY_RESOURCES =
