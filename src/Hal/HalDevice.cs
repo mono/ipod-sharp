@@ -36,6 +36,20 @@ namespace IPod.Hal {
             get { return volume; }
         }
 
+        private static string GetVolumeSizeString(Hal.Volume volume)
+        {
+            string format = "GiB";
+            double value = volume.GetPropertyUInt64("volume.size") / 1000.0 / 1000.0 / 1000.0;
+
+            if(value < 1.0) {
+                format = "MiB";
+                value *= 1000.0;
+            }
+
+            return String.Format("{0} {1}", (int)Math.Round(value), format);
+        }
+
+
         internal HalDevice (Volume volume) {
             this.volume = volume;
 
@@ -45,7 +59,7 @@ namespace IPod.Hal {
             ArtworkFormats = new ReadOnlyCollection<ArtworkFormat> (LoadArtworkFormats ());
                 
             ModelClass = volume.GetPropertyString (PodsleuthPrefix + "model.device_class");
-            ModelCapacity = volume.GetPropertyDouble (PodsleuthPrefix + "model.capacity");
+            AdvertisedCapacity = GetVolumeSizeString (volume);
             Generation = volume.GetPropertyDouble (PodsleuthPrefix + "model.generation");
             ModelColor = volume.GetPropertyString (PodsleuthPrefix + "model.shell_color");
             VolumeLabel = volume.GetPropertyString ("volume.label");

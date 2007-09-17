@@ -107,7 +107,7 @@ namespace IPod
         private string mountPoint;
         private string controlPath;
         private string modelClass;
-        private double modelCapacity;
+        private string advertisedCapacity;
         private string modelColor;
         private double generation;
         private string manuId;
@@ -208,9 +208,9 @@ namespace IPod
             set { modelClass = value; }
         }
                 
-        public double ModelCapacity {
-            get { return modelCapacity; }
-            set { modelCapacity = value; }
+        public string AdvertisedCapacity {
+            get { return advertisedCapacity; }
+            set { advertisedCapacity = value; }
         }
         
         public string ModelColor {
@@ -494,7 +494,7 @@ namespace IPod
         public void Dump () {
             Console.WriteLine ("Class: " + ModelClass);
             Console.WriteLine ("Generation: " + Generation);
-            Console.WriteLine ("Model Capacity: " + ModelCapacity);
+            Console.WriteLine ("Advertised Capacity: " + AdvertisedCapacity);
             Console.WriteLine ("Serial Number: " + SerialNumber);
             Console.WriteLine ("Volume Size: " + VolumeSize);
             Console.WriteLine ("Volume Available: " + VolumeAvailable);
