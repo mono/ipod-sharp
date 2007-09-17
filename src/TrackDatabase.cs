@@ -1704,6 +1704,7 @@ namespace IPod
                     break;
                 case DataSetIndex.Playlist:
                 case DataSetIndex.PlaylistDuplicate:
+                case DataSetIndex.PlaylistDuplicateDuplicate:
                     PlaylistList.Save(db, childWriter);
                     break;
                 case DataSetIndex.AlbumList:
