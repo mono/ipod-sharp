@@ -446,12 +446,14 @@ namespace IPod
                     nameRecord.Read(db, reader);
                     stringDetails.Add(nameRecord);
                 }
+                /*
                 else if (isLibrary)
                 {
                     DetailRecord rec = new DetailRecord(IsBE);
                     rec.Read(db, reader);
                     otherDetails.Add(rec);
                 }
+                */
                 else
                 {
                     GenericRecord rec = new GenericRecord(IsBE);
@@ -851,6 +853,7 @@ namespace IPod
                     // the strenc field is not what it was thought to be
                     // latest DBs have the field set to 1 even when the encoding
                     // is UTF-16. For now I'm just encoding as UTF-16
+                    Console.WriteLine ("String length: " + strlen);
                     if (strlen >= 2 && body[29] == '\0')
                     {
                         Value = encoding.GetString(body, 28, strlen);
@@ -896,14 +899,16 @@ namespace IPod
                 Value = String.Empty;
 
             WriteName(writer);
-            writer.Write(24);
 
             if (genericData != null) {
-                writer.Write (HeaderTwo - 12);
+                writer.Write (HeaderOne);
+                writer.Write (HeaderTwo);
                 writer.Write (genericData);
                 return;
             }
 
+            writer.Write(24);
+            
             byte[] valbytes = null;
 
             if ((int)Type < 50 || (int)Type >= 200)
