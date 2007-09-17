@@ -23,7 +23,6 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/DeviceGeneration.cs	\
 	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
-	$(srcdir)/IPlatformDevice.cs	\
 	$(srcdir)/ObjectDumper.cs		\
 	$(srcdir)/Photo.cs	\
 	$(srcdir)/PhotoDatabase.cs		\
