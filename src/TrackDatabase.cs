@@ -1939,6 +1939,38 @@ namespace IPod
         }
     }
 
+    internal static class DatabaseHasher
+    {
+        public static void Hash(string path, string firewireID)
+        {
+            byte [] hash = null;
+
+            using(BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open))) {
+                byte [] contents = new byte[reader.BaseStream.Length];
+                reader.Read(contents, 0, contents.Length);
+                
+                Zero(contents, 0x18, 8);
+                Zero(contents, 0x32, 20);
+                Zero(contents, 0x58, 20);
+
+                hash = Hash58.GenerateHash(firewireID, contents);
+            }
+
+            using(BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Open))) {
+                writer.Seek(0x58, SeekOrigin.Begin);
+                writer.Write(hash, 0, hash.Length);
+                writer.Flush();
+            }
+        }
+
+        private static void Zero(byte [] buffer, int index, int length)
+        {
+            for(int i = index; i < index + length; i++) {
+                buffer[i] = 0;
+            }
+        }
+    }
+
     public delegate void PlaylistHandler(object sender, Playlist playlist);
     public delegate void TrackHandler(object sender, Track track);
     public delegate void TrackSaveProgressHandler(object sender, TrackSaveProgressArgs args);
@@ -2448,6 +2480,8 @@ namespace IPod
                 {
                     dbrec.Save(dbrec, writer);
                 }
+
+                DatabaseHasher.Hash(TrackDbPath, device.FirewireID);
 
                 foreach (Track track in tracksToRemove)
                 {

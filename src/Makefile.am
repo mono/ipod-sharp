@@ -33,6 +33,7 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs	\
 	$(srcdir)/Utility.cs	\
+	$(srcdir)/Hash58.cs \
 	$(srcdir)/Hal/HalDevice.cs	\
 	$(srcdir)/Hal/HalDeviceManager.cs	\
 	$(srcdir)/Hal/Volume.cs	\

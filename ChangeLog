@@ -1,3 +1,10 @@
+2007-09-17  Aaron Bockover  <aaron@abock.org>
+
+	* src/TrackDatabase.cs: First pass at hashing the database 
+
+	* src/Hash58.cs: Implementation of the crappy hash algorithm that 
+	Apple decided to use to lock out third party clients
+
 2007-09-17  James Willcox  <snorp@snorp.net>
 
 	* Massive reorganization.  There is now a DeviceManager class which
