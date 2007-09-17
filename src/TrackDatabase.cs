@@ -501,7 +501,8 @@ namespace IPod
             foreach (Record rec in otherDetails)
             {
                 DetailRecord detail = rec as DetailRecord;
-                if (detail != null && detail.Type != DetailType.LibraryIndex)
+                if (detail != null && detail.Type != DetailType.LibraryIndex &&
+                    detail.Type != DetailType.LibraryIndex2)
                 {
                     details.Add(rec);
                 }
@@ -747,6 +748,7 @@ namespace IPod
         PlaylistData = 50,
         PlaylistRules = 51,
         LibraryIndex = 52,
+        LibraryIndex2 = 53,
         Misc = 100,
         AlbumListAlbum = 200,
         AlbumListArtist = 201,
@@ -780,6 +782,8 @@ namespace IPod
         public IndexType IndexType;
         public int[] LibraryIndices;
 
+        private byte[] genericData;
+
         public DetailRecord(bool isbe)
             : base(isbe)
         {
@@ -803,9 +807,12 @@ namespace IPod
             Type = (DetailType)ToInt32(body, 0);
 
             if ((int)Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex &&
-                Type != DetailType.AlbumListArtist && Type != DetailType.AlbumListAlbum &&
-                Type != DetailType.AlbumListPodcastUrl && Type != DetailType.AlbumListTitle)
-                throw new DatabaseReadException("Unsupported detail type: " + Type);
+                Type != DetailType.LibraryIndex2 && Type != DetailType.AlbumListArtist &&
+                Type != DetailType.AlbumListAlbum &&
+                Type != DetailType.AlbumListPodcastUrl && Type != DetailType.AlbumListTitle) {
+                genericData = body;
+                return;
+            }
 
             unknownOne = ToInt32(body, 4);
             unknownTwo = ToInt32(body, 8);
@@ -854,7 +861,8 @@ namespace IPod
                     }
                 }
             }
-            else if (Type == DetailType.LibraryIndex)
+            else if (Type == DetailType.LibraryIndex ||
+                     Type == DetailType.LibraryIndex2)
             {
                 IndexType = (IndexType)ToInt32(body, 12);
 
@@ -889,6 +897,12 @@ namespace IPod
 
             WriteName(writer);
             writer.Write(24);
+
+            if (genericData != null) {
+                writer.Write (HeaderTwo - 12);
+                writer.Write (genericData);
+                return;
+            }
 
             byte[] valbytes = null;
 
@@ -1598,7 +1612,8 @@ namespace IPod
         Library = 1,
         Playlist = 2,
         PlaylistDuplicate = 3,
-        AlbumList = 4
+        AlbumList = 4,
+        PlaylistDuplicateDuplicate = 5
     }
 
     internal class DataSetRecord : TrackDbRecord
@@ -1660,6 +1675,7 @@ namespace IPod
                     break;
                 case DataSetIndex.Playlist:
                 case DataSetIndex.PlaylistDuplicate:
+                case DataSetIndex.PlaylistDuplicateDuplicate:
                     this.PlaylistList = new PlaylistListRecord(IsBE);
                     this.PlaylistList.Read(db, reader);
                     break;
