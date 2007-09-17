@@ -7,18 +7,12 @@ using System.IO;
 
 namespace IPod
 {
-    internal enum EjectResult : uint
-    {
-        Ok,
-        Error,
-        Busy
-    };
-
     public enum ArtworkUsage : int
     {
         Unknown = -1,
         Photo,
-        Cover
+        Cover,
+        Chapter,
     }
 
     public enum PixelFormat : int
@@ -31,7 +25,6 @@ namespace IPod
 
     public class ArtworkFormat
     {
-
         private ArtworkUsage usage;
         private short width;
         private short height;
@@ -70,13 +63,13 @@ namespace IPod
             get { return rotation; }
         }
 
-        internal short CorrelationId
+        public short CorrelationId
         {
             get { return correlationId; }
         }
 
-        internal ArtworkFormat (ArtworkUsage usage, short width, short height, short correlationId,
-                                int size, PixelFormat pformat, short rotation)
+        public ArtworkFormat (ArtworkUsage usage, short width, short height, short correlationId,
+                              int size, PixelFormat pformat, short rotation)
         {
             this.usage = usage;
             this.width = width;
@@ -88,32 +81,79 @@ namespace IPod
         }
     }
 
-    public class Device
+    public class DeviceArgs : EventArgs {
+
+        private Device device;
+        
+        public Device Device {
+            get { return device; }
+        }
+        
+        public DeviceArgs (Device device) {
+            this.device = device;
+        }
+    }
+
+    public delegate void DeviceHandler (object o, DeviceArgs args);
+
+    public abstract class Device
     {
         private ArrayList equalizers;
         private EqualizerContainerRecord eqsrec;
         private TrackDatabase tracks;
         private PhotoDatabase photos;
         private SportKitManager sportKitManager;
-
-        internal IDevice platformDevice;
-
+        private Dictionary<int, ArtworkFormat> artFormats = new Dictionary<int, ArtworkFormat> ();
+        private string mountPoint;
+        private string controlPath;
+        private string modelClass;
+        private double modelCapacity;
+        private string modelColor;
+        private double generation;
+        private string manuId;
+        private string firmwareVersion;
+        private uint prodIndex;
+        private uint prodWeek;
+        private uint prodYear;
+        private string serialNumber;
+        private string volumeId;
+        private bool canWrite;
+        private string volumeLabel;
+        private string volumeUuid;
+        private string firewireId;
+        
         public event EventHandler Changed;
 
         #region Properties
 
         public ReadOnlyCollection<ArtworkFormat> ArtworkFormats
         {
-            get
-            {
-                return new ReadOnlyCollection<ArtworkFormat> (
-                    new List<ArtworkFormat> (platformDevice.ArtworkFormats.Values));
+            get {
+                return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (artFormats.Values));
+            } set {
+                artFormats.Clear ();
+                foreach (ArtworkFormat format in value) {
+                    artFormats[format.CorrelationId] = format;
+                }
             }
         }
 
-        public string ControlPath { get { return platformDevice.ControlPath; } }
-        public string DevicePath { get { return platformDevice.DevicePath; } }
-        public string MountPoint { get { return platformDevice.MountPoint; } }
+        public string ControlPath {
+            get {
+                if (controlPath == null) {
+                    return Path.Combine (MountPoint, "iPod_Control");
+                } else {
+                    return controlPath;
+                }
+            }
+            set { controlPath = value; }
+        }
+        
+        public string MountPoint {
+            get { return mountPoint; }
+            set { mountPoint = value; }
+        }
+        
         private string EqDbPath
         {
             get { return ControlPath + "/iTunes/iTunesEQPresets"; }
@@ -163,28 +203,26 @@ namespace IPod
             }
         }
 
-        public DeviceModel Model { get { return platformDevice.Model; } }
-        public string ModelString { get { return platformDevice.ModelString; } }
-        public DeviceGeneration Generation { get { return platformDevice.Generation; } }
-
-        public string UserName
-        {
-            get { return platformDevice.UserName; }
-            set
-            {
-                platformDevice.UserName = value;
-                EmitChanged ();
-            }
+        public string ModelClass {
+            get { return modelClass; }
+            set { modelClass = value; }
         }
-        public string HostName
-        {
-            get { return platformDevice.HostName; }
-            set
-            {
-                platformDevice.HostName = value;
-                EmitChanged ();
-            }
+                
+        public double ModelCapacity {
+            get { return modelCapacity; }
+            set { modelCapacity = value; }
         }
+        
+        public string ModelColor {
+            get { return modelColor; }
+            set { modelColor = value; }
+        }
+        
+        public double Generation {
+            get { return generation; }
+            set { generation = value; }
+        }
+                 
         public string Name
         {
             get { return TrackDatabase.Name; }
@@ -195,35 +233,86 @@ namespace IPod
             }
         }
 
-        public string AdvertisedCapacity { get { return platformDevice.AdvertisedCapacity; } }
-        public string VolumeID { get { return platformDevice.VolumeId; } }
-        public UInt64 VolumeSize { get { return platformDevice.VolumeSize; } }
-        public UInt64 VolumeUsed { get { return platformDevice.VolumeUsed; } }
-        public UInt64 VolumeAvailable { get { return platformDevice.VolumeAvailable; } }
+        public string VolumeID {
+            get { return volumeId; }
+            set { volumeId = value; }
+        }
 
-        public bool CanWrite { get { return platformDevice.CanWrite; } }
+        public bool CanWrite {
+            get { return canWrite; }
+            set { canWrite = value; }
+        }
+        
+        public string VolumeLabel {
+            get { return volumeLabel; }
+            set { volumeLabel = value; }
+        }
+        
+        public string VolumeUuid {
+            get { return volumeUuid; }
+            set { volumeUuid = value; }
+        }
+        
+        public abstract UInt64 VolumeSize { get; }
+        public abstract UInt64 VolumeUsed { get; }
+        public abstract UInt64 VolumeAvailable { get; }
+
+        public bool AlbumArtSupported {
+            get {
+                return LookupArtworkFormats (ArtworkUsage.Cover).Count > 0;
+            }
+        }
+        
+        public bool PhotosSupported {
+            get {
+                return LookupArtworkFormats (ArtworkUsage.Photo).Count > 0;
+            }
+        }
+
         internal bool IsBE { get { return ControlPath.EndsWith ("iTunes_Control"); } }
-        public bool IsIPod { get { return platformDevice.IsIPod; } }
         public bool IsShuffle
         {
             get
             {
-                return Model == DeviceModel.Shuffle || (
-                    Model >= DeviceModel.ShuffleSilver &&
-                    Model <= DeviceModel.ShuffleOrange);
+                return ModelClass == "shuffle";
             }
         }
 
-        public string ManufacturerId { get { return platformDevice.ManufacturerId; } }
-        public string FirmwareVersion { get { return platformDevice.FirmwareVersion; } }
-        public string ModelNumber { get { return platformDevice.ModelNumber; } }
-        public uint ProductionIndex { get { return platformDevice.ProductionIndex; } }
-        public uint ProductionWeek { get { return platformDevice.ProductionWeek; } }
-        public uint ProductionYear { get { return platformDevice.ProductionYear; } }
-        public string SerialNumber { get { return platformDevice.SerialNumber; } }
-        public string VolumeLabel { get { return platformDevice.VolumeLabel; } }
-        public string VolumeUuid { get { return platformDevice.VolumeUuid; } }
+        public string ManufacturerID {
+            get { return manuId; }
+            set { manuId = value; }
+        }
+                
+        public string FirmwareVersion {
+            get { return firmwareVersion; }
+            set { firmwareVersion = value; }
+        }
+        
+        public uint ProductionIndex {
+            get { return prodIndex; }
+            set { prodIndex = value; }
+        }
+        
+        public uint ProductionWeek {
+            get { return prodWeek; }
+            set { prodWeek = value; }
+        }
+        
+        public uint ProductionYear {
+            get { return prodYear; }
+            set { prodYear = value; }
+        }
+        
+        public string SerialNumber {
+            get { return serialNumber; }
+            set { serialNumber = value; }
+        }
 
+        public string FirewireID {
+            get { return firewireId; }
+            set { firewireId = value; }
+        }
+        
         private string DoNotAskPath
         {
             get
@@ -237,7 +326,7 @@ namespace IPod
         {
             get
             {
-                return Model == DeviceModel.Unknown &&
+                return ModelClass == "unknown" &&
                     SerialNumber != null && SerialNumber.Length == 11 &&
                     !File.Exists (DoNotAskPath);
             }
@@ -259,24 +348,22 @@ namespace IPod
 
         #region Constructors
 
-        public Device (string mountPathOrDrive)
-        {
-#if WINDOWS
-            platformDevice = new Win32.Device (mountPathOrDrive);
-#else
-            platformDevice = new Unix.Device (mountPathOrDrive);
-#endif
-            platformDevice.Host = this;
-        }
+        internal Device (string mountPointOrDrive, List<ArtworkFormat> artFormats,
+                         string modelClass) {
+            this.mountPoint = mountPointOrDrive;
+            this.modelClass = modelClass;
 
-        internal Device (IDevice device)
-        {
-            platformDevice = device;
-            platformDevice.Host = this;
+            this.artFormats = new Dictionary<int, ArtworkFormat> ();
+            foreach (ArtworkFormat format in artFormats) {
+                this.artFormats[format.CorrelationId] = format;
+            }
         }
 
         #endregion
 
+        internal Device () {
+        }
+        
         public void CreateEmptyTrackDatabase ()
         {
             tracks = null;
@@ -298,7 +385,7 @@ namespace IPod
 
         internal ArtworkFormat LookupArtworkFormat (int correlationId)
         {
-            return platformDevice.ArtworkFormats [correlationId];
+            return artFormats [correlationId];
         }
 
         private void LoadEqualizers ()
@@ -326,9 +413,7 @@ namespace IPod
         }
         public void LoadPhotoDatabase (bool createFresh)
         {
-            //FIXME: refuse if the device lacks photo capability
-
-            if (photos == null)
+            if (photos == null && PhotosSupported)
                 photos = new PhotoDatabase (this, true, createFresh);
         }
 
@@ -344,10 +429,6 @@ namespace IPod
         }
         public void LoadTrackDatabase (bool createFresh)
         {
-            if (!IsIPod) {
-                throw new DeviceException (this, "Cannot get song database, as this device is not an iPod");
-            }
-
             if (tracks == null)
                 tracks = new TrackDatabase (this, createFresh);
         }
@@ -355,7 +436,7 @@ namespace IPod
         public ReadOnlyCollection<ArtworkFormat> LookupArtworkFormats (ArtworkUsage usage)
         {
             List<ArtworkFormat> list = new List<ArtworkFormat> ();
-            foreach (ArtworkFormat format in platformDevice.ArtworkFormats.Values) {
+            foreach (ArtworkFormat format in artFormats.Values) {
                 if (format.Usage == usage) {
                     list.Add (format);
                 }
@@ -364,19 +445,11 @@ namespace IPod
             return new ReadOnlyCollection<ArtworkFormat> (list);
         }
 
-        public void RescanDisk ()
-        {
-            platformDevice.RescanDisk ();
-
-            EmitChanged ();
-        }
-        public void Eject () { platformDevice.Eject (); }
+        public abstract void RescanDisk ();
+        public abstract void Eject ();
 
         public void Save ()
         {
-            // do platform specific save first
-            platformDevice.Save ();
-
             // nothing more to do
             if (equalizers == null)
                 return;
@@ -418,13 +491,20 @@ namespace IPod
             eqsrec.Remove (eq.EqualizerRecord);
         }
 
-        public static Device [] ListDevices ()
-        {
-#if WINDOWS
-            return Win32.Device.ListDevices ();
-#else
-            return Unix.Device.ListDevices ();
-#endif
+        public void Dump () {
+            Console.WriteLine ("Class: " + ModelClass);
+            Console.WriteLine ("Generation: " + Generation);
+            Console.WriteLine ("Model Capacity: " + ModelCapacity);
+            Console.WriteLine ("Serial Number: " + SerialNumber);
+            Console.WriteLine ("Volume Size: " + VolumeSize);
+            Console.WriteLine ("Volume Available: " + VolumeAvailable);
+            Console.WriteLine ("Firewire ID: " + FirewireID);
+            Console.WriteLine ("Song Count: " + TrackDatabase.Tracks.Count);
+            Console.WriteLine ("\nPhoto Formats:");
+            foreach (ArtworkFormat format in LookupArtworkFormats (ArtworkUsage.Photo)) {
+                Console.WriteLine ("{0}x{1} using {2}, rotated {3}", format.Width, format.Height,
+                                   format.PixelFormat, format.Rotation);
+            }
         }
     }
 }

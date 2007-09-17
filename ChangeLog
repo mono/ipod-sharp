@@ -1,3 +1,9 @@
+2007-09-17  James Willcox  <snorp@snorp.net>
+
+	* Massive reorganization.  There is now a DeviceManager class which
+	does enumeration of devices.  Additionally, Device is now abstract
+	and platform-dependent subclasses are used instead.
+
 2007-09-10  James Willcox  <snorp@snorp.net>
 
 	* src/Device.cs: change the #ifdef to WINDOWS instead of DOTNET

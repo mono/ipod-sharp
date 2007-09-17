@@ -1,6 +1,6 @@
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Gtk;
 
 namespace IPod {
@@ -8,15 +8,9 @@ namespace IPod {
     public class DeviceCombo : ComboBox {
 
         private ListStore store;
-#if !WINDOWS
-        private Unix.DeviceEventListener listener;
-#endif
+        private DeviceManager manager;
 
-        private ArrayList devices = new ArrayList ();
-        private ArrayList addedUdis = new ArrayList ();
-        private ArrayList removedUdis = new ArrayList ();
-        private ArrayList changedDevices = new ArrayList ();
-        private ThreadNotify notify;
+        private List<Device> devices = new List<Device> ();
 
         public Device ActiveDevice {
             get {
@@ -38,86 +32,36 @@ namespace IPod {
             
             this.AddAttribute (renderer, "text", 0);
 
-            notify = new ThreadNotify (new ReadyEvent (OnNotify));
-                        
             Refresh ();
 
-            string paths = Environment.GetEnvironmentVariable ("IPOD_DEVICE_IMAGES");
-            if (paths != null) {
-                foreach (string path in paths.Split (':')) {
-                    try {
-                        Device device = new Device (path);
-                        AddDevice (device);
-                    } catch (Exception e) {
-                        Console.Error.WriteLine ("Failed to load device at: " + path);
-                    }
-                }
+            manager = DeviceManager.Create ();
+            foreach (Device device in manager.Devices) {
+                AddDevice (device);
+            }
+            SetActive ();
+            manager.DeviceAdded += OnDeviceAdded;
+            manager.DeviceRemoved += OnDeviceRemoved;
+        }
 
+        private void OnDeviceAdded (object o, DeviceArgs args) {
+            AddDevice (args.Device);
+                
+            if (ActiveDevice == null) {
                 SetActive ();
             }
-
-#if !WINDOWS
-            listener = new Unix.DeviceEventListener ();
-            listener.DeviceAdded += OnDeviceAdded;
-            listener.DeviceRemoved += OnDeviceRemoved;
-#endif
         }
 
-#if !WINDOWS
-        private void OnDeviceAdded (object o, Unix.DeviceAddedArgs args) {
-            lock (this) {
-                addedUdis.Add (args.Udi);
-                notify.WakeupMain ();
-            }
+        private void OnDeviceRemoved (object o, DeviceArgs args) {
+            RemoveDevice (args.Device);
         }
-
-        private void OnDeviceRemoved (object o, Unix.DeviceRemovedArgs args) {
-            lock (this) {
-                removedUdis.Add (args.Udi);
-                notify.WakeupMain ();
-            }
-        }
-#endif
 
         private void OnDeviceChanged (object o, EventArgs args) {
-            lock (this) {
-                changedDevices.Add (o);
-                notify.WakeupMain ();
-            }
-        }
-
-        private void OnNotify () {
-            lock (this) {
-                
-                foreach (string udi in addedUdis) {
-                    try {
-                        Device device = new Device (udi);
-                        AddDevice (device);
-                        
-                        if (ActiveDevice == null) {
-                            SetActive ();
-                        }
-                    } catch (Exception e) {
-                        Console.Error.WriteLine ("Error creating new device ({0}): {1}", udi, e);
-                    }
-                }
-
-                foreach (string udi in removedUdis) {
-                    RemoveDevice (udi);
-                }
-
-                foreach (Device device in changedDevices) {
-                    TreeIter iter = FindDevice (device.MountPoint);
-
-                    if (!iter.Equals (TreeIter.Zero)) {
-                        store.SetValue (iter, 0, device.Name);
-                        store.EmitRowChanged (store.GetPath (iter), iter);
-                    }
-                }
-
-                addedUdis.Clear ();
-                removedUdis.Clear ();
-                changedDevices.Clear ();
+            Device device = o as Device;
+            TreeIter iter = FindDevice (device.MountPoint);
+            
+            if (!iter.Equals (TreeIter.Zero)) {
+                store.SetValue (iter, 0, device.Name);
+                store.EmitRowChanged (store.GetPath (iter), iter);
             }
         }
 
@@ -133,26 +77,6 @@ namespace IPod {
                 if (device != null) {
                     
                     if (device.MountPoint == mount)
-                        return iter;
-                }
-
-            } while (store.IterNext (ref iter));
-
-            return TreeIter.Zero;
-        }
-
-        private TreeIter FindDeviceByUdi (string udi) {
-            TreeIter iter = TreeIter.Zero;
-
-            if (!store.GetIterFirst (out iter))
-                return TreeIter.Zero;
-            
-            do {
-                Device device = (Device) store.GetValue (iter, 1);
-
-                if (device != null) {
-                    
-                    if (device.VolumeID == udi)
                         return iter;
                 }
 
@@ -185,15 +109,6 @@ namespace IPod {
             
             store.Clear ();
 
-            foreach (Device device in Device.ListDevices ()) {
-                TreeIter iter = AddDevice (device);
-                
-                if (device.MountPoint == current) {
-                    SetActiveIter (iter);
-                    haveActive = true;
-                }
-            }
-
             if (!haveActive) {
                 SetActive ();
             }
@@ -221,13 +136,11 @@ namespace IPod {
             return store.AppendValues (device.Name, device);
         }
 
-        private void RemoveDevice (string udi) {
-            TreeIter iter = FindDeviceByUdi (udi);
+        private void RemoveDevice (Device device) {
+            TreeIter iter = FindDevice (device.MountPoint);
 
             if (iter.Equals (TreeIter.Zero))
                 return;
-
-            Device device = (Device) store.GetValue (iter, 1);
 
             device.Changed -= OnDeviceChanged;
             devices.Remove (device);

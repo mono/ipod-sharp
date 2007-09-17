@@ -1,8 +1,8 @@
-SUBDIRS = src ui tools
+SUBDIRS = src ui
 
-if BUILD_TESTS
-SUBDIRS += tests
-endif
+#if BUILD_TESTS
+#SUBDIRS += tests
+#endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = ipod-sharp.pc ipod-sharp-ui.pc

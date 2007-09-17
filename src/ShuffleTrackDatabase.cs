@@ -8,7 +8,7 @@ namespace IPod {
         
         public static bool Save(Device device) {
             
-            if(device.Model != DeviceModel.Shuffle)
+            if(device.ModelClass != "shuffle")
                 return false;
         
             string sdbFile = device.ControlPath + "/iTunes/iTunesSD";

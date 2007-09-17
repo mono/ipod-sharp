@@ -1958,7 +1958,7 @@ namespace IPod
 
         private string TrackDbPath
         {
-            get { return ControlPath + "iTunes/iTunesDB"; }
+            get { return ControlPath + "/iTunes/iTunesDB"; }
         }
 
         private string TrackDbBackupPath
@@ -1968,7 +1968,7 @@ namespace IPod
 
         private string MusicBasePath
         {
-            get { return ControlPath + "Music"; }
+            get { return ControlPath + "/Music"; }
         }
 
         private string PlayCountsPath
@@ -2185,6 +2185,7 @@ namespace IPod
 
             if (!File.Exists(TrackDbPath) || createFresh)
             {
+                Console.WriteLine ("Creating fresh track db: " + TrackDbPath);
                 dbrec = new DatabaseRecord(useBE);
                 LoadOnTheGo();
                 return;
@@ -2236,9 +2237,6 @@ namespace IPod
 
         private void CheckFreeSpace()
         {
-
-            device.RescanDisk();
-
             UInt64 available = device.VolumeAvailable;
             UInt64 required = 0;
 

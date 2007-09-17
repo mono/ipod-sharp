@@ -18,27 +18,27 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/Device.cs \
 	$(srcdir)/DeviceBusyException.cs	\
 	$(srcdir)/DeviceException.cs	\
+	$(srcdir)/DeviceManager.cs	\
 	$(srcdir)/DeviceModel.cs	\
 	$(srcdir)/DeviceGeneration.cs	\
 	$(srcdir)/EndianBinaryWriter.cs		\
 	$(srcdir)/Equalizer.cs		\
-	$(srcdir)/IDevice.cs	\
+	$(srcdir)/IPlatformDevice.cs	\
 	$(srcdir)/ObjectDumper.cs		\
 	$(srcdir)/Photo.cs	\
 	$(srcdir)/PhotoDatabase.cs		\
 	$(srcdir)/Playlist.cs		\
 	$(srcdir)/ShuffleTrackDatabase.cs \
 	$(srcdir)/SportKitManager.cs	\
-	$(srcdir)/SysInfo.cs	\
 	$(srcdir)/Thumbnail.cs		\
 	$(srcdir)/Track.cs		\
 	$(srcdir)/TrackDatabase.cs	\
 	$(srcdir)/Utility.cs	\
-	$(srcdir)/Unix/Device.cs	\
-	$(srcdir)/Unix/DeviceAddedHandler.cs	\
-	$(srcdir)/Unix/DeviceEventListener.cs	\
-	$(srcdir)/Unix/DeviceRemovedHandler.cs	\
-	$(srcdir)/Unix/Initializer.cs
+	$(srcdir)/Hal/HalDevice.cs	\
+	$(srcdir)/Hal/HalDeviceManager.cs	\
+	$(srcdir)/Hal/Volume.cs	\
+	$(srcdir)/Hal/Device.cs	\
+	$(srcdir)/Hal/Manager.cs
 
 
 ASSEMBLY_RESOURCES =
@@ -54,7 +54,7 @@ endif
 all: $(ASSEMBLY) 
 
 $(ASSEMBLY): $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES)
-	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0 -r:ICSharpCode.SharpZipLib
+	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0 -r:ICSharpCode.SharpZipLib $(DBUS_LIBS)
 
 update-docs: $(ASSEMBLY)
 	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en

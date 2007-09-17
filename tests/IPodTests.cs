@@ -316,14 +316,10 @@ namespace IPod.Tests {
         [Test]
         public void SaveDeviceTest () {
             Device device = OpenDevice ();
-            device.HostName = "foobar";
-            device.UserName = "bazbaz";
             device.Name = "fooname";
             device.Save ();
 
             device = GetDevice ();
-            Assert.AreEqual ("foobar", device.HostName);
-            Assert.AreEqual ("bazbaz", device.UserName);
             Assert.AreEqual ("fooname", device.Name);
         }
 
@@ -331,12 +327,6 @@ namespace IPod.Tests {
         public void RescanDeviceTest () {
             Device device = OpenDevice ();
             device.RescanDisk ();
-        }
-
-        [Test]
-        public void IsIPodTest () {
-            Device device = OpenDevice ();
-            Assert.IsTrue (device.IsIPod);
         }
 
         [Test]
