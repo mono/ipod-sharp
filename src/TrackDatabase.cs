@@ -1734,12 +1734,15 @@ namespace IPod
         private const int TrackIdStart = 1000;
 
         private int unknownOne = 1;
-        private int unknownTwo = 2;
+        private short unknownTwo = 2;
+        private short unknownThree = 0x0263;
+        private ulong deviceId = 0;
 
         private List<DataSetRecord> datasets = new List<DataSetRecord>();
 
         public int Version = MaxSupportedVersion;
         public long Id;
+        public byte[] Hash = new byte[20];
 
         public DataSetRecord this[DataSetIndex index]
         {
@@ -1780,7 +1783,8 @@ namespace IPod
             Version = ToInt32(body, 4);
             int childrenCount = ToInt32(body, 8);
             Id = ToInt64(body, 12);
-            unknownTwo = ToInt32(body, 20);
+            unknownTwo = ToInt16(body, 20);
+            unknownThree = ToInt16(body, 22);
 
             if (Version > MaxSupportedVersion)
                 throw new DatabaseReadException("Detected unsupported database version {0}", Version);
@@ -1842,15 +1846,30 @@ namespace IPod
             childWriter.Close();
 
             WriteName(writer);
-            writer.Write(36 + PadLength);
-            writer.Write(36 + PadLength + childDataLength);
+            if (Version >= 25) {
+                writer.Write(188);
+                writer.Write(188 + childDataLength);
+            } else {
+                writer.Write(36 + PadLength);
+                writer.Write(36 + PadLength + childDataLength);
+            }
 
             writer.Write(unknownOne);
             writer.Write(Version);
             writer.Write(datasets.Count);
             writer.Write(Id);
             writer.Write(unknownTwo);
-            writer.Write(new byte[PadLength]);
+            writer.Write(unknownThree);
+
+            if (Version >= 25) {
+                writer.Write(new byte[52]);
+                writer.Write(Hash);
+                writer.Write(0);
+                writer.Write(new byte[76]);
+            } else {
+                writer.Write(new byte[PadLength]);
+            }
+            
             writer.Write(childData, 0, childDataLength);
         }
     }

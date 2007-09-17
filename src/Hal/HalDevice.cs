@@ -55,7 +55,9 @@ namespace IPod.Hal {
 
             MountPoint = volume.GetPropertyString ("volume.mount_point");
             ControlPath = MountPoint + volume.GetPropertyString (PodsleuthPrefix + "control_path");
-            FirmwareVersion = volume.GetPropertyString (PodsleuthPrefix + "firmware_version");
+            if (volume.PropertyExists (PodsleuthPrefix + "firmware_version")) {
+                FirmwareVersion = volume.GetPropertyString (PodsleuthPrefix + "firmware_version");
+            }
             ArtworkFormats = new ReadOnlyCollection<ArtworkFormat> (LoadArtworkFormats ());
                 
             ModelClass = volume.GetPropertyString (PodsleuthPrefix + "model.device_class");
@@ -66,7 +68,11 @@ namespace IPod.Hal {
             VolumeID = volume.Udi;
             CanWrite = volume.GetPropertyBoolean ("volume.is_mounted_read_only");
             VolumeUuid = volume.GetPropertyString ("volume.uuid");
-            FirewireID = volume.GetPropertyString (PodsleuthPrefix + "firewire_id");
+
+            if (volume.PropertyExists (PodsleuthPrefix + "firewire_id")) {
+                FirewireID = volume.GetPropertyString (PodsleuthPrefix + "firewire_id");
+            }
+            
             ManufacturerID = volume.GetPropertyString (PodsleuthPrefix + "production.factory_id");
             ProductionIndex = (uint) volume.GetPropertyInteger (PodsleuthPrefix + "production.number");
             ProductionWeek = (uint) volume.GetPropertyInteger (PodsleuthPrefix + "production.week");
@@ -88,6 +94,9 @@ namespace IPod.Hal {
 
         private List<ArtworkFormat> LoadArtworkFormats () {
             List<ArtworkFormat> formats = new List<ArtworkFormat> ();
+
+            if (!volume.GetPropertyBoolean (PodsleuthPrefix + "images.album_art_supported"))
+                return formats;
 
             string[] formatList = volume.GetPropertyStringList (PodsleuthPrefix + "images.formats");
 
