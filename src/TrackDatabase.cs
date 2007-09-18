@@ -1868,7 +1868,8 @@ namespace IPod
             writer.Write(unknownThree);
 
             if (Version >= 25) {
-                writer.Write(new byte[52]);
+                writer.Write((short) 1);
+                writer.Write(new byte[50]);
                 writer.Write(Hash);
                 writer.Write(0);
                 writer.Write(new byte[76]);
