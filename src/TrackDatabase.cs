@@ -1744,6 +1744,8 @@ namespace IPod
         private short unknownThree = 0x0263;
         private ulong deviceId = 0;
 
+        private byte[] beforeHashBytes = new byte[52];
+        
         private List<DataSetRecord> datasets = new List<DataSetRecord>();
 
         public int Version = MaxSupportedVersion;
@@ -1791,6 +1793,9 @@ namespace IPod
             Id = ToInt64(body, 12);
             unknownTwo = ToInt16(body, 20);
             unknownThree = ToInt16(body, 22);
+
+            beforeHashBytes = new byte[body.Length - 24];
+            Array.Copy (body, 24, beforeHashBytes, 0, body.Length - 24);
 
             if (Version > MaxSupportedVersion)
                 throw new DatabaseReadException("Detected unsupported database version {0}", Version);
@@ -1868,8 +1873,7 @@ namespace IPod
             writer.Write(unknownThree);
 
             if (Version >= 25) {
-                writer.Write((short) 1);
-                writer.Write(new byte[50]);
+                writer.Write(beforeHashBytes);
                 writer.Write(Hash);
                 writer.Write(0);
                 writer.Write(new byte[76]);
