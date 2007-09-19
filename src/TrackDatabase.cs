@@ -853,7 +853,6 @@ namespace IPod
                     // the strenc field is not what it was thought to be
                     // latest DBs have the field set to 1 even when the encoding
                     // is UTF-16. For now I'm just encoding as UTF-16
-                    Console.WriteLine ("String length: " + strlen);
                     if (strlen >= 2 && body[29] == '\0')
                     {
                         Value = encoding.GetString(body, 28, strlen);
