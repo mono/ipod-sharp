@@ -8,6 +8,7 @@ namespace IPod.Hal {
     public class HalDeviceManager : DeviceManager {
 
         private Dictionary<string, HalDevice> devices = new Dictionary<string, HalDevice> ();
+        private Dictionary<string, Volume> watchedVolumes = new Dictionary<string, Volume> ();
 
         public override ReadOnlyCollection<IPod.Device> Devices {
             get {
@@ -25,7 +26,7 @@ namespace IPod.Hal {
 
             foreach (Device device in manager.FindDeviceByCapabilityAsDevice ("volume")) {
                 if (IsIPod (device)) {
-                    AddVolume (new Volume (device.Udi));
+                    MaybeAddVolume (new Volume (device.Udi));
                 }
             }
 
@@ -35,21 +36,66 @@ namespace IPod.Hal {
 
         private void OnDeviceAdded (object o, IPod.Hal.DeviceAddedArgs args) {
             if (IsIPod (args.Device)) {
-                AddVolume (new Volume (args.Udi));
+                MaybeAddVolume (new Volume (args.Udi));
             }
         }
 
         private void OnDeviceRemoved (object o, IPod.Hal.DeviceRemovedArgs args) {
-            RemoveVolume (args.Udi);
+            RemoveVolume (args.Udi, true);
         }
 
         private bool IsIPod (Device device) {
-            if (!device.PropertyExists ("volume.mount_point"))
+            return device.PropertyExists ("org.banshee-project.podsleuth.version");
+        }
+
+        private bool IsMounted (Device device) {
+            try {
+                if (!device.PropertyExists ("volume.mount_point"))
+                    return false;
+            } catch {
                 return false;
+            }
 
             string mountPoint = device.GetPropertyString ("volume.mount_point");
-            return device.PropertyExists ("org.banshee-project.podsleuth.version") &&
-                mountPoint != null && mountPoint != String.Empty;
+            return mountPoint != null && mountPoint != String.Empty;
+        }
+
+        private void OnVolumeModified (object o, PropertyModifiedArgs args) {
+            Volume volume = o as Volume;
+            
+            foreach (PropertyModification mod in args.Modifications) {
+                if (mod.Key == "volume.mount_point") {
+                    if (IsMounted (volume)) {
+                        AddVolume (volume);
+                    } else {
+                        RemoveVolume (volume.Udi, false);
+                    }
+                }
+            }
+        }
+        
+        private void WatchForMount (Volume volume) {
+            volume.PropertyModified += OnVolumeModified;
+            watchedVolumes[volume.Udi] = volume;
+        }
+
+        private void UnwatchForMount (string udi) {
+            watchedVolumes[udi].PropertyModified -= OnVolumeModified;
+            watchedVolumes.Remove (udi);
+        }
+
+        private void MaybeAddVolume (Volume volume) {
+            if (!IsIPod (volume))
+                return;
+
+            if (devices.ContainsKey (volume.Udi)) {
+                return;
+            }
+
+            WatchForMount (volume);
+            if (IsMounted (volume)) {
+                AddVolume (volume);
+            }
         }
         
         private void AddVolume (Volume volume) {
@@ -63,10 +109,14 @@ namespace IPod.Hal {
             }
         }
 
-        private void RemoveVolume (string udi) {
+        private void RemoveVolume (string udi, bool unwatch) {
             if (devices.ContainsKey (udi)) {
                 HalDevice device = devices[udi];
                 devices.Remove (udi);
+
+                if (unwatch)
+                    UnwatchForMount (udi);
+                
                 EmitRemoved (device);
             }
         }
