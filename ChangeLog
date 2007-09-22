@@ -1,3 +1,8 @@
+2007-09-22  James Willcox  <snorp@snorp.net>
+
+	* src/TrackDatabase.cs: some cleanups, and do the rest of the things
+	necessary to make the hashed databases work.
+
 2007-09-17  Aaron Bockover  <aaron@abock.org>
 
 	* src/TrackDatabase.cs: First pass at hashing the database 

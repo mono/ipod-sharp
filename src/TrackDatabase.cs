@@ -1056,6 +1056,9 @@ namespace IPod
         public int SampleCount;
         public int SeasonNumber;
         public int EpisodeNumber;
+        public int GaplessData;
+        public bool GaplessTrackFlag;
+        public bool GaplessAlbumFlag;
 
         public IList<DetailRecord> Details
         {
@@ -1175,6 +1178,13 @@ namespace IPod
                 EpisodeNumber = ToInt32(body, 204);
             }
 
+            if (db.Version >= 19) {
+                GaplessData = ToInt32 (body, 236);
+                GaplessTrackFlag = ToInt16 (body, 244) == 1;
+                GaplessAlbumFlag = ToInt16 (body, 246) == 1;
+            }
+                
+
             details.Clear();
 
             for (int i = 0; i < numDetails; i++)
@@ -1202,14 +1212,15 @@ namespace IPod
             childWriter.Close();
 
             int len;
-            if (db.Version >= 12)
-            {
-                len = 244;
-            }
-            else
-            {
+            if (db.Version >= 20) {
+                len = 388;
+            } else if (db.Version >= 12) {
+                len = 328;
+            } else {
                 len = 156;
             }
+
+            long startPosition = writer.BaseStream.Position;
 
             WriteName(writer);
             writer.Write(len);
@@ -1273,8 +1284,7 @@ namespace IPod
             writer.Write(unknownEleven);
             writer.Write(unknownTwelve);
 
-            if (db.Version >= 12)
-            {
+            if (db.Version >= 12) {
                 writer.Write(HasArtwork ? (byte)1 : (byte)0);
                 writer.Write(SkipWhenShuffle ? (byte)1 : (byte)0);
                 writer.Write(RememberPosition ? (byte)1 : (byte)0);
@@ -1294,12 +1304,22 @@ namespace IPod
                 writer.Write(FromMediaType(this.MediaType));
                 writer.Write(SeasonNumber);
                 writer.Write(EpisodeNumber);
-                writer.Write(new byte[24]);
+            }
+
+            if (db.Version >= 19) {
+                writer.Write (new byte[28]); // some unknown stuff
+                writer.Write (GaplessData);
+                writer.Write (0);
+                writer.Write (GaplessTrackFlag ? (short) 0 : (short) 1);
+                writer.Write (GaplessAlbumFlag ? (short) 0 : (short) 1);
             }
 
             writer.Flush();
-
+            writer.Write (new byte[len - (writer.BaseStream.Position - startPosition)]);
+            
+            
             writer.Write(childData, 0, childDataLength);
+            
         }
 
         private int FromMediaType(MediaType type)
@@ -1613,6 +1633,7 @@ namespace IPod
 
     internal enum DataSetIndex
     {
+        Unknown = -1,
         Library = 1,
         Playlist = 2,
         PlaylistDuplicate = 3,
@@ -1734,17 +1755,17 @@ namespace IPod
 
     internal class DatabaseRecord : TrackDbRecord
     {
-
+        private const long DeviceUid = 0xDEADBEEF;
         private const int MaxSupportedVersion = 25;
         private const int TrackIdStart = 1000;
 
         private int unknownOne = 1;
         private short unknownTwo = 2;
-        private short unknownThree = 0x0263;
-        private ulong deviceId = 0;
+        private short unknownThree = 0;
+        private int unknownFour = 1;
+        private int unknownFive = 0x08;
+        private char[] lang = new char[] { 'e', 'n' };
 
-        private byte[] beforeHashBytes = new byte[52];
-        
         private List<DataSetRecord> datasets = new List<DataSetRecord>();
 
         public int Version = MaxSupportedVersion;
@@ -1773,10 +1794,6 @@ namespace IPod
             DataSetRecord plrec = new DataSetRecord(DataSetIndex.Playlist, isbe);
             datasets.Add(plrec);
 
-            DataSetRecord plrec2 = new DataSetRecord(DataSetIndex.PlaylistDuplicate, isbe);
-            plrec2.PlaylistList = plrec.PlaylistList;
-            datasets.Add(plrec2);
-
             this.Name = "mhbd";
         }
 
@@ -1793,11 +1810,16 @@ namespace IPod
             unknownTwo = ToInt16(body, 20);
             unknownThree = ToInt16(body, 22);
 
-            beforeHashBytes = new byte[body.Length - 24];
-            Array.Copy (body, 24, beforeHashBytes, 0, body.Length - 24);
-
             if (Version > MaxSupportedVersion)
                 throw new DatabaseReadException("Detected unsupported database version {0}", Version);
+
+            if (Version >= 25) {
+                unknownFour = ToInt32 (body, 68);
+                unknownFive = ToInt32 (body, 72);
+                lang = new char[2];
+                lang[0] = (char) body[58];
+                lang[1] = (char) body[59];
+            }
 
             datasets.Clear();
 
@@ -1805,12 +1827,13 @@ namespace IPod
             {
                 DataSetRecord rec = new DataSetRecord(IsBE);
                 rec.Read(this, reader);
-                datasets.Add(rec);
-            }
 
-            // make the duplicate record have the same stuff as the 'real' one
-            if (this[DataSetIndex.PlaylistDuplicate] != null)
-                this[DataSetIndex.PlaylistDuplicate].PlaylistList = this[DataSetIndex.Playlist].PlaylistList;
+                if (rec.Index != DataSetIndex.PlaylistDuplicate &&
+                    rec.Index != DataSetIndex.PlaylistDuplicateDuplicate &&
+                    rec.Index != DataSetIndex.AlbumList) {
+                    datasets.Add(rec);
+                }
+            }
         }
 
         private void ReassignTrackIds()
@@ -1872,10 +1895,15 @@ namespace IPod
             writer.Write(unknownThree);
 
             if (Version >= 25) {
-                writer.Write(beforeHashBytes);
-                writer.Write(Hash);
-                writer.Write(0);
-                writer.Write(new byte[76]);
+                writer.Write (DeviceUid);
+                writer.Write (0);
+                writer.Write ((short) 1);
+                writer.Write (new byte[20]);
+                writer.Write (lang);
+                writer.Write (DeviceUid);
+                writer.Write (unknownFour);
+                writer.Write (unknownFive);
+                writer.Write (new byte[100]);
             } else {
                 writer.Write(new byte[PadLength]);
             }
@@ -2460,7 +2488,6 @@ namespace IPod
         public void Save()
         {
             CheckFreeSpace();
-            CreateAlbumList();
 
             // make sure all the new tracks have file names, and that they exist
             foreach (Track track in tracksToAdd)
@@ -2485,7 +2512,7 @@ namespace IPod
             {
                 // Save the tracks db
                 using (BinaryWriter writer = new EndianBinaryWriter(new FileStream(TrackDbPath, FileMode.Create),
-                                                                     dbrec.IsBE))
+                                                                    dbrec.IsBE))
                 {
                     dbrec.Save(dbrec, writer);
                 }
