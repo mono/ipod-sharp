@@ -49,7 +49,6 @@ namespace IPod.Hal {
             return String.Format("{0} {1}", (int)Math.Round(value), format);
         }
 
-
         internal HalDevice (Volume volume) {
             this.volume = volume;
 
@@ -141,6 +140,9 @@ namespace IPod.Hal {
                         case "rgb565be":
                             pformat = PixelFormat.Rgb565BE;
                             break;
+                        case "unknown":
+                            pformat = PixelFormat.Unknown;
+                            break;
                         }
                         break;
                     case "image_type":
@@ -159,8 +161,10 @@ namespace IPod.Hal {
                     }
                 }
 
-                formats.Add (new ArtworkFormat (usage, width, height, correlationId,
-                                                size, pformat, rotation));
+                if (pformat != PixelFormat.Unknown) {
+                    formats.Add (new ArtworkFormat (usage, width, height, correlationId,
+                                                    size, pformat, rotation));
+                }
             }
 
             return formats;

@@ -1,3 +1,12 @@
+2007-10-04  James Willcox  <snorp@snorp.net>
+
+	* src/Thumbnail.cs: use the data length instead of the format length
+	when writing the thumbnail since the latter is not required
+	to be valid.
+
+	* src/Hal/HalDevice.cs: ignore artwork formats with unknown
+	pixel formats.
+
 2007-09-22  James Willcox  <snorp@snorp.net>
 
 	* src/TrackDatabase.cs: some cleanups, and do the rest of the things

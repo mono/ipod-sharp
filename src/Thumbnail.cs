@@ -95,9 +95,9 @@ namespace IPod {
             stream.Seek (0, SeekOrigin.End);
             
             record.ThumbnailOffset = (int) stream.Position;
-            record.ImageSize = format.Size;
+            record.ImageSize = data.Length;
             
-            stream.Write (data, 0, format.Size);
+            stream.Write (data, 0, data.Length);
             
             record.Dirty = true;
         }
