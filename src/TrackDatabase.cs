@@ -331,7 +331,7 @@ namespace IPod
             }
         }
 
-        public IList<PlaylistItemRecord> Items
+        public ReadOnlyCollection<PlaylistItemRecord> Items
         {
             get
             {
@@ -646,7 +646,7 @@ namespace IPod
             }
         }
 
-        public IList<PlaylistRecord> Playlists
+        public ReadOnlyCollection<PlaylistRecord> Playlists
         {
             get
             {
@@ -1060,7 +1060,7 @@ namespace IPod
         public bool GaplessTrackFlag;
         public bool GaplessAlbumFlag;
 
-        public IList<DetailRecord> Details
+        public ReadOnlyCollection<DetailRecord> Details
         {
             get { return new ReadOnlyCollection<DetailRecord>(details); }
         }
@@ -1381,7 +1381,7 @@ namespace IPod
 
         private SortedList<int, TrackRecord> tracks = new SortedList<int, TrackRecord>();
 
-        public IList<TrackRecord> Tracks
+        public ReadOnlyCollection<TrackRecord> Tracks
         {
             get { return new ReadOnlyCollection<TrackRecord>(tracks.Values); }
         }
@@ -1488,7 +1488,7 @@ namespace IPod
 
         private List<TrackAlbumItemRecord> albums = new List<TrackAlbumItemRecord>();
 
-        public IList<TrackAlbumItemRecord> Albums
+        public ReadOnlyCollection<TrackAlbumItemRecord> Albums
         {
             get { return new ReadOnlyCollection<TrackAlbumItemRecord>(albums); }
         }
@@ -1562,7 +1562,7 @@ namespace IPod
 
         private List<DetailRecord> details = new List<DetailRecord>();
 
-        public IList<DetailRecord> Details
+        public ReadOnlyCollection<DetailRecord> Details
         {
             get { return new ReadOnlyCollection<DetailRecord>(details); }
         }
@@ -2104,7 +2104,7 @@ namespace IPod
             get { return device; }
         }
 
-        public IList<Track> Tracks
+        public ReadOnlyCollection<Track> Tracks
         {
             get
             {
@@ -2112,7 +2112,7 @@ namespace IPod
             }
         }
 
-        public IList<Playlist> Playlists
+        public ReadOnlyCollection<Playlist> Playlists
         {
             get
             {
@@ -2120,7 +2120,7 @@ namespace IPod
             }
         }
 
-        public IList<Playlist> OnTheGoPlaylists
+        public ReadOnlyCollection<Playlist> OnTheGoPlaylists
         {
             get
             {
