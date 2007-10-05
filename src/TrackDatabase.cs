@@ -1424,6 +1424,9 @@ namespace IPod
         // are invalid.
         public void ReloadTrackIds()
         {
+            if (tracks.Count == 0)
+                return;
+            
             TrackRecord[] trks = new TrackRecord[tracks.Count];
             tracks.Values.CopyTo(trks, 0);
 
@@ -2503,6 +2506,11 @@ namespace IPod
 
             if (SaveStarted != null)
                 SaveStarted(this, new EventArgs());
+
+            string trackDbDir = Path.GetDirectoryName (TrackDbPath);
+            if (!Directory.Exists (trackDbDir)) {
+                Directory.CreateDirectory (trackDbDir);
+            }
 
             // Back up the current track db
             if (File.Exists(TrackDbPath) && device.CanWrite)
