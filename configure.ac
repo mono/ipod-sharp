@@ -18,7 +18,7 @@ AC_DEFINE_UNQUOTED(MICRO_VERSION, $MICRO_VERSION, [Micro Version Number])
 
 AM_MAINTAINER_MODE
 
-PKG_CHECK_MODULES(DBUS, ndesk-dbus-1.0 ndesk-dbus-glib-1.0)
+PKG_CHECK_MODULES(DBUS, podsleuth >= 0.6.0 ndesk-dbus-1.0 ndesk-dbus-glib-1.0)
 
 dnl Mono	   
 AC_PATH_PROG(MONO, mono)
