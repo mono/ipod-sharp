@@ -1,3 +1,9 @@
+2007-10-08  Aaron Bockover  <abock@gnome.org>
+
+	* src/Device.cs: Added TrackDatabasePath and HasTrackDatabase
+
+	* src/TrackDatabase.cs: Use Device.TrackDatabasePath
+
 2007-10-04  James Willcox  <snorp@snorp.net>
 
 	* src/Thumbnail.cs: use the data length instead of the format length

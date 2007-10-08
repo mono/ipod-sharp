@@ -138,6 +138,14 @@ namespace IPod
             }
         }
 
+        public string TrackDatabasePath {
+            get { return String.Format("{0}{1}iTunes{1}iTunesDB", ControlPath, Path.DirectorySeparatorChar); }
+        }
+        
+        public bool HasTrackDatabase {
+            get { return File.Exists(TrackDatabasePath); }
+        }
+
         public string ControlPath {
             get {
                 if (controlPath == null) {
@@ -148,7 +156,7 @@ namespace IPod
             }
             set { controlPath = value; }
         }
-        
+
         public string MountPoint {
             get { return mountPoint; }
             set { mountPoint = value; }
@@ -156,7 +164,7 @@ namespace IPod
         
         private string EqDbPath
         {
-            get { return ControlPath + "/iTunes/iTunesEQPresets"; }
+            get { return String.Format("{0}{1}iTunes{1}iTunesEQPresets", ControlPath, Path.DirectorySeparatorChar); }
         }
 
         public Equalizer [] Equalizers
@@ -361,7 +369,7 @@ namespace IPod
 
         #endregion
 
-        internal Device () {
+        protected Device () {
         }
         
         public void CreateEmptyTrackDatabase ()

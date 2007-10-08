@@ -2066,7 +2066,7 @@ namespace IPod
 
         private string TrackDbPath
         {
-            get { return ControlPath + "/iTunes/iTunesDB"; }
+            get { return device.TrackDatabasePath; }
         }
 
         private string TrackDbBackupPath
