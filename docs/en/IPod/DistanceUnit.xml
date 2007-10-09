@@ -1,0 +1,36 @@
+<Type Name="DistanceUnit" FullName="IPod.DistanceUnit">
+  <TypeSignature Language="C#" Value="public enum DistanceUnit" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="Kilometers">
+      <MemberSignature Language="C#" Value="Kilometers" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DistanceUnit</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Miles">
+      <MemberSignature Language="C#" Value="Miles" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DistanceUnit</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

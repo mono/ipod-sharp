@@ -1,96 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace IPod
 {
-    public enum ArtworkUsage : int
+    public class DeviceArgs : EventArgs 
     {
-        Unknown = -1,
-        Photo,
-        Cover,
-        Chapter,
-    }
-
-    public enum PixelFormat : int
-    {
-        Unknown = -1,
-        Rgb565,
-        Rgb565BE,
-        IYUV
-    }
-
-    public class ArtworkFormat
-    {
-        private ArtworkUsage usage;
-        private short width;
-        private short height;
-        private short correlationId;
-        private int size;
-        private PixelFormat pformat;
-        private short rotation;
-
-        public ArtworkUsage Usage
-        {
-            get { return usage; }
-        }
-
-        public short Width
-        {
-            get { return width; }
-        }
-
-        public short Height
-        {
-            get { return height; }
-        }
-
-        public int Size
-        {
-            get { return size; }
-        }
-
-        public PixelFormat PixelFormat
-        {
-            get { return pformat; }
-        }
-
-        public short Rotation
-        {
-            get { return rotation; }
-        }
-
-        public short CorrelationId
-        {
-            get { return correlationId; }
-        }
-
-        public ArtworkFormat (ArtworkUsage usage, short width, short height, short correlationId,
-                              int size, PixelFormat pformat, short rotation)
-        {
-            this.usage = usage;
-            this.width = width;
-            this.height = height;
-            this.correlationId = correlationId;
-            this.size = size;
-            this.pformat = pformat;
-            this.rotation = rotation;
-        }
-    }
-
-    public class DeviceArgs : EventArgs {
-
         private Device device;
+        
+        public DeviceArgs (Device device) 
+        {
+            this.device = device;
+        }
         
         public Device Device {
             get { return device; }
-        }
-        
-        public DeviceArgs (Device device) {
-            this.device = device;
         }
     }
 
@@ -98,252 +24,151 @@ namespace IPod
 
     public abstract class Device
     {
-        private ArrayList equalizers;
-        private EqualizerContainerRecord eqsrec;
-        private TrackDatabase tracks;
-        private PhotoDatabase photos;
-        private SportKitManager sportKitManager;
-        private Dictionary<int, ArtworkFormat> artFormats = new Dictionary<int, ArtworkFormat> ();
-        private string mountPoint;
-        private string controlPath;
-        private string modelClass;
-        private string advertisedCapacity;
-        private string modelColor;
-        private double generation;
-        private string manuId;
-        private string firmwareVersion;
-        private uint prodIndex;
-        private uint prodWeek;
-        private uint prodYear;
-        private string serialNumber;
-        private string volumeId;
-        private bool canWrite;
-        private string volumeLabel;
-        private string volumeUuid;
-        private string firewireId;
+        #region Database Fields
+        private TrackDatabase track_database;
+        private PhotoDatabase photo_database;
+        private Dictionary<int, ArtworkFormat> artwork_formats = new Dictionary<int, ArtworkFormat> ();
+        private SportKitManager sport_kit_manager;
+        private List<Equalizer> equalizers;
+        private EqualizerContainerRecord equalizer_container_record;
+        #endregion
+        
+        #region Hardware Fields
+        private string control_path;
+        private string firmware_version;
+        private string firewire_id;
+        #endregion 
         
         public event EventHandler Changed;
-
-        #region Properties
-
-        public ReadOnlyCollection<ArtworkFormat> ArtworkFormats
-        {
-            get {
-                return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (artFormats.Values));
-            } set {
-                artFormats.Clear ();
-                foreach (ArtworkFormat format in value) {
-                    artFormats[format.CorrelationId] = format;
-                }
-            }
-        }
-
-        public string TrackDatabasePath {
-            get { return String.Format("{0}{1}iTunes{1}iTunesDB", ControlPath, Path.DirectorySeparatorChar); }
-        }
         
-        public bool HasTrackDatabase {
-            get { return File.Exists(TrackDatabasePath); }
+        protected Device () 
+        {
         }
 
-        public string ControlPath {
+        #region Database Properties
+
+        public TrackDatabase TrackDatabase {
             get {
-                if (controlPath == null) {
-                    return Path.Combine (MountPoint, "iPod_Control");
-                } else {
-                    return controlPath;
-                }
-            }
-            set { controlPath = value; }
-        }
-
-        public string MountPoint {
-            get { return mountPoint; }
-            set { mountPoint = value; }
-        }
-        
-        private string EqDbPath
-        {
-            get { return String.Format("{0}{1}iTunes{1}iTunesEQPresets", ControlPath, Path.DirectorySeparatorChar); }
-        }
-
-        public Equalizer [] Equalizers
-        {
-            get
-            {
-                if (equalizers == null)
-                    LoadEqualizers ();
-
-                return (Equalizer [])equalizers.ToArray (typeof (Equalizer));
-            }
-        }
-        public PhotoDatabase PhotoDatabase
-        {
-            get
-            {
-                if (photos == null) {
-                    LoadPhotoDatabase ();
-                }
-
-                return photos;
-            }
-        }
-        public TrackDatabase TrackDatabase
-        {
-            get
-            {
-                if (tracks == null) {
+                if (track_database == null) {
                     LoadTrackDatabase ();
                 }
 
-                return tracks;
+                return track_database;
             }
         }
-        public SportKitManager SportKitManager
+        
+        public PhotoDatabase PhotoDatabase {
+            get {
+                if (photo_database == null) {
+                    LoadPhotoDatabase ();
+                }
+
+                return photo_database;
+            }
+        }
+    
+        public ReadOnlyCollection<ArtworkFormat> ArtworkFormats
         {
-            get
-            {
-                if (sportKitManager == null) {
+            get { return new ReadOnlyCollection<ArtworkFormat> (new List<ArtworkFormat> (artwork_formats.Values)); }
+            set {
+                artwork_formats.Clear ();
+                foreach (ArtworkFormat format in value) {
+                    artwork_formats[format.CorrelationId] = format;
+                }
+            }
+        }
+        
+        public SportKitManager SportKitManager {
+            get {
+                if (sport_kit_manager == null) {
                     LoadSportKitManager ();
                 }
 
-                return sportKitManager;
+                return sport_kit_manager;
             }
         }
-
-        public string ModelClass {
-            get { return modelClass; }
-            set { modelClass = value; }
-        }
-                
-        public string AdvertisedCapacity {
-            get { return advertisedCapacity; }
-            set { advertisedCapacity = value; }
-        }
         
-        public string ModelColor {
-            get { return modelColor; }
-            set { modelColor = value; }
-        }
-        
-        public double Generation {
-            get { return generation; }
-            set { generation = value; }
-        }
-                 
-        public string Name
-        {
-            get { return TrackDatabase.Name; }
-            set
-            {
-                TrackDatabase.Name = value;
-                EmitChanged ();
-            }
-        }
-
-        public string VolumeID {
-            get { return volumeId; }
-            set { volumeId = value; }
-        }
-
-        public bool CanWrite {
-            get { return canWrite; }
-            set { canWrite = value; }
-        }
-        
-        public string VolumeLabel {
-            get { return volumeLabel; }
-            set { volumeLabel = value; }
-        }
-        
-        public string VolumeUuid {
-            get { return volumeUuid; }
-            set { volumeUuid = value; }
-        }
-        
-        public abstract UInt64 VolumeSize { get; }
-        public abstract UInt64 VolumeUsed { get; }
-        public abstract UInt64 VolumeAvailable { get; }
-
-        public bool AlbumArtSupported {
+        public ReadOnlyCollection<Equalizer> Equalizers {
             get {
-                return LookupArtworkFormats (ArtworkUsage.Cover).Count > 0;
-            }
-        }
-        
-        public bool PhotosSupported {
-            get {
-                return LookupArtworkFormats (ArtworkUsage.Photo).Count > 0;
-            }
-        }
-
-        internal bool IsBE { get { return ControlPath.EndsWith ("iTunes_Control"); } }
-        public bool IsShuffle
-        {
-            get
-            {
-                return ModelClass == "shuffle";
-            }
-        }
-
-        public string ManufacturerID {
-            get { return manuId; }
-            set { manuId = value; }
-        }
+                if (equalizers == null) {
+                    LoadEqualizers ();
+                }
                 
-        public string FirmwareVersion {
-            get { return firmwareVersion; }
-            set { firmwareVersion = value; }
+                return new ReadOnlyCollection<Equalizer> (equalizers);
+            }
         }
         
-        public uint ProductionIndex {
-            get { return prodIndex; }
-            set { prodIndex = value; }
-        }
+        #endregion
+
+        #region Path Properties
         
-        public uint ProductionWeek {
-            get { return prodWeek; }
-            set { prodWeek = value; }
-        }
-        
-        public uint ProductionYear {
-            get { return prodYear; }
-            set { prodYear = value; }
-        }
-        
-        public string SerialNumber {
-            get { return serialNumber; }
-            set { serialNumber = value; }
+        public string ControlPath {
+            get { return control_path ?? Path.Combine (VolumeInfo.MountPoint, "iPod_Control"); }
+            set { control_path = value; }
         }
 
-        public string FirewireID {
-            get { return firewireId; }
-            set { firewireId = value; }
+        public bool HasTrackDatabase {
+            get { return File.Exists(TrackDatabasePath); }
         }
         
-        private string DoNotAskPath
-        {
-            get
-            {
-                return String.Format ("{0}/.ipod-data-submit-{1}",
+        public string TrackDatabasePath {
+            get { return String.Format("{0}{1}iTunes{1}iTunesDB", ControlPath, Path.DirectorySeparatorChar); }
+        }
+
+        private string EqualizerDatabasePath {
+            get { return String.Format ("{0}{1}iTunes{1}iTunesEQPresets", ControlPath, Path.DirectorySeparatorChar); }
+        }
+        
+        private string DoNotAskPath {
+            get {
+                return String.Format ("{0}{1}.ipod-data-submit-{2}",
                     Environment.GetEnvironmentVariable ("HOME"),
-                    SerialNumber);
+                    Path.DirectorySeparatorChar,
+                    ProductionInfo.SerialNumber);
             }
         }
-        public bool ShouldAskIfUnknown
-        {
-            get
-            {
-                return ModelClass == "unknown" &&
-                    SerialNumber != null && SerialNumber.Length == 11 &&
+        
+        #endregion
+
+        #region Hardware properties
+
+        public string Name {
+            get { return TrackDatabase.Name; }
+            set {
+                TrackDatabase.Name = value;
+                OnChanged ();
+            }
+        }
+
+        public abstract VolumeInfo VolumeInfo { get; }
+        public abstract ProductionInfo ProductionInfo { get; }
+        public abstract ModelInfo ModelInfo { get; }
+
+        internal bool IsBE { 
+            get { return ControlPath.EndsWith ("iTunes_Control"); } 
+        }
+
+        public string FirmwareVersion {
+            get { return firmware_version; }
+            set { firmware_version = value; }
+        }
+    
+        public string FirewireId {
+            get { return firewire_id; }
+            set { firewire_id = value; }
+        }
+        
+        public bool ShouldAskIfUnknown {
+            get {
+                return ModelInfo.IsUnknown &&
+                    ProductionInfo.SerialNumber != null && ProductionInfo.SerialNumber.Length == 11 &&
                     !File.Exists (DoNotAskPath);
             }
         }
-        public string UnknownIpodUrl
-        {
-            get
-            {
-                string serial = SerialNumber;
+        
+        public string UnknownIpodUrl {
+            get {
+                string serial = ProductionInfo.SerialNumber;
                 if (serial == null || serial.Length != 11) {
                     return null;
                 }
@@ -353,28 +178,55 @@ namespace IPod
         }
 
         #endregion
-
-        #region Constructors
-
-        internal Device (string mountPointOrDrive, List<ArtworkFormat> artFormats,
-                         string modelClass) {
-            this.mountPoint = mountPointOrDrive;
-            this.modelClass = modelClass;
-
-            this.artFormats = new Dictionary<int, ArtworkFormat> ();
-            foreach (ArtworkFormat format in artFormats) {
-                this.artFormats[format.CorrelationId] = format;
+        
+        #region Private Methods
+        
+        private void OnChanged ()
+        {
+            EventHandler handler = Changed;
+            if (handler != null) {
+                handler (this, new EventArgs ());
             }
         }
-
-        #endregion
-
-        protected Device () {
+        
+        internal ArtworkFormat LookupArtworkFormat (int correlationId)
+        {
+            return artwork_formats [correlationId];
         }
+
+        private void LoadEqualizers ()
+        {
+            equalizers = new List<Equalizer> ();
+            equalizer_container_record = new EqualizerContainerRecord ();
+
+            if (!File.Exists (EqualizerDatabasePath)) {
+                return;
+            }
+            
+            using (BinaryReader reader = new BinaryReader (File.Open (EqualizerDatabasePath, FileMode.Open))) {
+                equalizer_container_record.Read (reader);
+
+                foreach (EqualizerRecord eqrec in equalizer_container_record.EqualizerRecords) {
+                    Equalizer eq = new Equalizer (eqrec);
+                    equalizers.Add (eq);
+                }
+            }
+        }
+        
+        private void LoadSportKitManager ()
+        {
+            if (sport_kit_manager == null) {
+                sport_kit_manager = new SportKitManager (this);
+            }
+        }
+        
+        #endregion
+        
+        #region Public Methods
         
         public void CreateEmptyTrackDatabase ()
         {
-            tracks = null;
+            track_database = null;
             LoadTrackDatabase (true);
         }
 
@@ -382,69 +234,33 @@ namespace IPod
         {
             File.Open (DoNotAskPath, FileMode.Create).Close ();
         }
-
-        private void EmitChanged ()
-        {
-            EventHandler handler = Changed;
-            if (handler != null) {
-                handler (this, new EventArgs ());
-            }
-        }
-
-        internal ArtworkFormat LookupArtworkFormat (int correlationId)
-        {
-            return artFormats [correlationId];
-        }
-
-        private void LoadEqualizers ()
-        {
-            equalizers = new ArrayList ();
-
-            eqsrec = new EqualizerContainerRecord ();
-
-            if (!File.Exists (EqDbPath))
-                return;
-
-            using (BinaryReader reader = new BinaryReader (File.Open (EqDbPath, FileMode.Open))) {
-                eqsrec.Read (reader);
-
-                foreach (EqualizerRecord eqrec in eqsrec.EqualizerRecords) {
-                    Equalizer eq = new Equalizer (eqrec);
-                    equalizers.Add (eq);
-                }
-            }
-        }
-
-        public void LoadPhotoDatabase ()
-        {
-            LoadPhotoDatabase (false);
-        }
-        public void LoadPhotoDatabase (bool createFresh)
-        {
-            if (photos == null && PhotosSupported)
-                photos = new PhotoDatabase (this, true, createFresh);
-        }
-
-        private void LoadSportKitManager ()
-        {
-            if (sportKitManager == null)
-                sportKitManager = new SportKitManager (this);
-        }
-
+        
         public void LoadTrackDatabase ()
         {
             LoadTrackDatabase (false);
         }
+        
         public void LoadTrackDatabase (bool createFresh)
         {
-            if (tracks == null)
-                tracks = new TrackDatabase (this, createFresh);
+            if (track_database == null)
+                track_database = new TrackDatabase (this, createFresh);
+        }
+        
+        public void LoadPhotoDatabase ()
+        {
+            LoadPhotoDatabase (false);
+        }
+        
+        public void LoadPhotoDatabase (bool createFresh)
+        {
+            if (photo_database == null && ModelInfo.PhotosSupported)
+                photo_database = new PhotoDatabase (this, true, createFresh);
         }
 
         public ReadOnlyCollection<ArtworkFormat> LookupArtworkFormats (ArtworkUsage usage)
         {
             List<ArtworkFormat> list = new List<ArtworkFormat> ();
-            foreach (ArtworkFormat format in artFormats.Values) {
+            foreach (ArtworkFormat format in artwork_formats.Values) {
                 if (format.Usage == usage) {
                     list.Add (format);
                 }
@@ -458,61 +274,90 @@ namespace IPod
 
         public void Save ()
         {
+            if (TrackDatabase != null) {
+                TrackDatabase.Save ();
+            }
+            
+            if (PhotoDatabase != null) {
+                PhotoDatabase.Save ();
+            }
+            
             // nothing more to do
-            if (equalizers == null)
+            if (equalizers == null) {
                 return;
-
+            }
+            
+            string backup_path = String.Format("{0}.bak", EqualizerDatabasePath);
+            
             try {
                 // Back up the eq db
-                if (File.Exists (EqDbPath))
-                    File.Copy (EqDbPath, EqDbPath + ".bak", true);
-
-                // Save the eq db
-                using (BinaryWriter writer = new BinaryWriter (new FileStream (EqDbPath, FileMode.Create))) {
-                    eqsrec.Save (writer);
+                if (File.Exists (EqualizerDatabasePath)) {
+                    File.Copy (EqualizerDatabasePath, backup_path, true);
                 }
-            }
-            catch (Exception e) {
+                
+                // Save the eq db
+                using (BinaryWriter writer = new BinaryWriter (new FileStream (EqualizerDatabasePath, FileMode.Create))) {
+                    equalizer_container_record.Save (writer);
+                }
+            } catch (Exception e) {
                 // restore the backup
-                File.Copy (EqDbPath + ".bak", EqDbPath, true);
-
+                File.Copy (backup_path, EqualizerDatabasePath, true);
                 throw e;
             }
         }
 
         public Equalizer CreateEqualizer ()
         {
-            if (equalizers == null)
+            if (equalizers == null) {
                 LoadEqualizers ();
+            }
+            
+            EqualizerRecord record = new EqualizerRecord ();
+            Equalizer equalizer = new Equalizer (record);
 
-            EqualizerRecord rec = new EqualizerRecord ();
-            Equalizer eq = new Equalizer (rec);
+            equalizer_container_record.Add (record);
+            equalizers.Add (equalizer);
 
-            eqsrec.Add (rec);
-            equalizers.Add (eq);
-
-            return eq;
+            return equalizer;
         }
-        public void RemoveEqualizer (Equalizer eq)
+        
+        public void RemoveEqualizer (Equalizer equalizer)
         {
-            equalizers.Remove (eq);
-            eqsrec.Remove (eq.EqualizerRecord);
+            equalizers.Remove (equalizer);
+            equalizer_container_record.Remove (equalizer.EqualizerRecord);
         }
 
-        public void Dump () {
-            Console.WriteLine ("Class: " + ModelClass);
-            Console.WriteLine ("Generation: " + Generation);
-            Console.WriteLine ("Advertised Capacity: " + AdvertisedCapacity);
-            Console.WriteLine ("Serial Number: " + SerialNumber);
-            Console.WriteLine ("Volume Size: " + VolumeSize);
-            Console.WriteLine ("Volume Available: " + VolumeAvailable);
-            Console.WriteLine ("Firewire ID: " + FirewireID);
-            Console.WriteLine ("Song Count: " + TrackDatabase.Tracks.Count);
-            Console.WriteLine ("\nPhoto Formats:");
+        public void Dump () 
+        {
+            Console.WriteLine ("iPod");
+            Console.WriteLine (" Firewire ID:      {0}", FirewireId);
+            Console.WriteLine (" Firmware Version: {0}", FirmwareVersion);
+            Console.WriteLine (" Control Path:     {0}", ControlPath);
+            Console.WriteLine ();
+            
+            
+            Console.WriteLine (" Volume Information");
+            VolumeInfo.Dump ();
+            Console.WriteLine ();
+            
+            Console.WriteLine (" Model Information");
+            ModelInfo.Dump ();
+            Console.WriteLine ();
+            
+            Console.WriteLine (" Production Information");
+            ProductionInfo.Dump ();
+            Console.WriteLine ();
+            
+            Console.WriteLine (" Database Information");
+            Console.WriteLine ("  Song Count: " + TrackDatabase.Tracks.Count);
+            Console.WriteLine ("  Photo Formats:");
+            
             foreach (ArtworkFormat format in LookupArtworkFormats (ArtworkUsage.Photo)) {
-                Console.WriteLine ("{0}x{1} using {2}, rotated {3}", format.Width, format.Height,
-                                   format.PixelFormat, format.Rotation);
+                Console.WriteLine ("   {0}x{1} using {2}, rotated {3}", format.Width, 
+                    format.Height, format.PixelFormat, format.Rotation);
             }
         }
+        
+        #endregion
     }
 }

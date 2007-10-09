@@ -1,0 +1,106 @@
+<Type Name="MediaType" FullName="IPod.MediaType">
+  <TypeSignature Language="C#" Value="public enum MediaType" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="Audio">
+      <MemberSignature Language="C#" Value="Audio" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Audiobook">
+      <MemberSignature Language="C#" Value="Audiobook" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="AudioVideo">
+      <MemberSignature Language="C#" Value="AudioVideo" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Movie">
+      <MemberSignature Language="C#" Value="Movie" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="MusicVideo">
+      <MemberSignature Language="C#" Value="MusicVideo" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Podcast">
+      <MemberSignature Language="C#" Value="Podcast" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="TVShow">
+      <MemberSignature Language="C#" Value="TVShow" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Video">
+      <MemberSignature Language="C#" Value="Video" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="VideoPodcast">
+      <MemberSignature Language="C#" Value="VideoPodcast" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.MediaType</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

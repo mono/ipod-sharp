@@ -1,0 +1,276 @@
+<Type Name="DeviceModel" FullName="IPod.DeviceModel">
+  <TypeSignature Language="C#" Value="public enum DeviceModel" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Enum</BaseTypeName>
+  </Base>
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="Color">
+      <MemberSignature Language="C#" Value="Color" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ColorU2">
+      <MemberSignature Language="C#" Value="ColorU2" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Invalid">
+      <MemberSignature Language="C#" Value="Invalid" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Mini">
+      <MemberSignature Language="C#" Value="Mini" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="MiniBlue">
+      <MemberSignature Language="C#" Value="MiniBlue" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="MiniGold">
+      <MemberSignature Language="C#" Value="MiniGold" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="MiniGreen">
+      <MemberSignature Language="C#" Value="MiniGreen" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="MiniPink">
+      <MemberSignature Language="C#" Value="MiniPink" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoBlack">
+      <MemberSignature Language="C#" Value="NanoBlack" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoBlue">
+      <MemberSignature Language="C#" Value="NanoBlue" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoGreen">
+      <MemberSignature Language="C#" Value="NanoGreen" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoPink">
+      <MemberSignature Language="C#" Value="NanoPink" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoProductRed">
+      <MemberSignature Language="C#" Value="NanoProductRed" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoSilver">
+      <MemberSignature Language="C#" Value="NanoSilver" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="NanoWhite">
+      <MemberSignature Language="C#" Value="NanoWhite" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Regular">
+      <MemberSignature Language="C#" Value="Regular" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="RegularU2">
+      <MemberSignature Language="C#" Value="RegularU2" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Shuffle">
+      <MemberSignature Language="C#" Value="Shuffle" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShuffleBlue">
+      <MemberSignature Language="C#" Value="ShuffleBlue" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShuffleGreen">
+      <MemberSignature Language="C#" Value="ShuffleGreen" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShuffleOrange">
+      <MemberSignature Language="C#" Value="ShuffleOrange" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShufflePink">
+      <MemberSignature Language="C#" Value="ShufflePink" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="ShuffleSilver">
+      <MemberSignature Language="C#" Value="ShuffleSilver" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="Unknown">
+      <MemberSignature Language="C#" Value="Unknown" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="VideoBlack">
+      <MemberSignature Language="C#" Value="VideoBlack" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+    <Member MemberName="VideoWhite">
+      <MemberSignature Language="C#" Value="VideoWhite" />
+      <MemberType>Field</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.DeviceModel</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

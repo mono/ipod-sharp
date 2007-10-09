@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using NDesk.DBus;
 
-namespace IPod.Hal
+namespace Hal
 {
     internal struct PropertyModification
     {
@@ -85,7 +85,7 @@ namespace IPod.Hal
       DictEntryEnd = (byte)'}',
     }
     
-    public enum PropertyType
+    internal enum PropertyType
     {
         Invalid = DType.Invalid,
         Int32 = DType.Int32,

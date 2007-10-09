@@ -1,3 +1,28 @@
+2007-10-09  Aaron Bockover  <abock@gnome.org>
+
+	* shamrock.m4: 
+	* configure.ac: Modernized to use shamrock
+
+	* docs/: New generation of docs
+
+	* src/PhotoDatabase.cs: Fixed path issues
+
+	* src/Hal/HalDeviceManager.cs:
+	* src/DeviceManager.cs: Namespace fixes
+
+	* src/Device.cs: Tons of fixups, API changes, and cleaning
+
+	* src/ArtworkFormat.cs:
+	* src/ProductionInfo.cs:
+	* src/ModelInfo.cs: 
+	* src/VolumeInfo.cs: Grouped and organized properties into small 
+	sub classes to make the Device API more usable
+
+	* src/Hal/HalDevice.cs: Lots of fixes, implement the changes in Device
+
+	* src/ShuffleTrackDatabase.cs:
+	* src/TrackDatabase.cs: Fixes to reflect API changes
+
 2007-10-08  Aaron Bockover  <abock@gnome.org>
 
 	* src/Device.cs: Added TrackDatabasePath and HasTrackDatabase

@@ -1,70 +1,32 @@
-AC_INIT(README)
+AC_INIT([ipod-sharp], [0.8.0])
 AC_CANONICAL_SYSTEM
-
-MAJOR_VERSION=0
-MINOR_VERSION=6
-MICRO_VERSION=4
-VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
-                                                                                
-AM_INIT_AUTOMAKE(ipod-sharp, $VERSION)
-                                                                                
-AC_SUBST(MAJOR_VERSION)
-AC_SUBST(MINOR_VERSION)
-AC_SUBST(MICRO_VERSION)
-                                                                                
-AC_DEFINE_UNQUOTED(MAJOR_VERSION, $MAJOR_VERSION, [Major Version Number])
-AC_DEFINE_UNQUOTED(MINOR_VERSION, $MINOR_VERSION, [Minor Version Number])
-AC_DEFINE_UNQUOTED(MICRO_VERSION, $MICRO_VERSION, [Micro Version Number])
-
+AC_PREREQ(2.13)
+AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar])
 AM_MAINTAINER_MODE
 
-PKG_CHECK_MODULES(DBUS, podsleuth >= 0.6.0 ndesk-dbus-1.0 ndesk-dbus-glib-1.0)
+DISTCHECK_CONFIGURE_FLAGS="--disable-docs"
+AC_SUBST(DISTCHECK_CONFIGURE_FLAGS)
 
-dnl Mono	   
-AC_PATH_PROG(MONO, mono)
-if test "x$MONO" = "x" ; then
-   AC_MSG_ERROR([Can not find "mono" in your PATH])
-fi
+ASM_VERSION="2.0.0.0"
+AC_SUBST(ASM_VERSION)
 
-dnl gmcs	   
-AC_PATH_PROG(MCS, gmcs)
-if test "x$MCS" = "x" ; then
-   AC_MSG_ERROR([Can not find "gmcs" in your PATH])
-fi
+AC_PROG_INSTALL
 
-AC_ARG_ENABLE(docs, [  --disable-docs    Do not build documentation],
-  with_docs=no, with_docs=yes)
+SHAMROCK_CHECK_MONO_MODULE(1.1.10)
+SHAMROCK_FIND_MONO_2_0_COMPILER
+SHAMROCK_FIND_MONO_RUNTIME
+SHAMROCK_CHECK_MONODOC
+SHAMROCK_CHECK_MONO_2_0_GAC_ASSEMBLIES([
+	System
+	System.Web
+])
 
-if test "x$with_docs" = "xyes"; then
-        AC_PATH_PROG(MONODOCER, monodocer, no)
-        if test "x$MONODOC" = "xno"; then
-                AC_MSG_ERROR([You need to install monodoc])
-        fi
+SHAMROCK_CHECK_MONO_NUNIT
 
-        AC_PATH_PROG(MDASSEMBLER, mdassembler, no)
-        if test "x$MDASSEMBLER" = "xno"; then
-                AC_MSG_ERROR([You need to install mdassembler])
-        fi
-        AM_CONDITIONAL(BUILD_DOCS, true)
-else
-        AC_MSG_NOTICE([not building API documentation])
-        AM_CONDITIONAL(BUILD_DOCS, false)
-fi
+PKG_CHECK_MODULES(PODSLEUTH, podsleuth >= 0.6.0)
+PKG_CHECK_MODULES(NDESK_DBUS, ndesk-dbus-1.0 ndesk-dbus-glib-1.0)
 
-AC_PATH_PROG(GACUTIL, gacutil, no)
-if test "x$GACUTIL" = "xno"; then
-        AC_MSG_ERROR([You need to install gacutil])
-fi
-
-AC_ARG_ENABLE(tests, [  --disable-tests   Do not build nunit tests],
-  with_nunit=no, with_nunit=yes)
-                                                                                                    
-if test "x$with_nunit" = "xyes"; then
-  AM_CONDITIONAL(BUILD_TESTS, true)
-else
-  AM_CONDITIONAL(BUILD_TESTS, false)
-fi
-
+SHAMROCK_EXPAND_LIBDIR
 
 AC_OUTPUT([
 Makefile
@@ -75,4 +37,13 @@ src/Firmware/Makefile
 ui/Makefile
 tools/Makefile
 tests/Makefile
+docs/Makefile
 ])
+
+echo "
+    Installation Prefix:     ${prefix}
+    C# Compiler:             ${MCS}
+
+    Developer Documentation: ${enable_docs}
+"
+

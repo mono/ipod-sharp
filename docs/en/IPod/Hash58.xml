@@ -1,0 +1,93 @@
+<Type Name="Hash58" FullName="IPod.Hash58">
+  <TypeSignature Language="C#" Value="public static class Hash58" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="GenerateHash">
+      <MemberSignature Language="C#" Value="public static byte[] GenerateHash (byte[] fwid, byte[] iTunesDB);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fwid" Type="System.Byte[]" />
+        <Parameter Name="iTunesDB" Type="System.Byte[]" />
+      </Parameters>
+      <Docs>
+        <param name="fwid">To be added.</param>
+        <param name="iTunesDB">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GenerateHash">
+      <MemberSignature Language="C#" Value="public static byte[] GenerateHash (string fwid, byte[] iTunesDB);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fwid" Type="System.String" />
+        <Parameter Name="iTunesDB" Type="System.Byte[]" />
+      </Parameters>
+      <Docs>
+        <param name="fwid">To be added.</param>
+        <param name="iTunesDB">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GenerateHash">
+      <MemberSignature Language="C#" Value="public static byte[] GenerateHash (byte[] fwid, byte[] iTunesDB, int sizeOfHeaders);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fwid" Type="System.Byte[]" />
+        <Parameter Name="iTunesDB" Type="System.Byte[]" />
+        <Parameter Name="sizeOfHeaders" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="fwid">To be added.</param>
+        <param name="iTunesDB">To be added.</param>
+        <param name="sizeOfHeaders">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GenerateHash">
+      <MemberSignature Language="C#" Value="public static byte[] GenerateHash (string fwid, byte[] iTunesDB, int sizeOfHeaders);" />
+      <MemberType>Method</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Byte[]</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="fwid" Type="System.String" />
+        <Parameter Name="iTunesDB" Type="System.Byte[]" />
+        <Parameter Name="sizeOfHeaders" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="fwid">To be added.</param>
+        <param name="iTunesDB">To be added.</param>
+        <param name="sizeOfHeaders">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

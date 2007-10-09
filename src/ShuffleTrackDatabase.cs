@@ -8,10 +8,10 @@ namespace IPod {
         
         public static bool Save(Device device) {
             
-            if(device.ModelClass != "shuffle")
+            if(device.ModelInfo.DeviceClass != "shuffle")
                 return false;
         
-            string sdbFile = device.ControlPath + "/iTunes/iTunesSD";
+            string sdbFile = String.Format("{0}{1}iTunes{1}iTunesSD", device.ControlPath, Path.DirectorySeparatorChar);
         
             using(BinaryWriter writer = new BinaryWriter(new FileStream(
                 sdbFile, FileMode.Create))) {
@@ -95,8 +95,8 @@ namespace IPod {
             
             // file name (UTF-16, record is 522 bytes)
             string file = track.FileName;
-            if(file.StartsWith(device.MountPoint)) {
-                file = file.Substring(device.MountPoint.Length);
+            if(file.StartsWith(device.VolumeInfo.MountPoint)) {
+                file = file.Substring(device.VolumeInfo.MountPoint.Length);
             }
             
             byte [] filebytes = Encoding.Unicode.GetBytes(file);

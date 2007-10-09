@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using NDesk.DBus;
 
-namespace IPod.Hal
+namespace Hal
 {
     [Interface("org.freedesktop.Hal.Device.Volume")]
     internal interface IVolumeIPod

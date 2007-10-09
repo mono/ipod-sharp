@@ -1003,11 +1003,9 @@ namespace IPod {
 
         private string PhotoDbPath {
             get {
-                if (isPhoto) {
-                    return device.MountPoint + "/Photos/Photo Database";
-                } else {
-                    return device.ControlPath + "/Artwork/ArtworkDB";
-                }
+                return isPhoto 
+                    ? String.Format ("{0}{1}Photos{1}Photo Database", device.VolumeInfo.MountPoint, Path.DirectorySeparatorChar)
+                    : String.Format ("{0}{1}Artwork{1}ArtworkDB", device.ControlPath, Path.DirectorySeparatorChar);
             }
         }
 
@@ -1247,14 +1245,14 @@ namespace IPod {
         }
 
         internal string GetFilesystemPath (string podpath) {
-            return String.Format ("{0}/Photos{1}", device.MountPoint, podpath.Replace(':', '/'));
+            return String.Format ("{0}{1}Photos{2}", device.VolumeInfo.MountPoint, podpath.Replace(':', '/'), Path.DirectorySeparatorChar);
         }
 
         internal string GetThumbPath (ArtworkFormat format) {
             if (isPhoto) {
-                return String.Format ("{0}/Photos/Thumbs/F{1}_1.ithmb", device.MountPoint, format.CorrelationId);
+                return String.Format ("{0}{2}Photos{2}Thumbs{2}F{1}_1.ithmb", device.VolumeInfo.MountPoint, format.CorrelationId, Path.DirectorySeparatorChar);
             } else {
-                return String.Format ("{0}/Artwork/F{1}_1.ithmb", device.ControlPath, format.CorrelationId);
+                return String.Format ("{0}{2}Artwork{2}F{1}_1.ithmb", device.ControlPath, format.CorrelationId, Path.DirectorySeparatorChar);
             }
 
         }

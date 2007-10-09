@@ -57,7 +57,7 @@ namespace IPod {
 
         private void OnDeviceChanged (object o, EventArgs args) {
             Device device = o as Device;
-            TreeIter iter = FindDevice (device.MountPoint);
+            TreeIter iter = FindDevice (device.VolumeInfo.MountPoint);
             
             if (!iter.Equals (TreeIter.Zero)) {
                 store.SetValue (iter, 0, device.Name);
@@ -76,7 +76,7 @@ namespace IPod {
 
                 if (device != null) {
                     
-                    if (device.MountPoint == mount)
+                    if (device.VolumeInfo.MountPoint == mount)
                         return iter;
                 }
 
@@ -105,7 +105,7 @@ namespace IPod {
             bool haveActive = false;
             
             if (ActiveDevice != null)
-                current = ActiveDevice.MountPoint;
+                current = ActiveDevice.VolumeInfo.MountPoint;
             
             store.Clear ();
 
@@ -137,7 +137,7 @@ namespace IPod {
         }
 
         private void RemoveDevice (Device device) {
-            TreeIter iter = FindDevice (device.MountPoint);
+            TreeIter iter = FindDevice (device.VolumeInfo.MountPoint);
 
             if (iter.Equals (TreeIter.Zero))
                 return;

@@ -1,0 +1,95 @@
+<Type Name="TrackSaveProgressArgs" FullName="IPod.TrackSaveProgressArgs">
+  <TypeSignature Language="C#" Value="public class TrackSaveProgressArgs : EventArgs" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.EventArgs</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public TrackSaveProgressArgs (IPod.Track track, double trackPercent, int completed, int total);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="track" Type="IPod.Track" />
+        <Parameter Name="trackPercent" Type="System.Double" />
+        <Parameter Name="completed" Type="System.Int32" />
+        <Parameter Name="total" Type="System.Int32" />
+      </Parameters>
+      <Docs>
+        <param name="track">To be added.</param>
+        <param name="trackPercent">To be added.</param>
+        <param name="completed">To be added.</param>
+        <param name="total">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CurrentTrack">
+      <MemberSignature Language="C#" Value="public IPod.Track CurrentTrack { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>IPod.Track</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TotalProgress">
+      <MemberSignature Language="C#" Value="public double TotalProgress { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TrackProgress">
+      <MemberSignature Language="C#" Value="public double TrackProgress { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TracksCompleted">
+      <MemberSignature Language="C#" Value="public int TracksCompleted { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TracksTotal">
+      <MemberSignature Language="C#" Value="public int TracksTotal { get; };" />
+      <MemberType>Property</MemberType>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

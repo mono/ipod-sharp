@@ -2150,19 +2150,15 @@ namespace IPod
         {
             this.device = device;
 
-            if (createFresh && File.Exists(TrackDbPath) && device.CanWrite)
-            {
-                File.Copy(TrackDbPath, TrackDbBackupPath, true);
+            if (createFresh && File.Exists (TrackDbPath) && !device.VolumeInfo.IsMountedReadOnly) {
+                File.Copy (TrackDbPath, TrackDbBackupPath, true);
             }
 
-            Reload(createFresh);
+            Reload (createFresh);
 
-            try
-            {
+            try {
                 artdb = new PhotoDatabase(device, false, createFresh);
-            }
-            catch
-            {
+            } catch {
                 artdb = null;
             }
         }
@@ -2335,7 +2331,7 @@ namespace IPod
 
         internal bool IsTrackOnDevice(string path)
         {
-            return path.StartsWith(MusicBasePath + Path.DirectorySeparatorChar + "F");
+            return path.StartsWith(MusicBasePath + "/F");
         }
 
         private string FormatSpace(UInt64 bytes)
@@ -2345,7 +2341,7 @@ namespace IPod
 
         private void CheckFreeSpace()
         {
-            UInt64 available = device.VolumeAvailable;
+            UInt64 available = device.VolumeInfo.SpaceAvailable;
             UInt64 required = 0;
 
             // we're going to free some up, so add that
@@ -2513,7 +2509,7 @@ namespace IPod
             }
 
             // Back up the current track db
-            if (File.Exists(TrackDbPath) && device.CanWrite)
+            if (File.Exists(TrackDbPath) && !device.VolumeInfo.IsMountedReadOnly)
                 File.Copy(TrackDbPath, TrackDbBackupPath, true);
 
             try
@@ -2525,7 +2521,7 @@ namespace IPod
                     dbrec.Save(dbrec, writer);
                 }
 
-                DatabaseHasher.Hash(TrackDbPath, device.FirewireID);
+                DatabaseHasher.Hash(TrackDbPath, device.FirewireId);
 
                 foreach (Track track in tracksToRemove)
                 {
@@ -2612,7 +2608,7 @@ namespace IPod
             catch (Exception e)
             {
                 // rollback the track db
-                if (File.Exists(TrackDbBackupPath) && device.CanWrite)
+                if (File.Exists(TrackDbBackupPath) && !device.VolumeInfo.IsMountedReadOnly)
                     File.Copy(TrackDbBackupPath, TrackDbPath, true);
 
                 throw new DatabaseWriteException(e, "Failed to save database");
@@ -2640,15 +2636,15 @@ namespace IPod
             else if (ipodPath == String.Empty)
                 return String.Empty;
 
-            return device.MountPoint + ipodPath.Replace(":", "/");
+            return device.VolumeInfo.MountPoint + ipodPath.Replace(":", "/");
         }
 
         internal string GetPodPath(string path)
         {
-            if (path == null || !path.StartsWith(device.MountPoint))
+            if (path == null || !path.StartsWith(device.VolumeInfo.MountPoint))
                 return null;
 
-            string ret = path.Replace(device.MountPoint, "");
+            string ret = path.Replace(device.VolumeInfo.MountPoint, "");
             return ret.Replace("/", ":");
         }
 

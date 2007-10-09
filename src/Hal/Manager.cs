@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using NDesk.DBus;
 
-namespace IPod.Hal
+namespace Hal
 {
     internal delegate void DBusDeviceAddedHandler(string udi);
     internal delegate void DBusDeviceRemovedHandler(string udi);

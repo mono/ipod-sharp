@@ -1,0 +1,78 @@
+<Overview>
+  <Assemblies>
+    <Assembly Name="ipod-sharp" Version="0.0.1.0">
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCopyright("(C) 2005 James Willcox  &lt;snorp@snorp.net&gt;")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyProduct("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyCompany("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyDescription("Library for interfacing with Apple iPod devices")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Reflection.AssemblyTitle("ipod-sharp")</AttributeName>
+        </Attribute>
+      </Attributes>
+    </Assembly>
+  </Assemblies>
+  <Remarks>To be added.</Remarks>
+  <Copyright>To be added.</Copyright>
+  <Types>
+    <Namespace Name="IPod">
+      <Type Name="Album" />
+      <Type Name="ArtworkFormat" />
+      <Type Name="ArtworkUsage" />
+      <Type Name="DatabaseReadException" />
+      <Type Name="DatabaseWriteException" />
+      <Type Name="Device" />
+      <Type Name="DeviceArgs" />
+      <Type Name="DeviceBusyException" />
+      <Type Name="DeviceException" />
+      <Type Name="DeviceGeneration" />
+      <Type Name="DeviceHandler" />
+      <Type Name="DeviceManager" />
+      <Type Name="DeviceModel" />
+      <Type Name="DistanceUnit" />
+      <Type Name="Equalizer" />
+      <Type Name="Hash58" />
+      <Type Name="InsufficientSpaceException" />
+      <Type Name="MediaType" />
+      <Type Name="ModelInfo" />
+      <Type Name="Photo" />
+      <Type Name="PhotoDatabase" />
+      <Type Name="PhotoSaveProgressArgs" />
+      <Type Name="PhotoSaveProgressHandler" />
+      <Type Name="PixelFormat" />
+      <Type Name="Playlist" />
+      <Type Name="PlaylistHandler" />
+      <Type Name="PlaylistTrackHandler" />
+      <Type Name="ProductionInfo" />
+      <Type Name="SportKit" />
+      <Type Name="SportKitManager" />
+      <Type Name="Thumbnail" />
+      <Type Name="Track" />
+      <Type Name="TrackDatabase" />
+      <Type Name="TrackHandler" />
+      <Type Name="TrackRating" />
+      <Type Name="TrackSaveProgressArgs" />
+      <Type Name="TrackSaveProgressHandler" />
+      <Type Name="VolumeInfo" />
+      <Type Name="Workout" />
+    </Namespace>
+  </Types>
+  <Title>ipod-sharp</Title>
+</Overview>

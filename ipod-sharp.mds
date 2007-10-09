@@ -7,10 +7,10 @@
       <Entry build="True" name="ipod-sharp" configuration="Debug" />
     </Configuration>
   </Configurations>
-  <DeployTargets />
   <StartMode startupentry="ipod-sharp" single="True">
     <Execute type="None" entry="ipod-sharp" />
   </StartMode>
+  <DeployTargets />
   <Entries>
     <Entry filename="./ipod-sharp.mdp" />
   </Entries>

@@ -1,6 +1,6 @@
-SUBDIRS = src ui
+SUBDIRS = src ui docs
 
-#if BUILD_TESTS
+#if ENABLE_TESTS
 #SUBDIRS += tests
 #endif
 

@@ -14,14 +14,7 @@
     </Configuration>
   </Configurations>
   <Contents>
-    <File name="./tools/DmgIsoExtract.cs" subtype="Code" buildaction="Compile" />
-    <File name="./tools/PodTool.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Firmware" subtype="Directory" buildaction="Compile" />
-    <File name="./src/Firmware/CpioArchive.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Firmware/DmgPartition.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Firmware/DmgImage.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Firmware/DmgFirmwareExtract.cs" subtype="Code" buildaction="Compile" />
-    <File name="./tools/ExtractFirmware.cs" subtype="Code" buildaction="Compile" />
+    <File name="./" subtype="Directory" buildaction="Compile" />
     <File name="./src/Album.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/DatabaseReadException.cs" subtype="Code" buildaction="Compile" />
@@ -30,31 +23,30 @@
     <File name="./src/DeviceBusyException.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/DeviceException.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/DeviceGeneration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/DeviceManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/DeviceModel.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/EndianBinaryWriter.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/Equalizer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/IDevice.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Hash58.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/ObjectDumper.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/Photo.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/PhotoDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/Playlist.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/ShuffleTrackDatabase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/SysInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/SysInfoExtended.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/SportKitManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/Thumbnail.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/Track.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/TrackDatabase.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/Utility.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Unix/Device.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Unix/DeviceAddedHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Unix/DeviceEventListener.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Unix/DeviceRemovedHandler.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Unix/Initializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Win32/Device.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Win32/WinAPI.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/SportKitManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Win32/DeviceEventListener.cs" subtype="Code" buildaction="Compile" />
-    <File name="./src/Win32/DeviceWatcherWindow.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Hal/Device.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Hal/HalDevice.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Hal/HalDeviceManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Hal/Manager.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Hal/Volume.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ArtworkFormat.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ProductionInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/VolumeInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/ModelInfo.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="glib-sharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -63,6 +55,7 @@
     <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
     <ProjectReference type="Gac" localcopy="True" refto="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Gac" localcopy="True" refto="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099" />
   </References>
   <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="./Makefile.am">
     <BuildFilesVar />

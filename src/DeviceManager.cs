@@ -18,7 +18,7 @@ namespace IPod {
 #if WINDOWS
             return new Windows.WindowsDeviceManager ();
 #else
-            return new Hal.HalDeviceManager ();
+            return new HalClient.HalDeviceManager ();
 #endif
         }
 

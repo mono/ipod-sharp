@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using NDesk.DBus;
 
-namespace IPod.Hal {
+using Hal;
 
-    public class HalDeviceManager : DeviceManager {
+namespace IPod.HalClient {
+
+    internal class HalDeviceManager : DeviceManager {
 
         private Dictionary<string, HalDevice> devices = new Dictionary<string, HalDevice> ();
         private Dictionary<string, Volume> watchedVolumes = new Dictionary<string, Volume> ();
@@ -24,7 +26,7 @@ namespace IPod.Hal {
         public HalDeviceManager () {
             Manager manager = new Manager ();
 
-            foreach (Device device in manager.FindDeviceByCapabilityAsDevice ("volume")) {
+            foreach (Hal.Device device in manager.FindDeviceByCapabilityAsDevice ("volume")) {
                 if (IsIPod (device)) {
                     MaybeAddVolume (new Volume (device.Udi));
                 }
@@ -34,21 +36,21 @@ namespace IPod.Hal {
             manager.DeviceRemoved += OnDeviceRemoved;
         }
 
-        private void OnDeviceAdded (object o, IPod.Hal.DeviceAddedArgs args) {
+        private void OnDeviceAdded (object o, DeviceAddedArgs args) {
             if (IsIPod (args.Device)) {
                 MaybeAddVolume (new Volume (args.Udi));
             }
         }
 
-        private void OnDeviceRemoved (object o, IPod.Hal.DeviceRemovedArgs args) {
+        private void OnDeviceRemoved (object o, DeviceRemovedArgs args) {
             RemoveVolume (args.Udi, true);
         }
 
-        private bool IsIPod (Device device) {
+        private bool IsIPod (Hal.Device device) {
             return device.PropertyExists ("org.banshee-project.podsleuth.version");
         }
 
-        private bool IsMounted (Device device) {
+        private bool IsMounted (Hal.Device device) {
             try {
                 if (!device.PropertyExists ("volume.mount_point"))
                     return false;

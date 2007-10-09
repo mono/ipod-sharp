@@ -1,8 +1,5 @@
 SUBDIRS = Firmware
 
-DOC_UPDATER = @MONODOCER@ -delete
-DOC_ASSEMBLER = @MDASSEMBLER@ --out ipod-sharp-docs --ecma
-
 MCS_FLAGS = -debug
 
 ASSEMBLY = ipod-sharp.dll
@@ -13,6 +10,7 @@ ipod_DATA = $(ASSEMBLY)
 ASSEMBLY_SOURCES =			\
 	$(srcdir)/Album.cs	\
 	$(srcdir)/AssemblyInfo.cs	\
+	$(srcdir)/ArtworkFormat.cs \
 	$(srcdir)/DatabaseReadException.cs	\
 	$(srcdir)/DatabaseWriteException.cs	\
 	$(srcdir)/Device.cs \
@@ -34,6 +32,9 @@ ASSEMBLY_SOURCES =			\
 	$(srcdir)/TrackDatabase.cs	\
 	$(srcdir)/Utility.cs	\
 	$(srcdir)/Hash58.cs \
+	$(srcdir)/ProductionInfo.cs \
+	$(srcdir)/VolumeInfo.cs \
+	$(srcdir)/ModelInfo.cs \
 	$(srcdir)/Hal/HalDevice.cs	\
 	$(srcdir)/Hal/HalDeviceManager.cs	\
 	$(srcdir)/Hal/Volume.cs	\
@@ -43,24 +44,10 @@ ASSEMBLY_SOURCES =			\
 
 ASSEMBLY_RESOURCES =
 
-if BUILD_DOCS
-docdir = `pkg-config monodoc --variable=sourcesdir`
-doc_DATA =              	\
-	ipod-sharp-docs.zip	\
-	ipod-sharp-docs.tree	\
-	ipod-sharp-docs.source
-endif
-
 all: $(ASSEMBLY) 
 
 $(ASSEMBLY): $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES)
-	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0 -r:ICSharpCode.SharpZipLib $(DBUS_LIBS)
-
-update-docs: $(ASSEMBLY)
-	$(DOC_UPDATER) -assembly:$(ASSEMBLY) -path:en
-
-ipod-sharp-docs.zip ipod-sharp-docs.tree: $(srcdir)/en/*/*.xml
-	$(DOC_ASSEMBLER) $(srcdir)/en
+	$(MCS) $(MCS_FLAGS) -unsafe -keyfile:$(top_srcdir)/ipod-sharp.snk -target:library -out:$@ $(ASSEMBLY_SOURCES) $(ASSEMBLY_RESOURCES:%=-resource:%) -r:Mono.Posix -pkg:gtk-sharp-2.0 -r:ICSharpCode.SharpZipLib $(NDESK_DBUS_LIBS)
 
 #install-data-hook:
 #	$(GACUTIL) /i $(ASSEMBLY) /package $(PACKAGE) /gacdir $(libdir) /root $(DESTDIR)$(libdir)
@@ -68,10 +55,7 @@ ipod-sharp-docs.zip ipod-sharp-docs.tree: $(srcdir)/en/*/*.xml
 EXTRA_DIST =			\
 	$(ASSEMBLY_SOURCES)	\
 	$(ASSEMBLY_RESOURCES)	\
-	ipod-sharp.dll.config	\
-	$(srcdir)/en/*.xml	\
-	$(srcdir)/en/*/*.xml	\
-	ipod-sharp-docs.source
+	ipod-sharp.dll.config
 
 CLEANFILES = $(ASSEMBLY) *.mdb
 MAINTAINERCLEANFILES = Makefile.in

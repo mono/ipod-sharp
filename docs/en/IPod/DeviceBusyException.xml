@@ -1,0 +1,29 @@
+<Type Name="DeviceBusyException" FullName="IPod.DeviceBusyException">
+  <TypeSignature Language="C#" Value="public class DeviceBusyException : IPod.DeviceException" />
+  <AssemblyInfo>
+    <AssemblyName>ipod-sharp</AssemblyName>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>IPod.DeviceException</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DeviceBusyException (IPod.Device device);" />
+      <MemberType>Constructor</MemberType>
+      <Parameters>
+        <Parameter Name="device" Type="IPod.Device" />
+      </Parameters>
+      <Docs>
+        <param name="device">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>
