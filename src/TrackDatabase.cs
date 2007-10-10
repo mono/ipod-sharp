@@ -2331,7 +2331,8 @@ namespace IPod
 
         internal bool IsTrackOnDevice(string path)
         {
-            return path.StartsWith(MusicBasePath + "/F");
+            return path.StartsWith(String.Format("{0}{1}f", MusicBasePath, Path.DirectorySeparatorChar)) 
+                || path.StartsWith(String.Format("{0}{1}F", MusicBasePath, Path.DirectorySeparatorChar));
         }
 
         private string FormatSpace(UInt64 bytes)

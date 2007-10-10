@@ -1,3 +1,7 @@
+2007-10-10  Aaron Bockover  <abock@gnome.org>
+
+	* src/TrackDatabase.cs: Fixed bug with IsTrackOnDevice
+
 2007-10-09  Aaron Bockover  <abock@gnome.org>
 
 	* shamrock.m4: 
