@@ -1,5 +1,10 @@
 2007-10-10  Aaron Bockover  <abock@gnome.org>
 
+	* src/Hal/HalDeviceManager.cs:
+	* src/Hal/HalDevice.cs: Reflect the new prefix for PodSleuth properties
+
+2007-10-10  Aaron Bockover  <abock@gnome.org>
+
 	* src/TrackDatabase.cs: Fixed bug with IsTrackOnDevice
 
 2007-10-09  Aaron Bockover  <abock@gnome.org>

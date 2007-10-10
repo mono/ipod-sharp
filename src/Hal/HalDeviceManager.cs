@@ -47,7 +47,7 @@ namespace IPod.HalClient {
         }
 
         private bool IsIPod (Hal.Device device) {
-            return device.PropertyExists ("org.banshee-project.podsleuth.version");
+            return device.PropertyExists ("org.podsleuth.version");
         }
 
         private bool IsMounted (Hal.Device device) {
