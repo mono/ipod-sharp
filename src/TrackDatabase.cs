@@ -1178,7 +1178,7 @@ namespace IPod
                 EpisodeNumber = ToInt32(body, 204);
             }
 
-            if (db.Version >= 19) {
+            if (db.Version >= 19 && body.Length >= 248) {
                 GaplessData = ToInt32 (body, 236);
                 GaplessTrackFlag = ToInt16 (body, 244) == 1;
                 GaplessAlbumFlag = ToInt16 (body, 246) == 1;
