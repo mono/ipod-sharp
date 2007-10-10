@@ -2521,7 +2521,9 @@ namespace IPod
                     dbrec.Save(dbrec, writer);
                 }
 
-                DatabaseHasher.Hash(TrackDbPath, device.FirewireId);
+                if (dbrec.Version >= 25) {
+                    DatabaseHasher.Hash(TrackDbPath, device.FirewireId);
+                }
 
                 foreach (Track track in tracksToRemove)
                 {

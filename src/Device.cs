@@ -191,7 +191,11 @@ namespace IPod
         
         internal ArtworkFormat LookupArtworkFormat (int correlationId)
         {
-            return artwork_formats [correlationId];
+            if (artwork_formats.ContainsKey (correlationId)) {
+                return artwork_formats[correlationId];
+            } else {
+                return null;
+            }
         }
 
         private void LoadEqualizers ()

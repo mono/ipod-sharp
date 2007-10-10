@@ -77,7 +77,11 @@ namespace IPod {
             this.db = db;
 
             foreach (ImageNameRecord name in item.Names) {
-                thumbnails.Add (new Thumbnail (this, name));
+                try {
+                    thumbnails.Add (new Thumbnail (this, name));
+                } catch (Exception e) {
+                    Console.Error.WriteLine ("ipod-sharp: Failed to read thumbnail: " + e.Message);
+                }
             }
         }
 
