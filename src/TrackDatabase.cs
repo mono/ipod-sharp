@@ -2490,23 +2490,9 @@ namespace IPod
             }
         }
 
-        private void AssignRightSideArtwork ()
-        {
-            if (artdb == null)
-                return;
-            
-            foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList.Tracks) {
-                Photo photo = artdb.LookupPhotoByTrackId (track.DatabaseId);
-                if (photo != null) {
-                    track.RightSideArtworkId = photo.Id;
-                }
-            }
-        }
-
         public void Save()
         {
             CheckFreeSpace();
-            AssignRightSideArtwork ();
 
             // make sure all the new tracks have file names, and that they exist
             foreach (Track track in tracksToAdd)

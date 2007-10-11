@@ -351,6 +351,7 @@ namespace IPod {
                 if (db.ArtworkDatabase != null) {
                     coverPhoto = db.ArtworkDatabase.CreatePhoto ();
                     coverPhoto.Record.TrackId = record.DatabaseId;
+                    record.RightSideArtworkId = coverPhoto.Id;
                 }
             }
 
