@@ -1059,6 +1059,7 @@ namespace IPod
         public int GaplessData;
         public bool GaplessTrackFlag;
         public bool GaplessAlbumFlag;
+        public int RightSideArtworkId;
 
         public ReadOnlyCollection<DetailRecord> Details
         {
@@ -1312,6 +1313,8 @@ namespace IPod
                 writer.Write (0);
                 writer.Write (GaplessTrackFlag ? (short) 0 : (short) 1);
                 writer.Write (GaplessAlbumFlag ? (short) 0 : (short) 1);
+                writer.Write (new byte[92]); // more random unknown stuff
+                writer.Write (RightSideArtworkId);
             }
 
             writer.Flush();
@@ -1863,6 +1866,8 @@ namespace IPod
                 }
             }
         }
+
+        
 
         public override void Save(DatabaseRecord db, BinaryWriter writer)
         {
@@ -2485,9 +2490,23 @@ namespace IPod
             }
         }
 
+        private void AssignRightSideArtwork ()
+        {
+            if (artdb == null)
+                return;
+            
+            foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList.Tracks) {
+                Photo photo = artdb.LookupPhotoByTrackId (track.DatabaseId);
+                if (photo != null) {
+                    track.RightSideArtworkId = photo.Id;
+                }
+            }
+        }
+
         public void Save()
         {
             CheckFreeSpace();
+            AssignRightSideArtwork ();
 
             // make sure all the new tracks have file names, and that they exist
             foreach (Track track in tracksToAdd)
