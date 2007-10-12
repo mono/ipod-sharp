@@ -2,7 +2,7 @@ MCS_FLAGS = -debug
 ASSEMBLY = ipod-sharp-firmware.dll
 
 ipoddir = $(prefix)/lib/ipod-sharp
-ipod_DATA = $(ASSEMBLY)
+ipod_SCRIPTS = $(ASSEMBLY) $(ASSEMBLY).mdb
 
 ASSEMBLY_SOURCES = \
 	$(srcdir)/DmgImage.cs \

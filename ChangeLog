@@ -1,3 +1,12 @@
+2007-10-11  Aaron Bockover  <abock@gnome.org>
+
+	* src/Firmware/Makefile.am:
+	* ui/Makefile.am:
+	* src/Makefile.am: Install the .mdb files
+
+	* src/TrackDatabase.cs: Return DetailType=32 as generic data since we
+	don't know how to handle it right now
+
 2007-10-10  Aaron Bockover  <abock@gnome.org>
 
 	* src/Hal/HalDeviceManager.cs:

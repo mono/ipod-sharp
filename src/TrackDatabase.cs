@@ -808,10 +808,10 @@ namespace IPod
 
             Type = (DetailType)ToInt32(body, 0);
 
-            if ((int)Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex &&
+            if (((int)Type > 50 && Type != DetailType.Misc && Type != DetailType.LibraryIndex &&
                 Type != DetailType.LibraryIndex2 && Type != DetailType.AlbumListArtist &&
-                Type != DetailType.AlbumListAlbum &&
-                Type != DetailType.AlbumListPodcastUrl && Type != DetailType.AlbumListTitle) {
+                Type != DetailType.AlbumListAlbum && Type != DetailType.AlbumListPodcastUrl && 
+                Type != DetailType.AlbumListTitle) || (int)Type == 32) {
                 genericData = body;
                 return;
             }
