@@ -1313,6 +1313,9 @@ namespace IPod
                 writer.Write (0);
                 writer.Write (GaplessTrackFlag ? (short) 0 : (short) 1);
                 writer.Write (GaplessAlbumFlag ? (short) 0 : (short) 1);
+            }
+
+            if (db.Version >= 25) {
                 writer.Write (new byte[92]); // more random unknown stuff
                 writer.Write (RightSideArtworkId);
             }
