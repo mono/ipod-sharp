@@ -35,10 +35,11 @@ ipod-sharp-ui.pc
 src/Makefile
 src/Firmware/Makefile
 ui/Makefile
-tools/Makefile
-tests/Makefile
 docs/Makefile
 ])
+
+# tests/Makefile
+# tools/Makefile
 
 echo "
     Installation Prefix:     ${prefix}
