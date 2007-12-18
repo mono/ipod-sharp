@@ -34,8 +34,14 @@ MAINTAINERCLEANFILES = \
 	intltool-update.in  \
 	mkinstalldirs
 
+release-tag:
+	@-test ! -z $$MONO_USER || { echo "Must set MONO_USER env."; exit 1; }; \
+	svn cp svn+ssh://$$MONO_USER@mono-cvs.ximian.com/source/trunk/ipod-sharp \
+		svn+ssh://$$MONO_USER@mono-cvs.ximian.com/source/tags/ipod-sharp-$(VERSION) -m "tag for $(VERSION)"
 
-release: dist
-	svn cp svn+ssh://jwilcox@mono-cvs.ximian.com/source/trunk/ipod-sharp \
-	svn+ssh://jwilcox@mono-cvs.ximian.com/source/tags/ipod-sharp-$(VERSION) -m "tag for $(VERSION)"
+snorp-upload: distcheck
 	scp ipod-sharp-$(VERSION).tar.gz root@snorp.net:/var/www/files/ipod-sharp
+
+abock-upload: distcheck
+	scp ChangeLog ipod-sharp-$(VERSION).tar.gz banshee@banshee-project.org:public_html/files/ipod-sharp
+

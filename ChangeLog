@@ -1,3 +1,9 @@
+2007-12-18  Aaron Bockover  <abock@gnome.org>
+
+	Released 0.8.0
+
+	* NEWS: Updated
+
 2007-10-11  Aaron Bockover  <abock@gnome.org>
 
 	* src/Firmware/Makefile.am:
