@@ -1,3 +1,22 @@
+2008-09-03  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* src/TrackDatabase.cs: Split out GetHash method that returns a byte []
+	for testability.
+
+	* src/Hal/HalDevice.cs: Fix issue with mono 2.0 compiler.
+
+	* src/Hash58.cs: Fix bug where the newest iPods (Classic and Nano) that
+	require the crazy new hash weren't showing any songs on the device once
+	the track database file grew bigger than a certain size.  Take the new
+	data tables from libgpod that precalculate the constants (BGO #536741).
+
+	* tests/IPodTests.cs: Add internal subclasses of Device and VolumeInfo so
+	we can get the tests working again, but for now comment all the tests out.
+
+	* tests/Makefile.am:
+	* tests/HashTests.cs: New file for testing the hashing fix mentioned
+	above.
+
 2007-12-18  Aaron Bockover  <abock@gnome.org>
 
 	Released 0.8.0

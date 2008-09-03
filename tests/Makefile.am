@@ -1,5 +1,6 @@
 TEST_SOURCES =			\
-	$(srcdir)/IPodTests.cs
+	$(srcdir)/IPodTests.cs \
+	$(srcdir)/HashTests.cs
 
 TEST_ASSEMBLY = ipod-sharp-tests.dll
 
