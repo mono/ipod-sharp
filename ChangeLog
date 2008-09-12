@@ -1,3 +1,11 @@
+2008-09-11  Aaron Bockover  <abock@gnome.org>
+
+	Released 0.8.1
+
+	* configure.ac: Bumped Version
+
+	* NEWS: Updated
+
 2008-09-03  Gabriel Burt  <gabriel.burt@gmail.com>
 
 	* src/TrackDatabase.cs: Split out GetHash method that returns a byte []

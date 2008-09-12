@@ -43,5 +43,5 @@ snorp-upload: distcheck
 	scp ipod-sharp-$(VERSION).tar.gz root@snorp.net:/var/www/files/ipod-sharp
 
 abock-upload: distcheck
-	scp ChangeLog ipod-sharp-$(VERSION).tar.gz banshee@banshee-project.org:public_html/files/ipod-sharp
+	scp ChangeLog ipod-sharp-$(VERSION).tar.gz bansheeweb@banshee-project.org:download.banshee-project.org/ipod-sharp
 
