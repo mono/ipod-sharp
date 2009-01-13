@@ -1,3 +1,9 @@
+2009-01-13  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* src/ArtworkFormat.cs:
+	* src/Photo.cs: Patch from Nicholas Doyle overriding ArtworkFormat's Equal
+	method, helps avoid a lot of dupliate cover art/wasted space (BGO #555329)
+
 2008-09-11  Aaron Bockover  <abock@gnome.org>
 
 	Released 0.8.1

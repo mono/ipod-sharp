@@ -67,5 +67,25 @@ namespace IPod
         public short CorrelationId {
             get { return correlationId; }
         }
+
+        public override int GetHashCode ()
+        {
+            return String.Format ("{0}{1}{2}{3}{4}{5}{6}",
+                Usage, Width, Height, CorrelationId, Size, PixelFormat, Rotation
+            ).GetHashCode ();
+        }
+
+        public override bool Equals (object right) {
+            ArtworkFormat a = right as ArtworkFormat;
+            return
+                a != null &&
+                a.Usage == this.Usage &&
+                a.Width == this.Width &&
+                a.Height == this.Height &&
+                a.CorrelationId == this.CorrelationId &&
+                a.Size == this.Size &&
+                a.PixelFormat == this.PixelFormat &&
+                a.Rotation == this.Rotation;
+        }
     }
 }

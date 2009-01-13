@@ -112,7 +112,7 @@ namespace IPod {
 
         public Thumbnail LookupThumbnail (ArtworkFormat format) {
             foreach (Thumbnail thumbnail in thumbnails) {
-                if (thumbnail.Format == format) {
+                if (thumbnail.Format.Equals (format)) {
                     return thumbnail;
                 }
             }
