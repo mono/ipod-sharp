@@ -1,3 +1,8 @@
+2009-03-28  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* src/Track.cs: In all string properties, remove the detail if the
+	value is null or empty (BGO #577124).
+
 2009-01-20  Aaron Bockover  <abock@gnome.org>
 
 	Released 0.8.2

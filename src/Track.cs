@@ -154,8 +154,7 @@ namespace IPod {
                 DetailRecord detail = record.GetDetail (DetailType.Title);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail (DetailType.Title);
-                detail.Value = value;
+                SetDetailValue (DetailType.Title, value);
             }
         }
         
@@ -164,8 +163,7 @@ namespace IPod {
                 DetailRecord detail = record.GetDetail (DetailType.Artist);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail (DetailType.Artist);
-                detail.Value = value;
+                SetDetailValue (DetailType.Artist, value);
             }
         }
         
@@ -174,19 +172,16 @@ namespace IPod {
                 DetailRecord detail = record.GetDetail (DetailType.Album);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail (DetailType.Album);
-                detail.Value = value;
+                SetDetailValue (DetailType.Album, value);
             }
         }
-
 
         public string AlbumArtist {
             get {
                 DetailRecord detail = record.GetDetail(DetailType.AlbumArtist);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail(DetailType.AlbumArtist);
-                detail.Value = value;
+                SetDetailValue (DetailType.AlbumArtist, value);
             }
         }
         
@@ -195,8 +190,7 @@ namespace IPod {
                 DetailRecord detail = record.GetDetail (DetailType.Genre);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail (DetailType.Genre);
-                detail.Value = value;
+                SetDetailValue (DetailType.Genre, value);
             }
         }
         
@@ -205,8 +199,7 @@ namespace IPod {
                 DetailRecord detail = record.GetDetail (DetailType.Comment);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail (DetailType.Comment);
-                detail.Value = value;
+                SetDetailValue (DetailType.Comment, value);
             }
         }
 
@@ -215,8 +208,7 @@ namespace IPod {
                 DetailRecord detail = record.GetDetail(DetailType.Composer);
                 return detail.Value;
             } set {
-                DetailRecord detail = record.GetDetail(DetailType.Composer);
-                detail.Value = value;
+                SetDetailValue (DetailType.Composer, value);
             }
         }
 
@@ -279,17 +271,17 @@ namespace IPod {
 
         public string PodcastUrl {
             get { return record.GetDetail (DetailType.PodcastUrl).Value; }
-            set { record.GetDetail (DetailType.PodcastUrl).Value = value; }
+            set { SetDetailValue (DetailType.PodcastUrl, value); }
         }
 
         public string Category {
             get { return record.GetDetail (DetailType.Category).Value; }
-            set { record.GetDetail (DetailType.Category).Value = value; }
+            set { SetDetailValue (DetailType.Category, value); }
         }
 
         public string Grouping {
             get { return record.GetDetail (DetailType.Grouping).Value; }
-            set { record.GetDetail (DetailType.Grouping).Value = value; }
+            set { SetDetailValue (DetailType.Grouping, value); }
         }
 
         public bool IsProtected {
@@ -416,6 +408,15 @@ namespace IPod {
             builder.Append (path);
 
             return new Uri (builder.ToString (), true);
+        }
+        
+        private void SetDetailValue (IPod.DetailType type, string val)
+        {
+            DetailRecord detail = record.GetDetail (type);
+            if (String.IsNullOrEmpty (val))
+                record.RemoveDetail (detail);
+            else
+                detail.Value = val;
         }
     }
 }
