@@ -2510,6 +2510,9 @@ namespace IPod
                 {
                     throw new DatabaseWriteException(String.Format("File '{0}' for track '{1}' does not exist",
                                                                      track.FileName, track.Title));
+                } else if (track.Duration.Equals (TimeSpan.Zero)) {
+                    throw new DatabaseWriteException(String.Format("Track '{0}' has no Duration assigned",
+                                                                     track.Title));
                 }
             }
 
