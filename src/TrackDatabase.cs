@@ -2093,7 +2093,7 @@ namespace IPod
 
         private string PlayCountsPath
         {
-            get { return ControlPath + "iTunes/Play Counts"; }
+            get { return ControlPath + "/iTunes/Play Counts"; }
         }
 
         internal string Name
@@ -2234,7 +2234,7 @@ namespace IPod
 
         private bool LoadOnTheGo(int num)
         {
-            string path = ControlPath + "iTunes/OTGPlaylistInfo";
+            string path = ControlPath + "/iTunes/OTGPlaylistInfo";
 
             if (num != 0)
             {

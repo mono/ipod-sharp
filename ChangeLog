@@ -1,3 +1,9 @@
+2009-05-27  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* src/TrackDatabase.cs: Fix PlayCountsPath (BGO #583760). 
+	Consequently, as pointed out by Gabriel Burt, fix the load of
+	OTGPlaylistInfo.
+
 2009-03-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* src/TrackDatabase.cs: throw error if no duration was specified
@@ -20,7 +26,7 @@
 
 	* src/ArtworkFormat.cs:
 	* src/Photo.cs: Patch from Nicholas Doyle overriding ArtworkFormat's Equal
-	method, helps avoid a lot of dupliate cover art/wasted space (BGO #555329)
+	method, helps avoid a lot of duplicate cover art/wasted space (BGO #555329)
 
 2008-09-11  Aaron Bockover  <abock@gnome.org>
 
