@@ -1,3 +1,8 @@
+2009-06-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* src/TrackDatabase: Bail out if we have more numEntries than
+	tracks. Fixes BGO#585397.
+
 2009-05-27  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* src/TrackDatabase.cs: Fix PlayCountsPath (BGO #583760). 

@@ -2200,6 +2200,12 @@ namespace IPod
                 int entryLength = dbrec.ToInt32(header, 8);
                 int numEntries = dbrec.ToInt32(header, 12);
 
+                if (numEntries > tracks.Count)
+                {
+                    //invalid data
+                    return;
+                }
+
                 for (int i = 0; i < numEntries; i++)
                 {
 
