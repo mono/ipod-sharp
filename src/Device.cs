@@ -278,11 +278,11 @@ namespace IPod
 
         public void Save ()
         {
-            if (TrackDatabase != null) {
+            if (track_database != null) {
                 TrackDatabase.Save ();
             }
             
-            if (PhotoDatabase != null) {
+            if (photo_database != null) {
                 PhotoDatabase.Save ();
             }
             

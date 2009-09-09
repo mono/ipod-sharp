@@ -1,3 +1,10 @@
+2009-09-09  Andrés G. Aragoneses  <aaragoneses@novell.com>
+
+	* src/Device.cs: In Device::Save(), check for null against the
+	fields instead of the properties for the databases, otherwise
+	it would always be true. Helps BGO#588101 as a workaround for
+	the cases in which the PhotoDatabase was not used at all.
+
 2009-06-30  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* src/TrackDatabase: Bail out if we have more numEntries than
