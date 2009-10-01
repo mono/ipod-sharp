@@ -1,3 +1,13 @@
+2009-10-01  Aaron Bockover  <abock@gnome.org>
+
+	Released 0.8.3
+
+	* configure.ac: Bumped Version
+
+	* NEWS: Updated
+
+	* Makefile.am: Added new release targets, sha256sum the files
+
 2009-09-09  Andrés G. Aragoneses  <aaragoneses@novell.com>
 
 	* src/Device.cs: In Device::Save(), check for null against the
