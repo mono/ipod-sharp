@@ -1,3 +1,11 @@
+2009-10-27  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* src/Track.cs: Add podcast-related properties, including DateReleased,
+	Description, and more.
+
+	* src/TrackDatabase.cs: Support reading and writing the podcast playlist.
+	Most of the fix needed for BGO #434237
+
 2009-10-01  Aaron Bockover  <abock@gnome.org>
 
 	Released 0.8.3

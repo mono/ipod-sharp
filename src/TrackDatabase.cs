@@ -14,6 +14,7 @@ namespace IPod
 
     internal abstract class Record
     {
+        internal bool DEBUG = false;
 
         public const int PadLength = 8;
 
@@ -154,6 +155,7 @@ namespace IPod
             base.Read(db, reader);
 
             data = reader.ReadBytes(this.HeaderTwo - 12);
+            if (DEBUG) Console.WriteLine ("  {0}", this.Name);
         }
 
         public override void Save(DatabaseRecord db, BinaryWriter writer)
@@ -167,23 +169,23 @@ namespace IPod
 
     internal class PlaylistItemRecord : TrackDbRecord
     {
-
-        private int unknownOne = 0;
-        private int unknownTwo = 0;
-        private List<DetailRecord> details = new List<DetailRecord>();
+        public bool IsPodcastGroup;
+        private Int16 unknownOne = 0;
+        public int GroupID = 0;
+        internal List<DetailRecord> details = new List<DetailRecord>();
         private DetailRecord posrec;
 
         public int TrackId;
-        public int Position
-        {
+
+        public int Position {
             get { return posrec.Position; }
             set { posrec.Position = value; }
         }
 
         public int Timestamp;
+        public int PodcastGroupRef;
 
-        public PlaylistItemRecord(bool isbe)
-            : base(isbe)
+        public PlaylistItemRecord(bool isbe) : base(isbe)
         {
             this.Name = "mhip";
             posrec = new DetailRecord(isbe);
@@ -198,12 +200,23 @@ namespace IPod
             byte[] body = reader.ReadBytes(this.HeaderOne - 12);
 
             int numDataObjects = ToInt32(body, 0);
-            unknownOne = ToInt32(body, 4);
-            unknownTwo = ToInt32(body, 8);
+            IsPodcastGroup = ToInt16(body, 4) == 0x100;
+            unknownOne = ToInt16(body, 6);
+            GroupID = ToInt32(body, 8);
             TrackId = ToInt32(body, 12);
             Timestamp = ToInt32(body, 16);
+            PodcastGroupRef = ToInt32(body, 20);
 
             details.Clear();
+
+            if (DEBUG) {
+                if (IsPodcastGroup)
+                    Console.WriteLine ("  mhip (podcast group, id {0})", GroupID);
+                else if (PodcastGroupRef > 0)
+                    Console.WriteLine ("  mhip (trackid {0}, podcast {1})", TrackId, PodcastGroupRef);
+                else
+                    Console.WriteLine ("  mhip (trackid {0})", TrackId);
+            }
 
             for (int i = 0; i < numDataObjects; i++)
             {
@@ -220,9 +233,13 @@ namespace IPod
             }
         }
 
+        public void AddDetail (DetailRecord detail)
+        {
+            details.Insert (0, detail);
+        }
+
         public override void Save(DatabaseRecord db, BinaryWriter writer)
         {
-
             int childrenLength = 0;
             byte[] childrenData = new byte[0];
 
@@ -241,23 +258,28 @@ namespace IPod
             }
 
             WriteName(writer);
-            writer.Write(32 + PadLength);
+            writer.Write(52 + PadLength);
 
             // as of version 13, the detail record counts as a child
             if (db.Version >= 13)
             {
-                writer.Write(32 + childrenLength + PadLength);
+                writer.Write(52 + childrenLength + PadLength);
             }
             else
             {
-                writer.Write(32 + PadLength);
+                writer.Write(52 + PadLength);
             }
 
             writer.Write(details.Count);
+            writer.Write((Int16) (IsPodcastGroup ? 0x100 : 0));
             writer.Write(unknownOne);
-            writer.Write(unknownTwo);
+            writer.Write(GroupID);
             writer.Write(TrackId);
             writer.Write(Timestamp);
+            writer.Write(PodcastGroupRef);
+            writer.Write((int)0); // unk4
+            writer.Write((int)0); // unk5
+            writer.Write((long)0);// unk6
             writer.Write(new byte[PadLength]);
             writer.Write(childrenData, 0, childrenLength);
         }
@@ -304,7 +326,7 @@ namespace IPod
         private bool isLibrary;
 
         private List<DetailRecord> stringDetails = new List<DetailRecord>();
-        private List<Record> otherDetails = new List<Record>();
+        internal List<Record> otherDetails = new List<Record>();
         private List<PlaylistItemRecord> playlistItems = new List<PlaylistItemRecord>();
 
         private DetailRecord nameRecord;
@@ -312,16 +334,14 @@ namespace IPod
         public bool IsHidden;
         public int Timestamp;
         public int Id;
-        public bool IsPodcast;
         public SortOrder Order = SortOrder.Manual;
 
-        public string PlaylistName
-        {
+        public bool IsPodcast;
+
+        public string PlaylistName {
             get { return nameRecord.Value; }
-            set
-            {
-                if (nameRecord == null)
-                {
+            set {
+                if (nameRecord == null) {
                     nameRecord = new DetailRecord(IsBE);
                     nameRecord.Type = DetailType.Title;
                     stringDetails.Add(nameRecord);
@@ -331,12 +351,16 @@ namespace IPod
             }
         }
 
-        public ReadOnlyCollection<PlaylistItemRecord> Items
-        {
+        public ReadOnlyCollection<PlaylistItemRecord> Items {
             get
             {
                 return new ReadOnlyCollection<PlaylistItemRecord>(playlistItems);
             }
+        }
+
+        public bool IsLibrary {
+            get { return isLibrary; }
+            set { isLibrary = value; }
         }
 
         public PlaylistRecord(bool isLibrary, bool isbe)
@@ -349,6 +373,10 @@ namespace IPod
         public void Clear()
         {
             playlistItems.Clear();
+        }
+
+        public int Count {
+            get { return playlistItems.Count; }
         }
 
         public bool RemoveItem(int index)
@@ -372,6 +400,11 @@ namespace IPod
             }
         }
 
+        public void RemoveItem (PlaylistItemRecord item)
+        {
+            playlistItems.Remove (item);
+        }
+
         public void AddItem(PlaylistItemRecord rec)
         {
             InsertItem(-1, rec);
@@ -392,6 +425,11 @@ namespace IPod
         public PlaylistItemRecord CreateItem()
         {
             return new PlaylistItemRecord(IsBE);
+        }
+
+        public int IndexOf (PlaylistItemRecord item)
+        {
+            return playlistItems.IndexOf (item);
         }
 
         public int IndexOf(int trackid)
@@ -419,10 +457,7 @@ namespace IPod
 
             int numdetails = ToInt32(body, 0);
             int numitems = ToInt32(body, 4);
-            int hiddenFlag = ToInt32(body, 8);
-
-            if (hiddenFlag == 1)
-                IsHidden = true;
+            IsHidden = body[8] == 1;
 
             Timestamp = ToInt32(body, 12);
             Id = ToInt32(body, 16);
@@ -430,18 +465,18 @@ namespace IPod
 
             if (db.Version >= 13)
             {
-                IsPodcast = ToInt16(body, 30) == 1 ? true : false;
+                IsPodcast = body[30] == 1;
                 Order = (SortOrder)ToInt32(body, 32);
             }
+
+            if (DEBUG) Console.WriteLine (" mhyp (id {0}, w/ {1} items, podcast pl? {2})", Id, numitems, IsPodcast);
 
             stringDetails.Clear();
             otherDetails.Clear();
             playlistItems.Clear();
 
-            for (int i = 0; i < numdetails; i++)
-            {
-                if (i == 0)
-                {
+            for (int i = 0; i < numdetails; i++) {
+                if (i == 0) {
                     nameRecord = new DetailRecord(IsBE);
                     nameRecord.Read(db, reader);
                     stringDetails.Add(nameRecord);
@@ -523,31 +558,97 @@ namespace IPod
 
         public override void Save(DatabaseRecord db, BinaryWriter writer)
         {
+            Save (db, writer, false);
+        }
 
-            if (isLibrary)
-            {
+        public void Save(DatabaseRecord db, BinaryWriter writer, bool podcast_mhsd)
+        {
+            if (isLibrary) {
                 CreateLibraryIndices(db[DataSetIndex.Library].TrackList);
             }
 
             MemoryStream stream = new MemoryStream();
             BinaryWriter childWriter = new EndianBinaryWriter(stream, IsBE);
 
-            foreach (TrackDbRecord rec in stringDetails)
-            {
+            foreach (DetailRecord rec in stringDetails) {
                 rec.Save(db, childWriter);
             }
 
-            foreach (TrackDbRecord rec in otherDetails)
-            {
+            foreach (TrackDbRecord rec in otherDetails) {
                 rec.Save(db, childWriter);
             }
 
-            int pos = 1;
-            foreach (PlaylistItemRecord item in playlistItems)
-            {
-                item.Position = pos++;
-                item.Save(db, childWriter);
+            int item_count = 0;
+            if (IsPodcast && podcast_mhsd) {
+                // the podcast playlist has a different structure than normal playlists.
+                // namely, instead of just a list of tracks, it contains an entry for a podcast
+                // followed by the episodes for that podcast, repeat
+                var items = new List<PlaylistItemRecord> ();
+
+                // Identify unique albums (podcast/groups) and create special mhip entries for them
+                int current_group_id = 1;
+                var groups = new Dictionary<string, PlaylistItemRecord> ();
+                var group_counts = new Dictionary<PlaylistItemRecord, int> ();
+                var tracks = db[DataSetIndex.Library].TrackList;
+
+                // some podcast entries are already in the list of playlistItems (eg ones that were
+                // already on the iPod); for new episodes, the podcast entry doesn't exist, so create it
+                foreach (var item in playlistItems) {
+
+                    // found an existing podcast entry
+                    if (item.IsPodcastGroup) {
+                        groups[item.Name] = item;
+                        group_counts[item] = 0;
+                        items.Add (item);
+                        continue;
+                    }
+
+                    var track = tracks.LookupTrack (item.TrackId);
+                    if (track == null)
+                        continue;
+
+                    // see if we already have a podcast entry for this episode's podcast
+                    // if so, reuse it, if not, make a new one
+                    var name = track.GetDetail (DetailType.Album).Value;
+                    if (!groups.ContainsKey (name)) {
+                        var group =  new PlaylistItemRecord (IsBE);
+                        group.IsPodcastGroup = true;
+                        group.TrackId = 0;
+                        group.GroupID = current_group_id++;
+                        group.details.Clear ();
+                        group.AddDetail (new DetailRecord (DetailType.Title, name, IsBE));
+                        groups[name] = group;
+                        group_counts[group] = 0;
+                        items.Add (group);
+                    }
+
+                    var podcast = groups[name];
+                    group_counts[podcast]++;
+                    item.PodcastGroupRef = podcast.GroupID;
+                    items.Insert (items.IndexOf (podcast) + 1, item);
+                }
+
+                int pos = 1;
+                playlistItems.Clear ();
+                foreach (PlaylistItemRecord item in items) {
+                    if (!item.IsPodcastGroup) {
+                        item.Position = pos++;
+                    } else if (group_counts[item] == 0) {
+                        // skip podcast entries that no longer have any episodes
+                        continue;
+                    }
+
+                    item.Save(db, childWriter);
+                    playlistItems.Add (item);
+                }
+            } else {
+                // normal playlist; just add all the items
+                foreach (PlaylistItemRecord item in playlistItems) {
+                    item.Save(db, childWriter);
+                }
             }
+
+            item_count = playlistItems.Count;
 
             childWriter.Flush();
             byte[] childData = stream.GetBuffer();
@@ -570,8 +671,11 @@ namespace IPod
             writer.Write(reclen + PadLength);
             writer.Write(reclen + PadLength + childDataLength);
             writer.Write(stringDetails.Count + otherDetails.Count);
-            writer.Write(playlistItems.Count);
-            writer.Write(IsHidden ? 1 : 0);
+            writer.Write(item_count);
+            writer.Write(IsHidden ? (byte)1 : (byte)0);
+            writer.Write((byte)0); // three unknown flags
+            writer.Write((byte)0);
+            writer.Write((byte)0);
             writer.Write(Timestamp);
             writer.Write(Id);
             writer.Write(unknownOne);
@@ -580,7 +684,8 @@ namespace IPod
 
             if (db.Version >= 13)
             {
-                writer.Write(IsPodcast ? (short)1 : (short)0);
+                writer.Write(IsPodcast ? (byte)1 : (byte)0);
+                writer.Write((byte)0);
                 writer.Write((int)Order);
             }
 
@@ -695,6 +800,11 @@ namespace IPod
 
         public override void Save(DatabaseRecord db, BinaryWriter writer)
         {
+            Save (db, writer, false);
+        }
+
+        public void Save(DatabaseRecord db, BinaryWriter writer, bool podcast_mhsd)
+        {
             WriteName(writer);
             writer.Write(12 + PadLength);
             writer.Write(playlists.Count);
@@ -702,7 +812,7 @@ namespace IPod
 
             foreach (PlaylistRecord rec in playlists)
             {
-                rec.Save(db, writer);
+                rec.Save(db, writer, podcast_mhsd);
             }
         }
 
@@ -743,6 +853,7 @@ namespace IPod
         Category = 9,
         Composer = 12,
         Grouping = 13,
+        Description = 14,
         PodcastUrl = 15,
         PodcastUrl2 = 16,
         ChapterData = 17,
@@ -889,11 +1000,17 @@ namespace IPod
             {
                 Position = ToInt32(body, 12);
             }
+
+            if (DEBUG) {
+                if (Type == DetailType.Misc)
+                    Console.WriteLine ("    mhod (misc, pos {0})", Position);
+                else
+                    Console.WriteLine ("    mhod ({1},  val {0})", Value, Type);
+            }
         }
 
         public override void Save(DatabaseRecord db, BinaryWriter writer)
         {
-
             if (Value == null)
                 Value = String.Empty;
 
@@ -1198,7 +1315,6 @@ namespace IPod
 
         public override void Save(DatabaseRecord db, BinaryWriter writer)
         {
-
             MemoryStream stream = new MemoryStream();
             BinaryWriter childWriter = new EndianBinaryWriter(stream, IsBE);
 
@@ -1645,7 +1761,7 @@ namespace IPod
         Unknown = -1,
         Library = 1,
         Playlist = 2,
-        PlaylistDuplicate = 3,
+        Podcast = 3,
         AlbumList = 4,
         PlaylistDuplicateDuplicate = 5
     }
@@ -1700,6 +1816,7 @@ namespace IPod
             byte[] body = reader.ReadBytes(this.HeaderOne - 12);
 
             Index = (DataSetIndex)ToInt32(body, 0);
+            if (DEBUG) Console.WriteLine (" mhsd {0}", Index);
 
             switch (Index)
             {
@@ -1708,8 +1825,8 @@ namespace IPod
                     this.TrackList.Read(db, reader);
                     break;
                 case DataSetIndex.Playlist:
-                case DataSetIndex.PlaylistDuplicate:
                 case DataSetIndex.PlaylistDuplicateDuplicate:
+                case DataSetIndex.Podcast:
                     this.PlaylistList = new PlaylistListRecord(IsBE);
                     this.PlaylistList.Read(db, reader);
                     break;
@@ -1737,9 +1854,14 @@ namespace IPod
                     TrackList.Save(db, childWriter);
                     break;
                 case DataSetIndex.Playlist:
-                case DataSetIndex.PlaylistDuplicate:
                 case DataSetIndex.PlaylistDuplicateDuplicate:
                     PlaylistList.Save(db, childWriter);
+                    break;
+                case DataSetIndex.Podcast:
+                    // Write out the same playlists as the normal playlist dataset,
+                    // except write the podcast playlist in a modified way (grouped by
+                    // album/podcast)
+                    db[DataSetIndex.Playlist].PlaylistList.Save (db, childWriter, true);
                     break;
                 case DataSetIndex.AlbumList:
                     AlbumList.Save(db, childWriter);
@@ -1781,6 +1903,8 @@ namespace IPod
         public long Id;
         public byte[] Hash = new byte[20];
 
+        public Device Device;
+
         public DataSetRecord this[DataSetIndex index]
         {
             get
@@ -1795,13 +1919,13 @@ namespace IPod
             }
         }
 
-        public DatabaseRecord(bool isbe)
+        public DatabaseRecord(Device device, bool isbe)
             : base(isbe)
         {
+            this.Device = device;
             datasets.Add(new DataSetRecord(DataSetIndex.Library, isbe));
-
-            DataSetRecord plrec = new DataSetRecord(DataSetIndex.Playlist, isbe);
-            datasets.Add(plrec);
+            datasets.Add(new DataSetRecord(DataSetIndex.Podcast, isbe));
+            datasets.Add(new DataSetRecord(DataSetIndex.Playlist, isbe));
 
             this.Name = "mhbd";
         }
@@ -1837,13 +1961,26 @@ namespace IPod
                 DataSetRecord rec = new DataSetRecord(IsBE);
                 rec.Read(this, reader);
 
-                if (rec.Index != DataSetIndex.PlaylistDuplicate &&
-                    rec.Index != DataSetIndex.PlaylistDuplicateDuplicate &&
+                if (rec.Index != DataSetIndex.PlaylistDuplicateDuplicate &&
                     rec.Index != DataSetIndex.AlbumList) {
                     datasets.Add(rec);
                 }
             }
+
+            if (this[DataSetIndex.Podcast] == null) {
+                datasets.Add (new DataSetRecord(DataSetIndex.Podcast, IsBE));
+            }
+
+            datasets.Sort ((a, b) => {
+                return Array.IndexOf (data_set_order, a.Index) - Array.IndexOf (data_set_order, b.Index);
+            });
         }
+
+        // Podcast comes before Playlist, even though its enum-int val is higher
+        private static DataSetIndex [] data_set_order = new DataSetIndex [] {
+            DataSetIndex.Library, DataSetIndex.Podcast, DataSetIndex.Playlist,
+            DataSetIndex.AlbumList, DataSetIndex.PlaylistDuplicateDuplicate
+        };
 
         private void ReassignTrackIds()
         {
@@ -1879,9 +2016,14 @@ namespace IPod
             MemoryStream stream = new MemoryStream();
             BinaryWriter childWriter = new EndianBinaryWriter(stream, IsBE);
 
-            foreach (DataSetRecord rec in datasets)
-            {
-                rec.Save(db, childWriter);
+            int datasets_count = datasets.Count;
+            bool supports_podcasts = Device.ModelInfo.HasCapability ("podcast");
+            foreach (DataSetRecord rec in datasets) {
+                if (rec.Index == DataSetIndex.Podcast && !supports_podcasts) {
+                    datasets_count--;
+                } else {
+                    rec.Save(db, childWriter);
+                }
             }
 
             childWriter.Flush();
@@ -1900,7 +2042,7 @@ namespace IPod
 
             writer.Write(unknownOne);
             writer.Write(Version);
-            writer.Write(datasets.Count);
+            writer.Write(datasets_count);
             writer.Write(Id);
             writer.Write(unknownTwo);
             writer.Write(unknownThree);
@@ -2029,7 +2171,6 @@ namespace IPod
 
     public class TrackDatabase
     {
-
         private const int CopyBufferSize = 8192;
         private const double PercentThreshold = 0.10;
 
@@ -2040,6 +2181,7 @@ namespace IPod
         private List<Track> tracksToRemove = new List<Track>();
 
         private List<Playlist> playlists = new List<Playlist>();
+        private Playlist podcast_playlist;
         private List<Playlist> otgPlaylists = new List<Playlist>();
 
         private Random random = new Random();
@@ -2143,14 +2285,16 @@ namespace IPod
             }
         }
 
-        public int Version
-        {
+        public int Version {
             get { return dbrec.Version; }
         }
 
-        internal PhotoDatabase ArtworkDatabase
-        {
+        internal PhotoDatabase ArtworkDatabase {
             get { return artdb; }
+        }
+
+        internal Playlist Podcasts {
+            get { return podcast_playlist; }
         }
 
         internal TrackDatabase(Device device)
@@ -2175,7 +2319,6 @@ namespace IPod
             }
         }
 
-
         private void Clear()
         {
             dbrec = null;
@@ -2183,6 +2326,7 @@ namespace IPod
             tracksToAdd.Clear();
             tracksToRemove.Clear();
             playlists.Clear();
+            podcast_playlist = null;
             otgPlaylists.Clear();
         }
 
@@ -2195,7 +2339,6 @@ namespace IPod
 
             using (BinaryReader reader = new BinaryReader(File.OpenRead(PlayCountsPath)))
             {
-
                 byte[] header = reader.ReadBytes(96);
                 int entryLength = dbrec.ToInt32(header, 8);
                 int numEntries = dbrec.ToInt32(header, 12);
@@ -2298,7 +2441,6 @@ namespace IPod
 
         private void Reload(bool createFresh)
         {
-
             Clear();
 
             // This blows, we need to use the device model number or something
@@ -2308,42 +2450,65 @@ namespace IPod
             if (!File.Exists(TrackDbPath) || createFresh)
             {
                 Console.WriteLine ("Creating fresh track db: " + TrackDbPath);
-                dbrec = new DatabaseRecord(useBE);
+                dbrec = new DatabaseRecord(device, useBE);
+
                 LoadOnTheGo();
+                CreatePodcastPlaylist ();
                 return;
             }
 
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(TrackDbPath)))
-            {
+            dbrec = new DatabaseRecord(device, useBE);
 
-                dbrec = new DatabaseRecord(useBE);
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(TrackDbPath))) {
                 dbrec.Read(null, reader);
+            }
 
-                // Load the tracks
-                foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList)
-                {
-                    Track t = new Track(this, track);
-                    tracks.Add(t);
-                }
+            // Load the tracks
+            foreach (TrackRecord track in dbrec[DataSetIndex.Library].TrackList)
+            {
+                Track t = new Track(this, track);
+                tracks.Add(t);
+            }
 
-                // Load the play counts
-                LoadPlayCounts();
+            // Load the play counts
+            LoadPlayCounts();
 
-                // Load the playlists
-                foreach (PlaylistRecord listrec in dbrec[DataSetIndex.Playlist].PlaylistList)
-                {
-                    if (listrec.IsHidden)
-                        continue;
+            // Load the playlists
+            foreach (PlaylistRecord listrec in dbrec[DataSetIndex.Playlist].PlaylistList)
+            {
+                if (listrec.IsHidden)
+                    continue;
 
-                    Playlist list = new Playlist(this, listrec);
+                Playlist list = new Playlist(this, listrec);
+
+                if (listrec.IsPodcast)
+                    podcast_playlist = list;
+                else
                     playlists.Add(list);
-                }
+            }
 
-                // Load the On-The-Go playlist
-                LoadOnTheGo();
+            CreatePodcastPlaylist ();
 
-                if (Reloaded != null)
-                    Reloaded(this, new EventArgs());
+            // Load the On-The-Go playlist
+            LoadOnTheGo();
+
+            if (Reloaded != null)
+                Reloaded(this, new EventArgs());
+        }
+
+        private void CreatePodcastPlaylist ()
+        {
+            if (podcast_playlist == null && device.ModelInfo.HasCapability ("podcast")) {
+                var record = new PlaylistRecord (false, dbrec.IsBE) {
+                    IsLibrary = false,
+                    IsHidden = false,
+                    IsPodcast = true,
+                    PlaylistName = "Podcasts",
+                    Order = SortOrder.ReleaseDate
+                };
+
+                podcast_playlist = new Playlist (this, record);
+                dbrec[DataSetIndex.Playlist].PlaylistList.AddPlaylist (record);
             }
         }
 
@@ -2742,6 +2907,10 @@ namespace IPod
                 foreach (Playlist list in playlists)
                 {
                     list.RemoveTrack(track);
+                }
+
+                if (podcast_playlist != null) {
+                    podcast_playlist.RemoveTrack (track);
                 }
 
                 // remove from On-The-Go playlists

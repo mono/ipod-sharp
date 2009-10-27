@@ -47,7 +47,24 @@ namespace IPod {
 
         public MediaType Type {
             get { return record.MediaType; }
-            set { record.MediaType = value; }
+            set {
+                if (record.MediaType == value)
+                    return;
+
+                record.MediaType = value;
+
+                if (value == MediaType.Podcast || value == MediaType.VideoPodcast) {
+                    record.UnknownPodcastFlag = true;
+                    if (db.Podcasts != null) {
+                        db.Podcasts.AddTrack (this);
+                    }
+                } else {
+                    record.UnknownPodcastFlag = false;
+                    if (db.Podcasts != null) {
+                        db.Podcasts.RemoveTrack (this);
+                    }
+                }
+            }
         }
 
         public string FileName {
@@ -138,6 +155,26 @@ namespace IPod {
             get { return record.Year; }
             set { record.Year = value; }
         }
+
+        public DateTime DateReleased {
+            get { return record.DateReleased; }
+            set { record.DateReleased = value; }
+        }
+
+        public bool NotPlayedMark {
+            get { return record.NotPlayedMark; }
+            set { record.NotPlayedMark = value; }
+        }
+
+        public bool RememberPosition {
+            get { return record.RememberPosition; }
+            set { record.RememberPosition = value; }
+        }
+
+        public int BookmarkTime {
+            get { return record.BookmarkTime; }
+            set { record.BookmarkTime = value; }
+        }
         
         public int BitRate {
             get { return record.BitRate; }
@@ -200,6 +237,15 @@ namespace IPod {
                 return detail.Value;
             } set {
                 SetDetailValue (DetailType.Comment, value);
+            }
+        }
+
+        public string Description {
+            get {
+                DetailRecord detail = record.GetDetail (DetailType.Description);
+                return detail.Value;
+            } set {
+                SetDetailValue (DetailType.Description, value);
             }
         }
 
