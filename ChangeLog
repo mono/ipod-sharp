@@ -1,3 +1,7 @@
+2009-11-02  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* configure.ac: Bumped Version
+
 2009-10-27  Gabriel Burt  <gabriel.burt@gmail.com>
 
 	* src/Track.cs: Add podcast-related properties, including DateReleased,

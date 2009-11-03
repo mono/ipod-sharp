@@ -1,4 +1,4 @@
-AC_INIT([ipod-sharp], [0.8.3])
+AC_INIT([ipod-sharp], [0.8.4])
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.13)
 AM_INIT_AUTOMAKE([1.9 dist-bzip2 tar-ustar])
