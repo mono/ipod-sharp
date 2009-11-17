@@ -882,6 +882,8 @@ namespace IPod
     {
 
         private static UnicodeEncoding encoding = new UnicodeEncoding(false, false);
+        private static readonly Encoding[] encodings = { Encoding.BigEndianUnicode, Encoding.Unicode, Encoding.UTF8 };
+        private static readonly byte[][] encodingPreambles = { Encoding.BigEndianUnicode.GetPreamble(), Encoding.Unicode.GetPreamble(), Encoding.UTF8.GetPreamble() };
 
         private int unknownOne;
         private int unknownTwo;
@@ -951,27 +953,43 @@ namespace IPod
                     Position = ToInt32(body, 12);
 
                     int strlen = 0;
-                    //int strenc = 0;
+                    int strenc = 0;
 
                     if ((int)Type < 50 || (int)Type >= 200)
                     {
                         // 'string' mhods       
                         strlen = ToInt32(body, 16);
-                        //strenc = ToInt32 (body, 20); // 0 == UTF16, 1 == UTF8
+                        strenc = ToInt32(body, 20); // 0 or 1: UTF16, 2: UTF8
                         unknownThree = ToInt32(body, 24);
                     }
 
-                    // the strenc field is not what it was thought to be
-                    // latest DBs have the field set to 1 even when the encoding
-                    // is UTF-16. For now I'm just encoding as UTF-16
-                    if (strlen >= 2 && body[29] == '\0')
+                    Encoding mhodEncoding = (strenc == 2) ? Encoding.UTF8 : Encoding.Unicode;
+                    
+                    // check for BOM to override encoding (is this the correct behavior?)
+                    for (int i = 0; i < encodings.Length; ++i)
                     {
-                        Value = encoding.GetString(body, 28, strlen);
+                        if (strlen >= encodingPreambles[i].Length)
+                        {
+                            bool preambleFound = true;
+                            
+                            for (int j = 0; j < encodingPreambles[i].Length; ++j)
+                            {
+                                if (body[28 + j] != encodingPreambles[i][j])
+                                {
+                                    preambleFound = false;
+                                    break;
+                                }
+                            }
+                            
+                            if (preambleFound)
+                            {
+                                mhodEncoding = encodings[i];
+                                break;
+                            }
+                        }
                     }
-                    else
-                    {
-                        Value = Encoding.UTF8.GetString(body, 28, strlen);
-                    }
+                    
+                    Value = mhodEncoding.GetString(body, 28, strlen);
                 }
             }
             else if (Type == DetailType.LibraryIndex ||
