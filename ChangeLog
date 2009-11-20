@@ -1,3 +1,8 @@
+2009-11-20  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* configure.ac:
+	* NEWS: Update for 0.8.5 release
+
 2009-11-16  Gabriel Burt  <gabriel.burt@gmail.com>
 
 	* src/TrackDatabase.cs: Patch from Carl Reinke fixing encoding issue that
