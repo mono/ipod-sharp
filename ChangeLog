@@ -1,3 +1,8 @@
+2010-01-26  Gabriel Burt  <gabriel.burt@gmail.com>
+
+	* configure.ac:
+	* NEWS: Bump to 0.8.6 in prep for next release
+
 2009-11-20  Gabriel Burt  <gabriel.burt@gmail.com>
 
 	* configure.ac:
