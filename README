@@ -1,3 +1,7 @@
+NOTICE: ipod-sharp is no longer maintained.  Banshee has switched to using
+libgpod-sharp; http://gtkpod.org/wiki/Libgpod
+
+
 ipod-sharp is a library that allows manipulation of the iTunesDB used in
 Apple iPod devices.  Currently it supports adding/removing songs and
 manipulating playlists.  Recent versions added the ability to manipulate 
